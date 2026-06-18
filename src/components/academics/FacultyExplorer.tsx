@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import {
   type CSSProperties,
   useCallback,
@@ -13,6 +12,7 @@ import { X } from "lucide-react";
 import { CardCarousel } from "@/components/ui/CardCarousel";
 import { ContentIcon } from "@/components/ui/ContentIcon";
 import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
+import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
 import { cn } from "@/lib/utils";
 import type {
   AcademicLevelSlug,
@@ -124,12 +124,9 @@ function FacultyCard({ member }: { member: FacultyMember }) {
     <article className="flex h-full min-h-[190px] flex-col items-center justify-center rounded-card border border-border bg-white p-5 text-center shadow-card">
       {member.image ? (
         <div className="relative size-20 overflow-hidden rounded-2xl bg-soft-cream">
-          <Image
-            src={member.image}
-            alt={member.imageDescription}
-            fill
+          <ResponsiveImage
+            image={member.image}
             sizes="80px"
-            className="object-cover"
           />
         </div>
       ) : (

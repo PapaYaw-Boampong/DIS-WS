@@ -21,6 +21,8 @@ export default function AcademicsPage() {
         eyebrow={academicsHero.eyebrow}
         title={academicsHero.title}
         description={academicsHero.description}
+        image={academicsHero.image}
+        preloadImage
         variant="orange"
       />
       <AcademicOverview />

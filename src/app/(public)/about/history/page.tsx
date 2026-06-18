@@ -6,7 +6,7 @@ import { HistoryTimeline } from "@/components/about/HistoryTimeline";
 import { RelatedAboutLinks } from "@/components/about/RelatedAboutLinks";
 import { CTASection } from "@/components/ui/CTASection";
 import { PageHero } from "@/components/ui/PageHero";
-import { aboutMetadata } from "@/data/about";
+import { aboutMetadata, historyHero } from "@/data/about";
 import { routes } from "@/lib/routes";
 
 export const metadata: Metadata = aboutMetadata.history;
@@ -15,9 +15,11 @@ export default function HistoryPage() {
   return (
     <>
       <PageHero
-        eyebrow="About Divine"
-        title="Our History"
-        description="The continuing story of a school community created to help children learn securely, grow confidently and live responsibly."
+        eyebrow={historyHero.eyebrow}
+        title={historyHero.title}
+        description={historyHero.description}
+        image={historyHero.image}
+        preloadImage
         variant="orange"
       />
       <HistoryOrigin />

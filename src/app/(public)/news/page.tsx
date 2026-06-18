@@ -5,7 +5,7 @@ import { CTASection } from "@/components/ui/CTASection";
 import { Container } from "@/components/ui/Container";
 import { PageHero } from "@/components/ui/PageHero";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { newsArticles, newsMetadata } from "@/data/news";
+import { newsArticles, newsHero, newsMetadata } from "@/data/news";
 import { routes } from "@/lib/routes";
 
 export const metadata: Metadata = newsMetadata.listing;
@@ -16,9 +16,11 @@ export default function NewsPage() {
   return (
     <>
       <PageHero
-        eyebrow="News"
-        title="News & Updates"
-        description="Follow school notices, community updates and event highlights from Divine International School."
+        eyebrow={newsHero.eyebrow}
+        title={newsHero.title}
+        description={newsHero.description}
+        image={newsHero.image}
+        preloadImage
         variant="orange"
         align="center"
       />

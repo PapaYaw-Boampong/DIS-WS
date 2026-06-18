@@ -1,5 +1,6 @@
 import type { NewsArticle } from "@/types/content";
 import { createPageMetadata } from "@/lib/metadata";
+import { siteImages } from "@/lib/images";
 import { routes } from "@/lib/routes";
 
 export const newsMetadata = {
@@ -11,6 +12,14 @@ export const newsMetadata = {
   }),
 };
 
+export const newsHero = {
+  eyebrow: "News",
+  title: "News & Updates",
+  description:
+    "Follow school notices, community updates and event highlights from Divine International School.",
+  image: siteImages.newsHero,
+} as const;
+
 export const newsArticles = [
   {
     title: "School Reopens",
@@ -20,6 +29,7 @@ export const newsArticles = [
     publishedAt: "School Notice",
     category: "Updates",
     icon: "newspaper",
+    image: siteImages.schoolReopens,
     imageDescription:
       "Placeholder for an approved photograph of pupils returning to school at the start of a term.",
     body: [
@@ -46,6 +56,7 @@ export const newsArticles = [
     publishedAt: "Calendar Update",
     category: "Families",
     icon: "users",
+    image: siteImages.familyProgressMeetings,
     imageDescription:
       "Placeholder for an approved photograph representing a family progress conversation with a teacher.",
     body: [
@@ -72,6 +83,7 @@ export const newsArticles = [
     publishedAt: "Event Highlight",
     category: "Student Life",
     icon: "trophy",
+    image: siteImages.coCurricularShowcase,
     imageDescription:
       "Placeholder for an approved photograph of pupils participating in co-curricular activities.",
     body: [
@@ -98,6 +110,7 @@ export const newsArticles = [
     publishedAt: "Admissions",
     category: "Admissions",
     icon: "clipboard-check",
+    image: siteImages.admissionsEnquiries,
     imageDescription:
       "Placeholder for an approved photograph representing a family admissions enquiry.",
     body: [

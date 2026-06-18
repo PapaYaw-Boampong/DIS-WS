@@ -29,6 +29,7 @@ export function AcademicLevelContent({ level }: AcademicLevelContentProps) {
             label={level.imageLabel}
             description={level.imageDescription}
             icon="graduation-cap"
+            image={level.image}
           />
         </Container>
       </section>

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 
-import { Container } from "@/components/ui/Container";
 import { portalLinks } from "@/data/navigation";
 import { school } from "@/data/school";
 import { routes } from "@/lib/routes";
@@ -9,7 +8,7 @@ import { routes } from "@/lib/routes";
 export function TopUtilityBar() {
   return (
     <div className="hidden h-[38px] bg-curry-orange text-white lg:block">
-      <Container className="flex h-full items-center justify-between gap-6 text-[0.8125rem] font-semibold">
+      <div className="flex h-full w-full items-center justify-between gap-6 px-4 text-[0.8125rem] font-semibold sm:px-6 lg:px-8 2xl:px-12">
         <div className="flex items-center gap-5">
           <a
             href={school.phoneHref}
@@ -49,7 +48,7 @@ export function TopUtilityBar() {
             ))}
           </ul>
         </nav>
-      </Container>
+      </div>
     </div>
   );
 }

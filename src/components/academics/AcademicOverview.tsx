@@ -22,6 +22,7 @@ export function AcademicOverview() {
           label={academicOverview.imageLabel}
           description={academicOverview.imageDescription}
           icon="graduation-cap"
+          image={academicOverview.image}
         />
       </Container>
     </section>

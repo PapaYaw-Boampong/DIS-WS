@@ -87,3 +87,134 @@ a {
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+
+@keyframes route-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.route-enter {
+  animation: route-enter 240ms ease-out both;
+}
+
+.site-image {
+  transition:
+    opacity 450ms ease-out,
+    transform 450ms ease-out;
+  will-change: opacity, transform;
+}
+
+.site-image-pending {
+  opacity: 0.78;
+  transform: scale(1.018);
+}
+
+.site-image-loaded {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@keyframes carousel-in-next {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes carousel-out-next {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+}
+
+@keyframes carousel-in-previous {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes carousel-out-previous {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+}
+
+.carousel-slide-incoming-next,
+.carousel-slide-outgoing-next,
+.carousel-slide-incoming-previous,
+.carousel-slide-outgoing-previous {
+  will-change: opacity, transform;
+}
+
+.carousel-slide-incoming-next {
+  animation: carousel-in-next 420ms ease-out both;
+}
+
+.carousel-slide-outgoing-next {
+  animation: carousel-out-next 420ms ease-out both;
+}
+
+.carousel-slide-incoming-previous {
+  animation: carousel-in-previous 420ms ease-out both;
+}
+
+.carousel-slide-outgoing-previous {
+  animation: carousel-out-previous 420ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .route-enter {
+    animation: none;
+  }
+
+  .site-image {
+    transition: none;
+  }
+
+  .site-image-pending,
+  .site-image-loaded {
+    opacity: 1;
+    transform: none;
+  }
+
+  .carousel-slide-incoming-next,
+  .carousel-slide-outgoing-next,
+  .carousel-slide-incoming-previous,
+  .carousel-slide-outgoing-previous {
+    animation: none;
+  }
+}

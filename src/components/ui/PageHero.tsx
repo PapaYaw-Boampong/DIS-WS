@@ -1,14 +1,14 @@
-import Image from "next/image";
-
 import { Container } from "@/components/ui/Container";
+import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
 import { cn } from "@/lib/utils";
+import type { SiteImage } from "@/types/content";
 
 type PageHeroProps = {
   eyebrow?: string;
   title: string;
   description: string;
-  image?: string;
-  imageAlt?: string;
+  image?: SiteImage;
+  preloadImage?: boolean;
   variant?: "light" | "dark" | "orange" | "pattern";
   align?: "left" | "center";
   size?: "default" | "spacious";
@@ -19,7 +19,7 @@ export function PageHero({
   title,
   description,
   image,
-  imageAlt = "",
+  preloadImage = false,
   variant = "light",
   align = "left",
   size = "default",
@@ -52,11 +52,10 @@ export function PageHero({
       ) : null}
       {image ? (
         <>
-          <Image
-            src={image}
-            alt={imageAlt}
-            fill
-            priority
+          <ResponsiveImage
+            image={image}
+            sizes="100vw"
+            preload={preloadImage}
             className="absolute inset-0 -z-20 object-cover"
           />
           <div className="absolute inset-0 -z-10 bg-charcoal/75" />

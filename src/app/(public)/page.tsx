@@ -24,7 +24,7 @@ export default function HomePage() {
       <HomeHero />
       <StatsSection />
       <WelcomeSection />
-      <SchoolMessage />
+      {/* <SchoolMessage /> */}
       <JoinPathways />
       <AcademicPreview />
       <EventsPreview />

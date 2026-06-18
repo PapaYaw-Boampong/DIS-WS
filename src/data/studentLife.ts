@@ -1,5 +1,6 @@
 import { routes } from "@/lib/routes";
 import { createPageMetadata } from "@/lib/metadata";
+import { siteImages } from "@/lib/images";
 import type {
   GalleryItem,
   StudentActivity,
@@ -26,6 +27,7 @@ export const studentLifeHero = {
     label: "Explore School",
     href: "#experience",
   },
+  image: siteImages.studentLifeHero,
 } as const;
 
 export const experienceSlides = [
@@ -39,6 +41,7 @@ export const experienceSlides = [
     imageDescription:
       "Placeholder for an approved photograph showing pupils participating in a supportive Divine International School environment.",
     icon: "heart",
+    image: siteImages.graduation,
   },
   {
     id: "confident-participation",
@@ -50,6 +53,7 @@ export const experienceSlides = [
     imageDescription:
       "Placeholder for an approved photograph of pupils confidently participating in a school activity.",
     icon: "sparkles",
+    image: siteImages.studentConfidence,
   },
   {
     id: "whole-child-growth",
@@ -61,6 +65,7 @@ export const experienceSlides = [
     imageDescription:
       "Placeholder for an approved photograph representing whole-child growth at Divine International School.",
     icon: "shield-check",
+    image: siteImages.achievement,
   },
 ] satisfies readonly StudentLifeSlide[];
 
@@ -75,6 +80,7 @@ export const campusSlides = [
     imageDescription:
       "Placeholder for an approved photograph of classroom and learning spaces on the Divine International School campus.",
     icon: "school",
+    image: siteImages.earlyLearningGallery,
   },
   {
     id: "community-spaces",
@@ -86,6 +92,7 @@ export const campusSlides = [
     imageDescription:
       "Placeholder for an approved photograph of pupils using a shared campus area at Divine International School.",
     icon: "users",
+    image: siteImages.graduation,
   },
   {
     id: "activity-spaces",
@@ -97,6 +104,7 @@ export const campusSlides = [
     imageDescription:
       "Placeholder for an approved photograph of an activity space at Divine International School.",
     icon: "compass",
+    image: siteImages.scienceGallery,
   },
 ] satisfies readonly StudentLifeSlide[];
 
@@ -111,6 +119,7 @@ export const activitySlides = [
     imageDescription:
       "Placeholder for an approved photograph of pupils taking part in a supervised school club.",
     icon: "puzzle",
+    image: siteImages.creativeConfidence,
   },
   {
     id: "sports",
@@ -122,6 +131,7 @@ export const activitySlides = [
     imageDescription:
       "Placeholder for an approved photograph of pupils participating in a school sport or movement activity.",
     icon: "trophy",
+    image: siteImages.dance,
   },
   {
     id: "arts-culture",
@@ -133,6 +143,7 @@ export const activitySlides = [
     imageDescription:
       "Placeholder for an approved photograph of pupils participating in creative arts or cultural activity.",
     icon: "palette",
+    image: siteImages.culturalPlay,
   },
   {
     id: "leadership-service",
@@ -144,6 +155,7 @@ export const activitySlides = [
     imageDescription:
       "Placeholder for an approved photograph of pupils taking part in a leadership or service activity.",
     icon: "handshake",
+    image: siteImages.recital,
   },
 ] satisfies readonly StudentLifeSlide[];
 
@@ -180,6 +192,7 @@ export const studentVoices = [
     imageDescription:
       "Placeholder for an approved photograph representing family partnership at Divine International School.",
     icon: "users",
+    image: siteImages.awardGallery,
   },
   {
     id: "learner-confidence",
@@ -192,6 +205,7 @@ export const studentVoices = [
     imageDescription:
       "Placeholder for an approved photograph representing learner confidence and participation.",
     icon: "sparkles",
+    image: siteImages.studentConfidence,
   },
   {
     id: "community-belonging",
@@ -204,6 +218,7 @@ export const studentVoices = [
     imageDescription:
       "Placeholder for an approved photograph representing belonging within the Divine school community.",
     icon: "heart",
+    image: siteImages.graduation,
   },
 ] satisfies readonly StudentVoice[];
 
@@ -213,35 +228,83 @@ export const galleryItems = [
     description:
       "Placeholder for an approved campus-life photograph.",
     icon: "school",
+    image: siteImages.earlyLearningGallery,
   },
   {
     title: "Classroom Learning",
     description:
       "Placeholder for an approved classroom-learning photograph.",
     icon: "book-open",
+    image: siteImages.scienceGallery,
   },
   {
     title: "Sports Activity",
     description:
       "Placeholder for an approved sports or wellbeing photograph.",
     icon: "trophy",
+    image: siteImages.dance,
   },
   {
     title: "Creative Work",
     description:
       "Placeholder for an approved creative arts photograph.",
     icon: "palette",
+    image: siteImages.creativeConfidence,
   },
   {
     title: "School Celebration",
     description:
       "Placeholder for an approved school celebration photograph.",
     icon: "calendar",
+    image: siteImages.awardGallery,
   },
   {
     title: "Community Life",
     description:
       "Placeholder for an approved school community photograph.",
     icon: "users",
+    image: siteImages.recital,
+  },
+  {
+    title: "Student Speaker",
+    description:
+      "A pupil presenting confidently during a school programme.",
+    icon: "presentation",
+    image: siteImages.galleryStudentSpeaker,
+  },
+  {
+    title: "Creative Presentation",
+    description:
+      "A pupil participating in a creative school presentation.",
+    icon: "palette",
+    image: siteImages.galleryFashion,
+  },
+  {
+    title: "Stage Recital",
+    description:
+      "Pupils performing together during a school recital.",
+    icon: "music",
+    image: siteImages.galleryRecital,
+  },
+  {
+    title: "Cultural Performance",
+    description:
+      "Pupils sharing a cultural story through performance.",
+    icon: "users",
+    image: siteImages.galleryCulturalPlay,
+  },
+  {
+    title: "Award Moment",
+    description:
+      "A learner and family celebrating school achievement.",
+    icon: "trophy",
+    image: siteImages.galleryAward,
+  },
+  {
+    title: "Graduation Portrait",
+    description:
+      "A young learner ready for the school graduation ceremony.",
+    icon: "graduation-cap",
+    image: siteImages.galleryGraduate,
   },
 ] satisfies readonly GalleryItem[];

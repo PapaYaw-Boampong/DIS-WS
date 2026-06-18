@@ -7,6 +7,7 @@ import type {
   TeacherProfile,
 } from "@/types/content";
 import { createPageMetadata } from "@/lib/metadata";
+import { siteImages } from "@/lib/images";
 import { routes } from "@/lib/routes";
 
 export const academicMetadata = {
@@ -35,6 +36,7 @@ export const academicsHero = {
   title: "Learning that builds knowledge, confidence and character",
   description:
     "Our academic programme combines strong foundations, purposeful teaching and opportunities for every learner to participate, practise and grow.",
+  image: siteImages.academicsHero,
 } as const;
 
 export const academicOverview = {
@@ -47,6 +49,7 @@ export const academicOverview = {
   imageLabel: "Teaching and learning at Divine",
   imageDescription:
     "Placeholder for an approved photograph of pupils participating in a classroom learning activity at Divine International School.",
+  image: siteImages.academicsOverview,
 } as const;
 
 export const academicLevels = [
@@ -177,6 +180,7 @@ const levelDetails = [
     imageLabel: "Early Years learning environment",
     imageDescription:
       "Placeholder for an approved photograph of young learners engaged in a supervised Early Years activity.",
+    image: siteImages.earlyYears,
     subjects: [
       {
         title: "Communication & Language",
@@ -313,6 +317,7 @@ const levelDetails = [
     eyebrow: "Ready for the Next Stage",
     heroDescription:
       "Focused learning that develops deeper subject knowledge, independent study habits and responsible leadership.",
+    heroImage: siteImages.juniorHighHero,
     overviewTitle: "Greater depth, independence and purpose",
     overviewParagraphs: [
       "Junior High learners engage with increasingly specialised content while strengthening analysis, communication and problem-solving skills.",
@@ -321,6 +326,7 @@ const levelDetails = [
     imageLabel: "Junior High academic learning",
     imageDescription:
       "Placeholder for an approved photograph of Junior High students engaged in a subject lesson.",
+    image: siteImages.juniorHigh,
     subjects: [
       {
         title: "Languages & Communication",

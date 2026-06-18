@@ -26,7 +26,6 @@ export function LearningResources() {
               eyebrow={resource.eyebrow}
               icon={resource.icon}
               image={resource.image}
-              imageAlt={resource.imageAlt}
             />
           ))}
         </CardCarousel>

@@ -20,16 +20,19 @@ export default function AdmissionsPage() {
       <PageHero
         title={admissionsHero.title}
         description={admissionsHero.description}
+        image={admissionsHero.image}
+        preloadImage
         variant="orange"
         align="center"
         size="spacious"
       />
       <AdmissionsIntroduction />
-      <WhyChooseDivine />
-      <AdmissionsSteps />
       <RequirementsSection />
+      <AdmissionsSteps />
       <FeesPreview />
       <AdmissionsEnquiryForm />
+      <WhyChooseDivine />
+      
       <AdmissionsFAQ />
       <CTASection
         title="Take the next step with Divine"

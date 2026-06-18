@@ -5,6 +5,7 @@ import type {
   AdmissionStep,
 } from "@/types/content";
 import { createPageMetadata } from "@/lib/metadata";
+import { siteImages } from "@/lib/images";
 import { routes } from "@/lib/routes";
 
 export const admissionsMetadata = createPageMetadata({
@@ -18,6 +19,7 @@ export const admissionsHero = {
   title: "Admissions",
   description:
     "A nurturing school community committed to academic excellence, discipline and character development.",
+  image: siteImages.admissionsHero,
 } as const;
 
 export const admissionsIntroduction = {

@@ -8,7 +8,6 @@ import { ChevronDown } from "lucide-react";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { TopUtilityBar } from "@/components/layout/TopUtilityBar";
 import { Button } from "@/components/ui/Button";
-import { Container } from "@/components/ui/Container";
 import { mainNavigation } from "@/data/navigation";
 import { school } from "@/data/school";
 import { routes } from "@/lib/routes";
@@ -32,7 +31,7 @@ export function PublicHeader() {
     <header className="sticky top-0 z-50 w-full bg-white">
       <TopUtilityBar />
       <div className="border-b border-border bg-white shadow-header">
-        <Container className="flex h-[78px] items-center justify-between gap-6 lg:h-[98px]">
+        <div className="flex h-[78px] w-full items-center justify-between gap-6 px-4 sm:px-6 lg:h-[98px] lg:px-8 2xl:px-12">
           <Link
             href={routes.home}
             className="flex shrink-0 items-center gap-3"
@@ -43,7 +42,7 @@ export function PublicHeader() {
               alt=""
               width={67}
               height={57}
-              priority
+              preload
               className="h-12 w-auto lg:h-[57px]"
             />
             <span className="max-w-[190px] text-lg leading-tight font-semibold text-charcoal lg:text-xl">
@@ -52,7 +51,7 @@ export function PublicHeader() {
           </Link>
 
           <nav
-            className="hidden flex-1 items-center justify-center lg:flex"
+            className="ml-auto hidden items-center lg:flex"
             aria-label="Primary navigation"
           >
             <ul className="flex items-center gap-1 xl:gap-2">
@@ -136,7 +135,7 @@ export function PublicHeader() {
             <Button href={routes.admissions}>Apply Now</Button>
           </div>
           <MobileNav items={mainNavigation} />
-        </Container>
+        </div>
       </div>
     </header>
   );

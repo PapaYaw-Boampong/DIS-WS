@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { Container } from "@/components/ui/Container";
-import { ContentIcon } from "@/components/ui/ContentIcon";
+import { NewsImagePlaceholder } from "@/components/news/NewsImagePlaceholder";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { featuredNews } from "@/data/news";
 import { routes } from "@/lib/routes";
@@ -18,19 +18,10 @@ export function NewsPreview() {
               key={article.slug}
               className="grid min-h-[360px] overflow-hidden rounded-card border border-border bg-white shadow-card lg:grid-cols-[0.9fr_1.1fr]"
             >
-              <div
-                role="img"
-                aria-label={article.imageDescription}
-                className="pattern-checker relative flex min-h-64 items-center justify-center overflow-hidden border-b border-border lg:min-h-full lg:border-r lg:border-b-0"
-              >
-                <div
-                  className="absolute size-56 rounded-full bg-curry-orange/10"
-                  aria-hidden="true"
-                />
-                <div className="relative flex size-20 items-center justify-center rounded-[1.5rem] bg-white text-curry-orange shadow-card">
-                  <ContentIcon name={article.icon} className="size-9" />
-                </div>
-              </div>
+              <NewsImagePlaceholder
+                article={article}
+                className="min-h-64 rounded-none border-0 border-b border-border lg:min-h-full lg:border-r lg:border-b-0"
+              />
 
               <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-12">
                 <p className="text-sm font-extrabold tracking-[0.14em] text-curry-orange uppercase">

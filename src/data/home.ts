@@ -1,9 +1,11 @@
 import { routes } from "@/lib/routes";
+import { siteImages } from "@/lib/images";
 import type {
   HeroSlide,
   HomePathway,
   HomeStat,
   LinkAction,
+  SiteImage,
 } from "@/types/content";
 
 export const homeHeroSlides: readonly HeroSlide[] = [
@@ -19,6 +21,7 @@ export const homeHeroSlides: readonly HeroSlide[] = [
       label: "Explore School",
       href: routes.about,
     },
+    image: siteImages.homeHero,
   },
 ];
 
@@ -50,11 +53,13 @@ export const welcomeContent = {
     label: "Read More",
     href: routes.about,
   },
+  image: siteImages.homeWelcome,
 } satisfies {
   readonly eyebrow: string;
   readonly title: string;
   readonly description: string;
   readonly action: LinkAction;
+  readonly image: SiteImage;
 };
 
 export const schoolMessage = {

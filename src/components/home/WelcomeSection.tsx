@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/Button";
-import { ContentIcon } from "@/components/ui/ContentIcon";
 import { Container } from "@/components/ui/Container";
+import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { welcomeContent } from "@/data/home";
 
@@ -19,23 +19,11 @@ export function WelcomeSection() {
           </Button>
         </div>
 
-        <div
-          role="img"
-          aria-label="School photography placeholder"
-          className="pattern-checker relative flex min-h-[320px] items-center justify-center overflow-hidden rounded-[1.625rem] border border-curry-orange/10 sm:min-h-[360px]"
-        >
-          <div
-            className="absolute -top-16 -right-16 size-52 rounded-full bg-curry-orange/10"
-            aria-hidden="true"
-          />
-          <div
-            className="absolute -bottom-20 -left-20 size-64 rounded-full bg-curry/10"
-            aria-hidden="true"
-          />
-          <div className="relative flex size-24 items-center justify-center rounded-[1.75rem] bg-white text-curry-orange shadow-card">
-            <ContentIcon name="school" className="size-11" />
-          </div>
-        </div>
+        <ImagePlaceholder
+          label="Pupils learning together"
+          description="Approved photograph of pupils learning together."
+          image={welcomeContent.image}
+        />
       </Container>
     </section>
   );

@@ -44,7 +44,6 @@ export function CurriculumSection() {
               eyebrow={area.eyebrow}
               icon={area.icon}
               image={area.image}
-              imageAlt={area.imageAlt}
               className="bg-soft-white"
             />
           ))}

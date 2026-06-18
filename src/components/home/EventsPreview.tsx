@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { ContentIcon } from "@/components/ui/ContentIcon";
+import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { featuredEvents } from "@/data/events";
 import { routes } from "@/lib/routes";
@@ -17,9 +18,17 @@ export function EventsPreview() {
           {featuredEvents.map((event) => (
             <article
               key={event.title}
-              className="grid min-h-[300px] gap-8 rounded-card border border-border bg-white p-7 shadow-card sm:p-10 lg:grid-cols-[1fr_auto] lg:items-center lg:p-12"
+              className="grid min-h-[340px] overflow-hidden rounded-card border border-border bg-white shadow-card lg:grid-cols-[0.8fr_1.2fr]"
             >
-              <div className="max-w-2xl">
+              {event.image ? (
+                <div className="relative min-h-64 lg:min-h-full">
+                  <ResponsiveImage
+                    image={event.image}
+                    sizes="(min-width: 1024px) 40vw, 100vw"
+                  />
+                </div>
+              ) : null}
+              <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-12">
                 <div className="flex size-14 items-center justify-center rounded-2xl bg-soft-cream text-curry-orange">
                   <ContentIcon name={event.icon} className="size-7" />
                 </div>
@@ -39,14 +48,14 @@ export function EventsPreview() {
                   View Calendar
                   <ArrowRight aria-hidden="true" className="size-4" />
                 </Link>
+                <Button
+                  href={routes.calendar}
+                  size="lg"
+                  className="mt-7 w-full sm:w-fit"
+                >
+                  View Our Calendar
+                </Button>
               </div>
-              <Button
-                href={routes.calendar}
-                size="lg"
-                className="w-full lg:w-auto"
-              >
-                View Our Calendar
-              </Button>
             </article>
           ))}
         </div>

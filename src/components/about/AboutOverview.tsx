@@ -22,6 +22,7 @@ export function AboutOverview() {
           label={aboutOverview.imageLabel}
           description={aboutOverview.imageDescription}
           icon="users"
+          image={aboutOverview.image}
         />
       </Container>
     </section>

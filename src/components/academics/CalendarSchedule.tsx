@@ -2,6 +2,7 @@ import { ChevronDown } from "lucide-react";
 
 import { Container } from "@/components/ui/Container";
 import { ContentIcon } from "@/components/ui/ContentIcon";
+import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { academicTerms } from "@/data/academics";
 import { calendarEvents } from "@/data/events";
@@ -67,20 +68,30 @@ export function CalendarSchedule() {
             {calendarEvents.map((event) => (
               <article
                 key={event.title}
-                className="flex min-h-[280px] flex-col rounded-card border border-border bg-white p-6 shadow-card"
+                className="flex min-h-[360px] flex-col overflow-hidden rounded-card border border-border bg-white shadow-card"
               >
-                <div className="flex size-12 items-center justify-center rounded-[0.875rem] bg-soft-cream text-curry-orange">
-                  <ContentIcon name={event.icon} className="size-6" />
+                {event.image ? (
+                  <div className="relative aspect-[4/3]">
+                    <ResponsiveImage
+                      image={event.image}
+                      sizes="(min-width: 768px) 33vw, 100vw"
+                    />
+                  </div>
+                ) : null}
+                <div className="flex flex-1 flex-col p-6">
+                  <div className="flex size-12 items-center justify-center rounded-[0.875rem] bg-soft-cream text-curry-orange">
+                    <ContentIcon name={event.icon} className="size-6" />
+                  </div>
+                  <p className="mt-6 text-xs font-extrabold tracking-[0.14em] text-curry-orange uppercase">
+                    {event.date}
+                  </p>
+                  <h3 className="mt-2 text-xl font-bold text-charcoal">
+                    {event.title}
+                  </h3>
+                  <p className="mt-3 leading-7 text-muted-grey">
+                    {event.description}
+                  </p>
                 </div>
-                <p className="mt-6 text-xs font-extrabold tracking-[0.14em] text-curry-orange uppercase">
-                  {event.date}
-                </p>
-                <h3 className="mt-2 text-xl font-bold text-charcoal">
-                  {event.title}
-                </h3>
-                <p className="mt-3 leading-7 text-muted-grey">
-                  {event.description}
-                </p>
               </article>
             ))}
           </div>

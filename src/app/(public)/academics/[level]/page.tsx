@@ -56,6 +56,8 @@ export default async function AcademicLevelPage({
         eyebrow={detail.eyebrow}
         title={detail.title}
         description={detail.heroDescription}
+        image={detail.heroImage}
+        preloadImage={Boolean(detail.heroImage)}
         variant="orange"
       />
       <AcademicLevelContent level={detail} />

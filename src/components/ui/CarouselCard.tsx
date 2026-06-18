@@ -1,16 +1,17 @@
-import Image from "next/image";
-
 import { ContentIcon } from "@/components/ui/ContentIcon";
+import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
 import { cn } from "@/lib/utils";
-import type { ContentIcon as ContentIconName } from "@/types/content";
+import type {
+  ContentIcon as ContentIconName,
+  SiteImage,
+} from "@/types/content";
 
 type CarouselCardProps = {
   title: string;
   description: string;
   eyebrow?: string;
   icon: ContentIconName;
-  image?: string;
-  imageAlt?: string;
+  image?: SiteImage;
   imageDescription?: string;
   className?: string;
 };
@@ -21,7 +22,6 @@ export function CarouselCard({
   eyebrow,
   icon,
   image,
-  imageAlt,
   imageDescription,
   className,
 }: CarouselCardProps) {
@@ -34,12 +34,9 @@ export function CarouselCard({
     >
       {image ? (
         <div className="relative aspect-[4/3] overflow-hidden bg-soft-cream">
-          <Image
-            src={image}
-            alt={imageAlt ?? ""}
-            fill
+          <ResponsiveImage
+            image={image}
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-            className="object-cover"
           />
         </div>
       ) : imageDescription ? (

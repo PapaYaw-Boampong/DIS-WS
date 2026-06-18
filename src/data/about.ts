@@ -1,5 +1,6 @@
 import { routes } from "@/lib/routes";
 import { createPageMetadata } from "@/lib/metadata";
+import { siteImages } from "@/lib/images";
 import type {
   AboutValue,
   HistoryMilestone,
@@ -40,6 +41,15 @@ export const aboutHero = {
   title: "Welcome to the DIS Family",
   description:
     "We are a caring school community where pupils are guided academically, socially, morally and spiritually.",
+  image: siteImages.aboutHero,
+} as const;
+
+export const historyHero = {
+  eyebrow: "About Divine",
+  title: "Our History",
+  description:
+    "The continuing story of a school community created to help children learn securely, grow confidently and live responsibly.",
+  image: siteImages.historyHero,
 } as const;
 
 export const aboutOverview = {
@@ -52,6 +62,7 @@ export const aboutOverview = {
   imageLabel: "Divine school community",
   imageDescription:
     "Placeholder for an approved photograph showing pupils and staff in the Divine International School community.",
+  image: siteImages.aboutCommunity,
 } as const;
 
 export const aboutValues = [
@@ -131,6 +142,7 @@ export const historyOrigin = {
   imageLabel: "Our school story",
   imageDescription:
     "Placeholder for an approved historical or campus photograph from Divine International School.",
+  image: siteImages.historyOrigin,
 } as const;
 
 export const historyLegacy = {

@@ -60,6 +60,8 @@ export default async function NewsArticlePage({
         eyebrow={`${article.category} · ${article.publishedAt}`}
         title={article.title}
         description={article.excerpt}
+        image={article.image}
+        preloadImage={Boolean(article.image)}
         variant="orange"
         align="center"
       />

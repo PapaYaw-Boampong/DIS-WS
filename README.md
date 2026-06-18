@@ -58,8 +58,20 @@ page.
 ## Content And Images
 
 Current school copy, statistics, staff roles, news, events and map location are
-static local data. Placeholder media areas are accessible styled placeholders
-until approved school photography is supplied.
+static local data. Approved school photography is stored as static imports under
+`src/assets/images/approved`; unavailable portraits and news images retain their
+accessible styled placeholders.
+
+The `pics/` directory is the source archive and is not served by the website.
+To regenerate the approved, metadata-stripped image set:
+
+```powershell
+npm.cmd run prepare:images
+```
+
+The preparation script uses an explicit allowlist, auto-rotates photographs,
+limits the longest edge to 2400 pixels, exports progressive JPEG at quality 88,
+and verifies that EXIF, GPS, XMP and IPTC metadata were removed.
 
 Forms are presentational only. Valid submissions display an inline notice and do
 not send data to a backend.

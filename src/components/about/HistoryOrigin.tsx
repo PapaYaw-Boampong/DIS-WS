@@ -11,6 +11,7 @@ export function HistoryOrigin() {
           label={historyOrigin.imageLabel}
           description={historyOrigin.imageDescription}
           icon="landmark"
+          image={historyOrigin.image}
         />
         <div>
           <SectionHeader

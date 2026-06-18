@@ -1,3 +1,11 @@
+import type { StaticImageData } from "next/image";
+
+export type SiteImage = {
+  readonly src: StaticImageData;
+  readonly alt: string;
+  readonly position?: string;
+};
+
 export type NavItem = {
   readonly label: string;
   readonly href: string;
@@ -55,6 +63,7 @@ export type HeroSlide = {
   readonly description: string;
   readonly primaryAction: LinkAction;
   readonly secondaryAction: LinkAction;
+  readonly image?: SiteImage;
 };
 
 export type HomeStat = {
@@ -87,6 +96,7 @@ export type LeaderProfile = {
   readonly description: string;
   readonly icon: ContentIcon;
   readonly imageDescription: string;
+  readonly image?: SiteImage;
 };
 
 export type MessageSection = {
@@ -98,7 +108,7 @@ export type AcademicLevel = {
   readonly title: string;
   readonly slug: AcademicLevelSlug;
   readonly description: string;
-  readonly image?: string;
+  readonly image?: SiteImage;
   readonly icon: ContentIcon;
 };
 
@@ -113,8 +123,7 @@ export type AcademicCardItem = {
   readonly description: string;
   readonly icon: ContentIcon;
   readonly eyebrow?: string;
-  readonly image?: string;
-  readonly imageAlt?: string;
+  readonly image?: SiteImage;
 };
 
 export type AcademicLevelDetail = {
@@ -122,10 +131,12 @@ export type AcademicLevelDetail = {
   readonly title: string;
   readonly eyebrow: string;
   readonly heroDescription: string;
+  readonly heroImage?: SiteImage;
   readonly overviewTitle: string;
   readonly overviewParagraphs: readonly string[];
   readonly imageLabel: string;
   readonly imageDescription: string;
+  readonly image?: SiteImage;
   readonly subjects: readonly AcademicCardItem[];
   readonly developmentFocus: readonly AcademicCardItem[];
   readonly assessmentTitle: string;
@@ -142,6 +153,7 @@ export type TeacherProfile = {
   readonly description: string;
   readonly icon: ContentIcon;
   readonly imageDescription: string;
+  readonly image?: SiteImage;
 };
 
 export type FacultyMember = {
@@ -150,7 +162,7 @@ export type FacultyMember = {
   readonly displayName: string;
   readonly description: string;
   readonly icon: ContentIcon;
-  readonly image?: string;
+  readonly image?: SiteImage;
   readonly imageDescription: string;
 };
 
@@ -199,6 +211,7 @@ export type StudentLifeSlide = {
   readonly imageLabel: string;
   readonly imageDescription: string;
   readonly icon: ContentIcon;
+  readonly image?: SiteImage;
 };
 
 export type StudentActivity = {
@@ -211,6 +224,7 @@ export type GalleryItem = {
   readonly title: string;
   readonly description: string;
   readonly icon: ContentIcon;
+  readonly image?: SiteImage;
 };
 
 export type StudentVoice = {
@@ -222,6 +236,7 @@ export type StudentVoice = {
   readonly imageLabel: string;
   readonly imageDescription: string;
   readonly icon: ContentIcon;
+  readonly image?: SiteImage;
 };
 
 export type AcademicTerm = {
@@ -237,6 +252,7 @@ export type EventItem = {
   readonly description: string;
   readonly href: string;
   readonly icon: ContentIcon;
+  readonly image?: SiteImage;
 };
 
 export type NewsItem = {
@@ -245,7 +261,7 @@ export type NewsItem = {
   readonly excerpt: string;
   readonly publishedAt: string;
   readonly category: string;
-  readonly image?: string;
+  readonly image?: SiteImage;
   readonly icon: ContentIcon;
 };
 
