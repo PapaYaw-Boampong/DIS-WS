@@ -1,0 +1,18 @@
+export const routes = {
+  home: "/",
+  about: "/about",
+  history: "/about/history",
+  principalMessage: "/about/principal-message",
+  leadership: "/about/leadership",
+  academics: "/academics",
+  academicLevel: (level: string) => `/academics/${level}`,
+  teachers: "/academics/teachers",
+  admissions: "/admissions",
+  studentLife: "/student-life",
+  calendar: "/calendar",
+  news: "/news",
+  newsArticle: (slug: string) => `/news/${slug}`,
+  portal: "/portal",
+  contact: "/contact",
+  location: "/location",
+} as const;
