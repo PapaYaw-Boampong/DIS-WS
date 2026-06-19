@@ -42,7 +42,6 @@ export function PublicHeader() {
               alt=""
               width={67}
               height={57}
-              preload
               className="h-12 w-auto lg:h-[57px]"
             />
             <span className="max-w-[190px] text-lg leading-tight font-semibold text-charcoal lg:text-xl">

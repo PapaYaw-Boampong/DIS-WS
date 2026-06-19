@@ -21,7 +21,7 @@ export function EventsPreview() {
               className="grid min-h-[340px] overflow-hidden rounded-card border border-border bg-white shadow-card lg:grid-cols-[0.8fr_1.2fr]"
             >
               {event.image ? (
-                <div className="relative min-h-64 lg:min-h-full">
+                <div className="relative min-h-64 bg-soft-cream lg:min-h-full">
                   <ResponsiveImage
                     image={event.image}
                     sizes="(min-width: 1024px) 40vw, 100vw"

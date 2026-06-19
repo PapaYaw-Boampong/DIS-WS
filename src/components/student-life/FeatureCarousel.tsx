@@ -19,6 +19,7 @@ type FeatureCarouselVariant = "split" | "media";
 type FeatureCarouselMediaSize = "compact" | "large" | "wide";
 type SlideDirection = "previous" | "next";
 type TransitionPhase = "loading" | "animating";
+type ImageLoading = "eager" | "lazy";
 
 type CarouselTransition = {
   fromIndex: number;
@@ -40,7 +41,6 @@ type FeatureCarouselProps = {
 };
 
 const transitionDuration = 420;
-const imageLoadTimeout = 1600;
 
 const mediaSizeClasses: Record<FeatureCarouselMediaSize, string> = {
   compact: "h-[280px] sm:h-[340px]",
@@ -52,12 +52,18 @@ function SlideMedia({
   slide,
   mediaSize,
   sizes,
+  loading,
+  initiallyLoaded,
   onImageLoad,
+  onImageError,
 }: {
   slide: StudentLifeSlide;
   mediaSize: FeatureCarouselMediaSize;
   sizes: string;
+  loading?: ImageLoading;
+  initiallyLoaded?: boolean;
   onImageLoad?: () => void;
+  onImageError?: () => void;
 }) {
   return (
     <div
@@ -72,7 +78,10 @@ function SlideMedia({
         <ResponsiveImage
           image={slide.image}
           sizes={sizes}
+          loading={loading}
+          initiallyLoaded={initiallyLoaded}
           onLoad={onImageLoad}
+          onError={onImageError}
         />
       ) : (
         <>
@@ -122,18 +131,24 @@ function SlideComposition({
   textPosition,
   mediaSize,
   mediaSizes,
+  imageLoading,
+  imageInitiallyLoaded,
   className,
   ariaHidden,
   onImageLoad,
+  onImageError,
 }: {
   slide: StudentLifeSlide;
   variant: FeatureCarouselVariant;
   textPosition: "left" | "right";
   mediaSize: FeatureCarouselMediaSize;
   mediaSizes: string;
+  imageLoading?: ImageLoading;
+  imageInitiallyLoaded?: boolean;
   className?: string;
   ariaHidden?: boolean;
   onImageLoad?: () => void;
+  onImageError?: () => void;
 }) {
   return (
     <div
@@ -146,7 +161,10 @@ function SlideComposition({
             slide={slide}
             mediaSize={mediaSize}
             sizes={mediaSizes}
+            loading={imageLoading}
+            initiallyLoaded={imageInitiallyLoaded}
             onImageLoad={onImageLoad}
+            onImageError={onImageError}
           />
           <div className="mt-6 rounded-card border border-border bg-white p-6 shadow-card sm:p-7">
             <SlideText slide={slide} />
@@ -168,7 +186,10 @@ function SlideComposition({
                 slide={slide}
                 mediaSize={mediaSize}
                 sizes={mediaSizes}
+                loading={imageLoading}
+                initiallyLoaded={imageInitiallyLoaded}
                 onImageLoad={onImageLoad}
+                onImageError={onImageError}
               />
             </>
           ) : (
@@ -177,7 +198,10 @@ function SlideComposition({
                 slide={slide}
                 mediaSize={mediaSize}
                 sizes={mediaSizes}
+                loading={imageLoading}
+                initiallyLoaded={imageInitiallyLoaded}
                 onImageLoad={onImageLoad}
+                onImageError={onImageError}
               />
               <SlideText slide={slide} />
             </>
@@ -213,18 +237,30 @@ export function FeatureCarousel({
 }: FeatureCarouselProps) {
   const carouselId = useId();
   const cooldownTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const imageWaitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const transitionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const transitionRef = useRef<CarouselTransition | null>(null);
   const transitionToken = useRef(0);
+  const initialResolvedImageIndices = slides.flatMap((slide, index) =>
+    slide.image ? [] : [index],
+  );
+  const resolvedImageIndicesRef = useRef(
+    new Set<number>(initialResolvedImageIndices),
+  );
+  const [resolvedImageIndices, setResolvedImageIndices] = useState<number[]>(
+    initialResolvedImageIndices,
+  );
   const [activeIndex, setActiveIndex] = useState(0);
   const [transition, setTransition] = useState<CarouselTransition | null>(null);
+  const [preloadIndex, setPreloadIndex] = useState<number | null>(null);
   const [isInCooldown, setIsInCooldown] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   const hasMultipleSlides = slides.length > 1;
   const isTransitioning = transition !== null;
-  const visibleIndex = transition?.toIndex ?? activeIndex;
+  const visibleIndex =
+    transition?.phase === "animating"
+      ? transition.toIndex
+      : activeIndex;
   const activeSlide = slides[visibleIndex] ?? slides[0];
   const mediaSizes =
     variant === "media"
@@ -232,16 +268,34 @@ export function FeatureCarousel({
       : "(min-width: 1280px) 780px, (min-width: 1024px) 65vw, 100vw";
 
   const clearTransitionTimers = useCallback(() => {
-    if (imageWaitTimer.current) {
-      clearTimeout(imageWaitTimer.current);
-      imageWaitTimer.current = null;
-    }
-
     if (transitionTimer.current) {
       clearTimeout(transitionTimer.current);
       transitionTimer.current = null;
     }
   }, []);
+
+  const queueNextSlideImage = useCallback(
+    (index: number) => {
+      if (!hasMultipleSlides) {
+        setPreloadIndex(null);
+        return;
+      }
+
+      const nextIndex = (index + 1) % slides.length;
+      const nextSlide = slides[nextIndex];
+
+      if (
+        !nextSlide?.image ||
+        resolvedImageIndicesRef.current.has(nextIndex)
+      ) {
+        setPreloadIndex(null);
+        return;
+      }
+
+      setPreloadIndex(nextIndex);
+    },
+    [hasMultipleSlides, slides],
+  );
 
   const finishTransition = useCallback(
     (token: number, toIndex: number) => {
@@ -255,8 +309,9 @@ export function FeatureCarousel({
       transitionRef.current = null;
       setActiveIndex(toIndex);
       setTransition(null);
+      queueNextSlideImage(toIndex);
     },
-    [clearTransitionTimers],
+    [clearTransitionTimers, queueNextSlideImage],
   );
 
   const beginTransitionAnimation = useCallback(
@@ -271,9 +326,12 @@ export function FeatureCarousel({
         return;
       }
 
-      if (imageWaitTimer.current) {
-        clearTimeout(imageWaitTimer.current);
-        imageWaitTimer.current = null;
+      if (
+        prefersReducedMotion ||
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ) {
+        finishTransition(token, toIndex);
+        return;
       }
 
       const animatingTransition = {
@@ -288,7 +346,36 @@ export function FeatureCarousel({
         transitionDuration,
       );
     },
-    [finishTransition],
+    [finishTransition, prefersReducedMotion],
+  );
+
+  const handleSlideImageResolved = useCallback(
+    (index: number) => {
+      if (!resolvedImageIndicesRef.current.has(index)) {
+        resolvedImageIndicesRef.current.add(index);
+        setResolvedImageIndices((current) =>
+          current.includes(index) ? current : [...current, index],
+        );
+      }
+
+      const currentTransition = transitionRef.current;
+
+      if (
+        currentTransition?.phase === "loading" &&
+        currentTransition.toIndex === index
+      ) {
+        beginTransitionAnimation(
+          currentTransition.token,
+          currentTransition.toIndex,
+        );
+        return;
+      }
+
+      if (!currentTransition && index === activeIndex) {
+        queueNextSlideImage(index);
+      }
+    },
+    [activeIndex, beginTransitionAnimation, queueNextSlideImage],
   );
 
   const postponeAutomaticAdvance = useCallback(() => {
@@ -328,11 +415,16 @@ export function FeatureCarousel({
         postponeAutomaticAdvance();
       }
 
-      if (
+      const reduceMotion =
         prefersReducedMotion ||
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      ) {
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const targetIsReady =
+        !slides[normalizedIndex]?.image ||
+        resolvedImageIndicesRef.current.has(normalizedIndex);
+
+      if (reduceMotion && targetIsReady) {
         setActiveIndex(normalizedIndex);
+        queueNextSlideImage(normalizedIndex);
         return;
       }
 
@@ -341,22 +433,26 @@ export function FeatureCarousel({
         fromIndex: activeIndex,
         toIndex: normalizedIndex,
         direction,
-        phase: "loading",
+        phase: targetIsReady && !reduceMotion ? "animating" : "loading",
         token,
       };
 
       transitionRef.current = nextTransition;
       setTransition(nextTransition);
-      imageWaitTimer.current = setTimeout(
-        () => beginTransitionAnimation(token, normalizedIndex),
-        slides[normalizedIndex]?.image ? imageLoadTimeout : 0,
-      );
+
+      if (nextTransition.phase === "animating") {
+        transitionTimer.current = setTimeout(
+          () => finishTransition(token, normalizedIndex),
+          transitionDuration,
+        );
+      }
     },
     [
       activeIndex,
-      beginTransitionAnimation,
+      finishTransition,
       postponeAutomaticAdvance,
       prefersReducedMotion,
+      queueNextSlideImage,
       slides,
     ],
   );
@@ -461,11 +557,27 @@ export function FeatureCarousel({
       data-feature-carousel={label}
       data-carousel-cooldown={isInCooldown ? "active" : "idle"}
       data-carousel-transition={transition?.phase ?? "idle"}
-      className={cn("min-w-0", className)}
+      className={cn("relative min-w-0", className)}
       onKeyDown={handleKeyDown}
       onFocusCapture={postponeAutomaticAdvance}
       onPointerDownCapture={postponeAutomaticAdvance}
     >
+      {preloadIndex !== null && slides[preloadIndex]?.image ? (
+        <div
+          className="pointer-events-none absolute size-px overflow-hidden opacity-0"
+          aria-hidden="true"
+        >
+          <ResponsiveImage
+            image={slides[preloadIndex].image}
+            sizes={mediaSizes}
+            loading="eager"
+            initiallyLoaded={resolvedImageIndices.includes(preloadIndex)}
+            onLoad={() => handleSlideImageResolved(preloadIndex)}
+            onError={() => handleSlideImageResolved(preloadIndex)}
+          />
+        </div>
+      ) : null}
+
       <div
         id={carouselId}
         role="region"
@@ -482,8 +594,18 @@ export function FeatureCarousel({
               textPosition={textPosition}
               mediaSize={mediaSize}
               mediaSizes={mediaSizes}
+              imageLoading="lazy"
+              imageInitiallyLoaded={resolvedImageIndices.includes(
+                transition.fromIndex,
+              )}
               className={animationClass("outgoing", transition)}
               ariaHidden={transition.phase === "animating"}
+              onImageLoad={() =>
+                handleSlideImageResolved(transition.fromIndex)
+              }
+              onImageError={() =>
+                handleSlideImageResolved(transition.fromIndex)
+              }
             />
             <SlideComposition
               key={`${transition.token}-incoming`}
@@ -492,13 +614,17 @@ export function FeatureCarousel({
               textPosition={textPosition}
               mediaSize={mediaSize}
               mediaSizes={mediaSizes}
+              imageLoading="eager"
+              imageInitiallyLoaded={resolvedImageIndices.includes(
+                transition.toIndex,
+              )}
               className={animationClass("incoming", transition)}
               ariaHidden={transition.phase === "loading"}
               onImageLoad={() =>
-                beginTransitionAnimation(
-                  transition.token,
-                  transition.toIndex,
-                )
+                handleSlideImageResolved(transition.toIndex)
+              }
+              onImageError={() =>
+                handleSlideImageResolved(transition.toIndex)
               }
             />
           </>
@@ -510,6 +636,10 @@ export function FeatureCarousel({
             textPosition={textPosition}
             mediaSize={mediaSize}
             mediaSizes={mediaSizes}
+            imageLoading="lazy"
+            imageInitiallyLoaded={resolvedImageIndices.includes(activeIndex)}
+            onImageLoad={() => handleSlideImageResolved(activeIndex)}
+            onImageError={() => handleSlideImageResolved(activeIndex)}
           />
         )}
       </div>
