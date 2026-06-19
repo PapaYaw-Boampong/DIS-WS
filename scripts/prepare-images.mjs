@@ -94,7 +94,7 @@ for (const [source, output] of approvedAssets) {
     })
     .jpeg({
       quality: 88,
-      progressive: true,
+      progressive: false,
     })
     .toFile(outputPath);
 
