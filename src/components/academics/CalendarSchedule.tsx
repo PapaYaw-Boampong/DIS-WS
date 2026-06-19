@@ -71,7 +71,7 @@ export function CalendarSchedule() {
                 className="flex min-h-[360px] flex-col overflow-hidden rounded-card border border-border bg-white shadow-card"
               >
                 {event.image ? (
-                  <div className="relative aspect-[4/3]">
+                  <div className="relative aspect-[4/3] bg-soft-cream">
                     <ResponsiveImage
                       image={event.image}
                       sizes="(min-width: 768px) 33vw, 100vw"
