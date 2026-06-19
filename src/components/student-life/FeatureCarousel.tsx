@@ -43,9 +43,9 @@ const transitionDuration = 420;
 const imageLoadTimeout = 1600;
 
 const mediaSizeClasses: Record<FeatureCarouselMediaSize, string> = {
-  compact: "min-h-[280px] sm:min-h-[340px]",
-  large: "min-h-[360px] sm:min-h-[500px] lg:min-h-[620px]",
-  wide: "min-h-[360px] sm:min-h-[520px] lg:min-h-[640px]",
+  compact: "h-[280px] sm:h-[340px]",
+  large: "h-[360px] sm:h-[500px] lg:h-[620px]",
+  wide: "h-[360px] sm:h-[520px] lg:h-[640px]",
 };
 
 function SlideMedia({

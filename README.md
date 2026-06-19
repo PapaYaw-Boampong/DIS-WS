@@ -26,9 +26,18 @@ Open `http://localhost:3000`.
 
 ## Configuration
 
-Set `NEXT_PUBLIC_SITE_URL` to the final production origin before deployment.
-If it is not set, SEO metadata, `robots.txt` and `sitemap.xml` fall back to
+Copy `.env.example` to `.env.local` when local URL overrides are needed.
+Set `NEXT_PUBLIC_SITE_URL` to the final custom production origin in Vercel.
+When it is omitted on Vercel, the generated project URL is detected
+automatically. Outside Vercel, the site falls back to
 `https://www.divineschool.edu.gh`.
+
+## Vercel Deployment
+
+The repository includes `vercel.json`, `.nvmrc` and a locked npm dependency
+tree. Import the repository into Vercel and deploy it as a Next.js project.
+Add `NEXT_PUBLIC_SITE_URL` in the Vercel project settings when the final custom
+domain is ready, then redeploy so canonical metadata and the sitemap use it.
 
 ## Public Routes
 

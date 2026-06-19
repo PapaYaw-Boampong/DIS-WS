@@ -104,23 +104,6 @@ a {
   animation: route-enter 240ms ease-out both;
 }
 
-.site-image {
-  transition:
-    opacity 450ms ease-out,
-    transform 450ms ease-out;
-  will-change: opacity, transform;
-}
-
-.site-image-pending {
-  opacity: 0.78;
-  transform: scale(1.018);
-}
-
-.site-image-loaded {
-  opacity: 1;
-  transform: scale(1);
-}
-
 @keyframes carousel-in-next {
   from {
     opacity: 0;
@@ -199,16 +182,6 @@ a {
 
   .route-enter {
     animation: none;
-  }
-
-  .site-image {
-    transition: none;
-  }
-
-  .site-image-pending,
-  .site-image-loaded {
-    opacity: 1;
-    transform: none;
   }
 
   .carousel-slide-incoming-next,

@@ -24,6 +24,7 @@ import galleryStudentSpeaker from "@/assets/images/approved/gallery-student-spea
 import graduation from "@/assets/images/approved/graduation.jpg";
 import historyHero from "@/assets/images/approved/history-hero.jpg";
 import historyOrigin from "@/assets/images/approved/history-origin.jpg";
+import historyYearGroup2024 from "@/assets/images/approved/history-year-group-2024.jpg";
 import homeHero from "@/assets/images/approved/home-hero.jpg";
 import homeWelcome from "@/assets/images/approved/home-welcome.jpg";
 import juniorHighHero from "@/assets/images/approved/junior-high-hero.jpg";
@@ -81,6 +82,11 @@ export const siteImages = {
     src: historyOrigin,
     alt: "Students in an earlier Divine International School classroom.",
     position: "center 45%",
+  },
+  historyYearGroup2024: {
+    src: historyYearGroup2024,
+    alt: "A Divine International School year group gathered on campus in 2024.",
+    position: "center",
   },
   academicsOverview: {
     src: academicsOverview,

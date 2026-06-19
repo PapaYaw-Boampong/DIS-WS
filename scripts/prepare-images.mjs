@@ -12,6 +12,10 @@ const approvedAssets = [
   ["academics/Elearners/kids circle.jpeg", "home-welcome.jpg"],
   ["history/students/year group 2024.jpeg", "about-community.jpg"],
   ["history/students/dis- start.jpeg", "history-origin.jpg"],
+  [
+    "history/students/year group 2 2024.jpeg",
+    "history-year-group-2024.jpg",
+  ],
   ["academics/jhs/Sci 5.jpeg", "academics-overview.jpg"],
   ["academics/Elearners/kids playing.jpeg", "early-years.jpg"],
   ["academics/jhs/Sci 1.jpeg", "junior-high.jpg"],

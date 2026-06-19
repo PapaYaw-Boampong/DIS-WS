@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 import type { SiteImage } from "@/types/content";
@@ -21,8 +20,6 @@ export function ResponsiveImage({
   className,
   onLoad,
 }: ResponsiveImageProps) {
-  const [isLoaded, setIsLoaded] = useState(false);
-
   return (
     <Image
       src={image.src}
@@ -31,16 +28,9 @@ export function ResponsiveImage({
       sizes={sizes}
       preload={preload}
       placeholder="blur"
-      className={cn(
-        "site-image object-cover",
-        isLoaded ? "site-image-loaded" : "site-image-pending",
-        className,
-      )}
+      className={cn("object-cover", className)}
       style={{ objectPosition: image.position }}
-      onLoad={() => {
-        setIsLoaded(true);
-        onLoad?.();
-      }}
+      onLoad={onLoad}
     />
   );
 }

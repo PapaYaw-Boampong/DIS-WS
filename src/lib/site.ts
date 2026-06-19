@@ -3,7 +3,12 @@ import { school } from "@/data/school";
 const fallbackSiteUrl = "https://www.divineschool.edu.gh";
 
 function normalizeSiteUrl(value: string | undefined) {
-  const candidate = value?.trim() || fallbackSiteUrl;
+  const rawValue = value?.trim();
+  const candidate = rawValue
+    ? /^https?:\/\//i.test(rawValue)
+      ? rawValue
+      : `https://${rawValue}`
+    : fallbackSiteUrl;
 
   try {
     return new URL(candidate).origin;
@@ -12,10 +17,15 @@ function normalizeSiteUrl(value: string | undefined) {
   }
 }
 
+const deploymentUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  process.env.VERCEL_PROJECT_PRODUCTION_URL ??
+  process.env.VERCEL_URL;
+
 export const siteConfig = {
   name: school.name,
   shortName: school.shortName,
-  url: normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL),
+  url: normalizeSiteUrl(deploymentUrl),
   description:
     "A nurturing school community committed to academic excellence, discipline and character development.",
   locale: "en_GH",

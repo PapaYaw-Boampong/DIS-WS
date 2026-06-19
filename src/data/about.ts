@@ -132,6 +132,29 @@ export const historyMilestones = [
   },
 ] satisfies readonly HistoryMilestone[];
 
+export const historyPhotos = [
+  {
+    id: "early-classroom",
+    label: "Early classroom life at Divine International School",
+    image: siteImages.historyOrigin,
+  },
+  {
+    id: "year-group-2022",
+    label: "Divine International School year group, 2022",
+    image: siteImages.historyHero,
+  },
+  {
+    id: "year-group-2024",
+    label: "Divine International School year group, 2024",
+    image: siteImages.aboutCommunity,
+  },
+  {
+    id: "year-group-2024-two",
+    label: "Divine International School students gathered in 2024",
+    image: siteImages.historyYearGroup2024,
+  },
+] as const;
+
 export const historyOrigin = {
   eyebrow: "Our Story",
   title: "A continuing commitment to children and families",
