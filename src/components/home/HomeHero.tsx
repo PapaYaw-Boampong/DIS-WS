@@ -7,13 +7,13 @@ export function HomeHero() {
   const slide = homeHeroSlides[0];
 
   return (
-    <section className="relative isolate overflow-hidden bg-[#c8792d] text-white">
+    <section className="relative isolate overflow-hidden bg-curry-orange text-white">
       {slide.image ? (
         <ResponsiveImage
           image={slide.image}
           sizes="100vw"
           preload
-          className="absolute inset-0 -z-30"
+          className="absolute inset-0 -z-20"
         />
       ) : null}
       <div

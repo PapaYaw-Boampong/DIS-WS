@@ -33,8 +33,8 @@ export function PageHero({
         size === "default" && "py-20 sm:py-24 lg:py-32",
         size === "spacious" && "py-28 sm:py-36 lg:py-48",
         variant === "light" && "bg-soft-white",
-        variant === "dark" && "bg-charcoal",
-        variant === "orange" && "bg-[#c8792d]",
+        // variant === "dark" && "bg-charcoal",
+        variant === "orange" && "bg-curry-orange",
         variant === "pattern" && "pattern-checker",
       )}
     >
@@ -58,7 +58,10 @@ export function PageHero({
             preload={preloadImage}
             className="absolute inset-0 -z-20 object-cover"
           />
-          <div className="absolute inset-0 -z-10 bg-charcoal/75" />
+          <div
+            className="absolute inset-0 -z-20 bg-charcoal/75"
+            aria-hidden="true"
+          />
         </>
       ) : null}
       <Container>

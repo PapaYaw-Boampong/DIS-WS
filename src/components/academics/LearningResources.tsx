@@ -15,7 +15,7 @@ export function LearningResources() {
         />
         <CardCarousel
           label="Teaching and Learning Resources"
-          desktopVisible={3}
+          desktopVisible={4}
           className="mt-12"
         >
           {learningResources.map((resource) => (

@@ -2,8 +2,35 @@ import type { StaticImageData } from "next/image";
 
 export type SiteImage = {
   readonly src: StaticImageData;
+  readonly id: string;
   readonly alt: string;
+  readonly title: string;
+  readonly caption?: string;
+  readonly album: ImageAlbumId;
   readonly position?: string;
+  readonly fit?: "cover" | "contain";
+  readonly profile: "hero" | "gallery" | "card";
+  readonly quality: 82 | 86 | 90;
+};
+
+export type ImageAlbumId =
+  | "learning"
+  | "history"
+  | "career-day"
+  | "colour-day"
+  | "competitions"
+  | "excursions"
+  | "graduation"
+  | "awards"
+  | "creative-presentation"
+  | "cultural-play"
+  | "recitals"
+  | "leadership-portraits";
+
+export type GalleryAlbum = {
+  readonly id: ImageAlbumId;
+  readonly title: string;
+  readonly description: string;
 };
 
 export type NavItem = {
@@ -251,6 +278,7 @@ export type EventItem = {
   readonly date: string;
   readonly description: string;
   readonly href: string;
+  readonly actionLabel?: string;
   readonly icon: ContentIcon;
   readonly image?: SiteImage;
 };

@@ -269,7 +269,7 @@ export function CardCarousel({
           <div
             key={index}
             className={cn(
-              "min-w-0 shrink-0 snap-start basis-full sm:basis-[calc((100%_-_1.5rem)/2)]",
+              "min-w-0 shrink-0 snap-start basis-3/4 sm:basis-[calc((75%_-_1.125rem)/2)]",
               desktopBasis,
             )}
           >

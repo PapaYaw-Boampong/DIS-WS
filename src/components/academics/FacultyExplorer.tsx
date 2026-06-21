@@ -196,7 +196,7 @@ function FacultyPanel({
       </div>
       <CardCarousel
         label={`${team.title} faculty`}
-        desktopVisible={3}
+        desktopVisible={4}
         className="mt-6"
       >
         {members.map((member) => (
@@ -312,7 +312,17 @@ export function FacultyExplorer({ teams, faculty }: FacultyExplorerProps) {
   }, [selectedTeam]);
 
   useEffect(() => {
-    if (phase !== "opening" || mobilePanelHeight <= 0) {
+    if (phase !== "opening") {
+      return;
+    }
+
+    if (window.matchMedia("(min-width: 1024px)").matches) {
+      const frame = requestAnimationFrame(() => setPhase("open"));
+      animationFrames.current.push(frame);
+      return;
+    }
+
+    if (mobilePanelHeight <= 0) {
       return;
     }
 

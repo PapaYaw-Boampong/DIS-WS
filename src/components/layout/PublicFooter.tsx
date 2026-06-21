@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 
+import { NewsletterSignup } from "@/components/community/NewsletterSignup";
 import { Container } from "@/components/ui/Container";
 import { footerLinkGroups } from "@/data/navigation";
 import { school } from "@/data/school";
@@ -10,6 +11,7 @@ import { routes } from "@/lib/routes";
 export function PublicFooter() {
   return (
     <footer className="bg-dark-footer text-soft-white">
+      <NewsletterSignup />
       <Container className="grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_0.8fr_0.8fr_0.8fr_1fr] lg:gap-8">
         <div className="sm:col-span-2 lg:col-span-1">
           <Link
@@ -22,6 +24,7 @@ export function PublicFooter() {
               alt=""
               width={47}
               height={40}
+              quality={90}
               className="h-10 w-auto"
             />
             <span className="max-w-[180px] text-lg leading-tight font-extrabold text-white">

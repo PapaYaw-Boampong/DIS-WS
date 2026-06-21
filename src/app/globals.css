@@ -37,6 +37,7 @@
 }
 
 html {
+  /* font-size: 15px; */
   scroll-behavior: smooth;
 }
 
@@ -160,19 +161,27 @@ a {
 }
 
 .carousel-slide-incoming-next {
-  animation: carousel-in-next 420ms ease-out both;
+  animation: carousel-in-next 500ms ease-out both;
 }
 
 .carousel-slide-outgoing-next {
-  animation: carousel-out-next 420ms ease-out both;
+  animation: carousel-out-next 500ms ease-out both;
 }
 
 .carousel-slide-incoming-previous {
-  animation: carousel-in-previous 420ms ease-out both;
+  animation: carousel-in-previous 500ms ease-out both;
 }
 
 .carousel-slide-outgoing-previous {
-  animation: carousel-out-previous 420ms ease-out both;
+  animation: carousel-out-previous 500ms ease-out both;
+}
+
+html[data-dis-home-intro="pending"] {
+  overflow: hidden;
+}
+
+html[data-dis-home-intro="seen"] .home-intro {
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

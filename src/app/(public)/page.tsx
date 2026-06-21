@@ -5,7 +5,6 @@ import { EventsPreview } from "@/components/home/EventsPreview";
 import { HomeHero } from "@/components/home/HomeHero";
 import { JoinPathways } from "@/components/home/JoinPathways";
 import { NewsPreview } from "@/components/home/NewsPreview";
-import { SchoolMessage } from "@/components/home/SchoolMessage";
 import { StatsSection } from "@/components/home/StatsSection";
 import { WelcomeSection } from "@/components/home/WelcomeSection";
 import { createPageMetadata } from "@/lib/metadata";

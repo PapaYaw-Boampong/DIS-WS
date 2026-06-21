@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import Link from "next/link";
-import { CheckCircle2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, LoaderCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
@@ -53,7 +53,11 @@ function validate(values: ContactFormValues) {
 export function ContactForm() {
   const [values, setValues] = useState<ContactFormValues>(initialValues);
   const [errors, setErrors] = useState<ContactFormErrors>({});
-  const [submitted, setSubmitted] = useState(false);
+  const [website, setWebsite] = useState("");
+  const [status, setStatus] = useState<
+    "idle" | "submitting" | "success" | "error"
+  >("idle");
+  const [statusMessage, setStatusMessage] = useState("");
   const nameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const reasonRef = useRef<HTMLSelectElement>(null);
@@ -84,10 +88,11 @@ export function ContactForm() {
       delete nextErrors[field];
       return nextErrors;
     });
-    setSubmitted(false);
+    setStatus("idle");
+    setStatusMessage("");
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const nextErrors = validate(values);
@@ -96,10 +101,42 @@ export function ContactForm() {
     ).find((field) => nextErrors[field]);
 
     setErrors(nextErrors);
-    setSubmitted(!firstInvalidField);
 
     if (firstInvalidField) {
       fieldRefs[firstInvalidField].current?.focus();
+      return;
+    }
+
+    setStatus("submitting");
+    setStatusMessage("");
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...values, website }),
+      });
+      const result = (await response.json()) as {
+        message?: string;
+      };
+
+      if (!response.ok) {
+        throw new Error(result.message || "Unable to submit your message.");
+      }
+
+      setValues(initialValues);
+      setWebsite("");
+      setStatus("success");
+      setStatusMessage(
+        "Your message has been sent. The school team will respond using the contact details you provided.",
+      );
+    } catch (error) {
+      setStatus("error");
+      setStatusMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to submit your message.",
+      );
     }
   }
 
@@ -111,7 +148,7 @@ export function ContactForm() {
             <SectionHeader
               eyebrow="Message Us"
               title="Send a contact enquiry"
-              description="This form is presentational for now. It helps families prepare a message but does not submit to a backend."
+              description="Send your question directly to the school team. Required fields are marked in the form."
             />
             <div className="mt-8 rounded-card border border-curry-orange/20 bg-soft-cream p-6">
               <h2 className="font-bold text-charcoal">Need quick help?</h2>
@@ -139,8 +176,21 @@ export function ContactForm() {
           <form
             noValidate
             onSubmit={handleSubmit}
+            aria-busy={status === "submitting"}
             className="rounded-[2rem] border border-border bg-white p-6 shadow-card sm:p-8"
           >
+            <div className="absolute -left-[9999px]" aria-hidden="true">
+              <label htmlFor="contact-website">Website</label>
+              <input
+                id="contact-website"
+                name="website"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                value={website}
+                onChange={(event) => setWebsite(event.target.value)}
+              />
+            </div>
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <label htmlFor="name" className="text-sm font-bold text-charcoal">
@@ -278,24 +328,42 @@ export function ContactForm() {
               </div>
             </div>
 
-            <Button type="submit" size="lg" className="mt-7 w-full sm:w-auto">
-              Prepare Message
+            <Button
+              type="submit"
+              size="lg"
+              disabled={status === "submitting"}
+              className="mt-7 w-full gap-2 sm:w-auto"
+            >
+              {status === "submitting" ? (
+                <LoaderCircle
+                  aria-hidden="true"
+                  className="size-5 animate-spin"
+                />
+              ) : null}
+              {status === "submitting" ? "Sending..." : "Send Message"}
             </Button>
 
-            {submitted ? (
+            {status === "success" || status === "error" ? (
               <div
-                role="status"
-                className="mt-6 flex gap-3 rounded-2xl border border-curry-orange/25 bg-soft-cream p-4 text-sm leading-6 text-charcoal"
+                role={status === "error" ? "alert" : "status"}
+                className={`mt-6 flex gap-3 rounded-2xl border p-4 text-sm leading-6 text-charcoal ${
+                  status === "error"
+                    ? "border-red-200 bg-red-50"
+                    : "border-curry-orange/25 bg-soft-cream"
+                }`}
               >
-                <CheckCircle2
-                  aria-hidden="true"
-                  className="mt-0.5 size-5 shrink-0 text-curry-orange"
-                />
-                <p>
-                  Online contact submission is coming soon, so no information
-                  has been sent. Please use the phone or email details above to
-                  reach the school.
-                </p>
+                {status === "error" ? (
+                  <AlertCircle
+                    aria-hidden="true"
+                    className="mt-0.5 size-5 shrink-0 text-red-700"
+                  />
+                ) : (
+                  <CheckCircle2
+                    aria-hidden="true"
+                    className="mt-0.5 size-5 shrink-0 text-curry-orange"
+                  />
+                )}
+                <p>{statusMessage}</p>
               </div>
             ) : null}
           </form>

@@ -4,42 +4,61 @@ import type { EventItem } from "@/types/content";
 
 export const featuredEvents = [
   {
-    title: "End of Term Celebration",
-    date: "End of Term",
+    title: "Career Day at Divine",
+    date: "School community activity",
     description:
-      "Join the school community as we celebrate student progress, achievement and a successful term.",
-    href: routes.calendar,
-    icon: "calendar",
-    image: siteImages.endOfTermEvent,
+      "Pupils explore different professions through creative dress, conversation and shared activities.",
+    href: `${routes.studentLife}#gallery`,
+    actionLabel: "Explore the Gallery",
+    icon: "briefcase",
+    image: siteImages.careerDay,
   },
 ] satisfies readonly EventItem[];
 
 export const calendarEvents = [
   {
-    title: "Family Progress Meetings",
-    date: "Scheduled each term",
+    title: "Career Day",
+    date: "School activity programme",
     description:
-      "Dedicated conversations between families and teachers about learner progress, strengths and next steps.",
+      "A practical opportunity for pupils to learn about professions and imagine future pathways.",
     href: routes.calendar,
-    icon: "users",
-    image: siteImages.familyProgressMeetings,
+    icon: "briefcase",
+    image: siteImages.careerDay,
   },
   {
-    title: "Co-curricular Showcase",
-    date: "Academic year programme",
+    title: "Colour Day",
+    date: "School celebration",
     description:
-      "A school community event highlighting pupil participation in sport, clubs, art, music and performance.",
+      "A colourful community activity that encourages participation, creativity and shared enjoyment.",
+    href: routes.calendar,
+    icon: "palette",
+    image: siteImages.colourDay,
+  },
+  {
+    title: "School Competitions",
+    date: "Activity programme",
+    description:
+      "Team activities give pupils opportunities to participate, cooperate and practise healthy competition.",
     href: routes.calendar,
     icon: "trophy",
-    image: siteImages.calendarShowcase,
+    image: siteImages.competition,
   },
   {
-    title: "End of Term Celebration",
-    date: "End of term",
+    title: "Educational Excursions",
+    date: "Learning beyond the classroom",
     description:
-      "A celebration of progress, effort and achievement across the Divine school community.",
+      "Supervised visits connect classroom learning with community spaces and practical experience.",
     href: routes.calendar,
-    icon: "calendar",
-    image: siteImages.endOfTermEvent,
+    icon: "compass",
+    image: siteImages.excursion,
+  },
+  {
+    title: "Graduation Celebration",
+    date: "School milestone",
+    description:
+      "The school community recognises learner progress and celebrates an important transition.",
+    href: routes.calendar,
+    icon: "graduation-cap",
+    image: siteImages.graduation,
   },
 ] satisfies readonly EventItem[];
