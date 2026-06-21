@@ -39,6 +39,7 @@ export function LeadershipGrid({
                 label={profile.title}
                 description={profile.imageDescription}
                 icon={profile.icon}
+                image={profile.image}
                 aspect="square"
                 className="rounded-none border-0 border-b border-border"
               />

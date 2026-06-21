@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
+import { HOME_INTRO_STORAGE_KEY } from "@/lib/homeIntro";
 import { siteConfig } from "@/lib/site";
 
 import "./globals.css";
@@ -10,6 +11,23 @@ const inter = Inter({
   subsets: ["latin"],
   display: "swap",
 });
+
+const homeIntroBootstrapScript = `
+  (() => {
+    if (window.location.pathname !== "/") {
+      return;
+    }
+
+    try {
+      document.documentElement.dataset.disHomeIntro =
+        window.sessionStorage.getItem("${HOME_INTRO_STORAGE_KEY}") === "1"
+          ? "seen"
+          : "pending";
+    } catch {
+      document.documentElement.dataset.disHomeIntro = "pending";
+    }
+  })();
+`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -57,7 +75,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      className={`${inter.variable} h-full antialiased`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{ __html: homeIntroBootstrapScript }}
+        />
+      </head>
       <body className="min-h-full">{children}</body>
     </html>
   );

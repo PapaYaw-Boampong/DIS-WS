@@ -92,7 +92,8 @@ export const principalProfile = {
   description:
     "Our principal leads a caring, accountable school culture focused on strong teaching, pupil wellbeing and meaningful partnership with families.",
   imageDescription:
-    "Placeholder portrait for the principal of Divine International School.",
+    "The principal of Divine International School during a school celebration.",
+  image: siteImages.principalPortrait,
   icon: "user-round",
   quote:
     "Every learner deserves to feel secure, capable and inspired to become their best.",
@@ -153,6 +154,31 @@ export const historyPhotos = [
     label: "Divine International School students gathered in 2024",
     image: siteImages.historyYearGroup2024,
   },
+  {
+    id: "year-group-3",
+    label: "A Divine International School year group",
+    image: siteImages.historyYearGroup3,
+  },
+  {
+    id: "year-group-4",
+    label: "A Divine International School year group",
+    image: siteImages.historyYearGroup4,
+  },
+  {
+    id: "year-group-6",
+    label: "A Divine International School year group",
+    image: siteImages.historyYearGroup6,
+  },
+  {
+    id: "year-group-7",
+    label: "A Divine International School year group",
+    image: siteImages.historyYearGroup7,
+  },
+  {
+    id: "year-group-8",
+    label: "A Divine International School year group",
+    image: siteImages.historyYearGroup8,
+  },
 ] as const;
 
 export const historyOrigin = {
@@ -206,7 +232,8 @@ export const leadershipProfiles = [
       "Guides school direction, learning standards, staff culture and family partnership.",
     icon: "user-round",
     imageDescription:
-      "Placeholder portrait for the principal of Divine International School.",
+      "The principal of Divine International School during a school celebration.",
+    image: siteImages.principalCloseUp,
   },
   {
     title: "Head of Academics",
@@ -215,7 +242,8 @@ export const leadershipProfiles = [
       "Supports curriculum quality, teacher development, assessment and pupil progress.",
     icon: "book-open",
     imageDescription:
-      "Placeholder portrait for the Head of Academics at Divine International School.",
+      "Members of the Divine International School leadership team.",
+    image: siteImages.leadershipGroup,
   },
   {
     title: "Head of Administration",

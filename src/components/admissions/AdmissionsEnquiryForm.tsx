@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import Link from "next/link";
-import { CheckCircle2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, LoaderCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
@@ -58,7 +58,11 @@ export function AdmissionsEnquiryForm() {
   const [values, setValues] =
     useState<AdmissionsEnquiryValues>(initialValues);
   const [errors, setErrors] = useState<AdmissionsEnquiryErrors>({});
-  const [submitted, setSubmitted] = useState(false);
+  const [website, setWebsite] = useState("");
+  const [status, setStatus] = useState<
+    "idle" | "submitting" | "success" | "error"
+  >("idle");
+  const [statusMessage, setStatusMessage] = useState("");
   const guardianNameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const phoneRef = useRef<HTMLInputElement>(null);
@@ -91,10 +95,11 @@ export function AdmissionsEnquiryForm() {
       delete nextErrors[field];
       return nextErrors;
     });
-    setSubmitted(false);
+    setStatus("idle");
+    setStatusMessage("");
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const nextErrors = validate(values);
@@ -109,10 +114,44 @@ export function AdmissionsEnquiryForm() {
     ).find((field) => nextErrors[field]);
 
     setErrors(nextErrors);
-    setSubmitted(!firstInvalidField);
 
     if (firstInvalidField) {
       fieldRefs[firstInvalidField].current?.focus();
+      return;
+    }
+
+    setStatus("submitting");
+    setStatusMessage("");
+
+    try {
+      const response = await fetch("/api/admissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...values, website }),
+      });
+      const result = (await response.json()) as {
+        message?: string;
+      };
+
+      if (!response.ok) {
+        throw new Error(
+          result.message || "Unable to submit your enquiry.",
+        );
+      }
+
+      setValues(initialValues);
+      setWebsite("");
+      setStatus("success");
+      setStatusMessage(
+        "Your admissions enquiry has been sent. The school team will contact your family with the next steps.",
+      );
+    } catch (error) {
+      setStatus("error");
+      setStatusMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to submit your enquiry.",
+      );
     }
   }
 
@@ -152,8 +191,21 @@ export function AdmissionsEnquiryForm() {
           <form
             noValidate
             onSubmit={handleSubmit}
+            aria-busy={status === "submitting"}
             className="rounded-[2rem] border border-border bg-white p-6 shadow-card sm:p-8"
           >
+            <div className="absolute -left-[9999px]" aria-hidden="true">
+              <label htmlFor="admissions-website">Website</label>
+              <input
+                id="admissions-website"
+                name="website"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                value={website}
+                onChange={(event) => setWebsite(event.target.value)}
+              />
+            </div>
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <label
@@ -328,30 +380,44 @@ export function AdmissionsEnquiryForm() {
               </div>
             </div>
 
-            <Button type="submit" size="lg" className="mt-7 w-full sm:w-auto">
-              Prepare Enquiry
+            <Button
+              type="submit"
+              size="lg"
+              disabled={status === "submitting"}
+              className="mt-7 w-full gap-2 sm:w-auto"
+            >
+              {status === "submitting" ? (
+                <LoaderCircle
+                  aria-hidden="true"
+                  className="size-5 animate-spin"
+                />
+              ) : null}
+              {status === "submitting"
+                ? "Sending..."
+                : "Send Enquiry"}
             </Button>
 
-            {submitted ? (
+            {status === "success" || status === "error" ? (
               <div
-                role="status"
-                className="mt-6 flex gap-3 rounded-2xl border border-curry-orange/25 bg-soft-cream p-4 text-sm leading-6 text-charcoal"
+                role={status === "error" ? "alert" : "status"}
+                className={`mt-6 flex gap-3 rounded-2xl border p-4 text-sm leading-6 text-charcoal ${
+                  status === "error"
+                    ? "border-red-200 bg-red-50"
+                    : "border-curry-orange/25 bg-soft-cream"
+                }`}
               >
-                <CheckCircle2
-                  aria-hidden="true"
-                  className="mt-0.5 size-5 shrink-0 text-curry-orange"
-                />
-                <p>
-                  Online submission is coming soon, so no information has been
-                  sent. Please{" "}
-                  <Link
-                    href={routes.contact}
-                    className="font-bold text-curry-orange hover:text-deep-orange"
-                  >
-                    contact Admissions
-                  </Link>{" "}
-                  to continue your enquiry.
-                </p>
+                {status === "error" ? (
+                  <AlertCircle
+                    aria-hidden="true"
+                    className="mt-0.5 size-5 shrink-0 text-red-700"
+                  />
+                ) : (
+                  <CheckCircle2
+                    aria-hidden="true"
+                    className="mt-0.5 size-5 shrink-0 text-curry-orange"
+                  />
+                )}
+                <p>{statusMessage}</p>
               </div>
             ) : null}
           </form>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { CommunityConnect } from "@/components/community/CommunityConnect";
 import { ContactDetailsSection } from "@/components/contact/ContactDetailsSection";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { ContactSupportSections } from "@/components/contact/ContactSupportSections";
@@ -18,6 +19,7 @@ export default function ContactPage() {
         align="center"
       />
       <ContactDetailsSection />
+      <CommunityConnect />
       <ContactForm />
       <ContactSupportSections />
     </>

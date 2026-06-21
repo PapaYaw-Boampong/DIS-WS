@@ -11,6 +11,7 @@ export function PrincipalPreview() {
           label={principalProfile.role}
           description={principalProfile.imageDescription}
           icon={principalProfile.icon}
+          image={principalProfile.image}
           aspect="portrait"
           className="mx-auto w-full max-w-md"
         />

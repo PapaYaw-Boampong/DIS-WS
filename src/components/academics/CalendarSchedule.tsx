@@ -64,7 +64,7 @@ export function CalendarSchedule() {
             title="Events across the academic year"
             description="Confirmed dates will be added when the official calendar is released."
           />
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
+          <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {calendarEvents.map((event) => (
               <article
                 key={event.title}
@@ -74,7 +74,7 @@ export function CalendarSchedule() {
                   <div className="relative aspect-[4/3] bg-soft-cream">
                     <ResponsiveImage
                       image={event.image}
-                      sizes="(min-width: 768px) 33vw, 100vw"
+                      sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
                     />
                   </div>
                 ) : null}

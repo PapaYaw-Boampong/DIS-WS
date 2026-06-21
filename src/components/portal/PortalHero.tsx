@@ -5,7 +5,7 @@ import { routes } from "@/lib/routes";
 
 export function PortalHero() {
   return (
-    <section className="relative isolate overflow-hidden bg-[#c8792d] py-24 text-white sm:py-32 lg:py-44">
+    <section className="relative isolate overflow-hidden bg-curry-orange py-24 text-white sm:py-32 lg:py-44">
       <div
         className="absolute -right-28 -bottom-40 -z-10 size-[440px] rounded-full border-[76px] border-white/5"
         aria-hidden="true"

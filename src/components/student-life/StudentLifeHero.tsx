@@ -5,12 +5,12 @@ import { studentLifeHero } from "@/data/studentLife";
 
 export function StudentLifeHero() {
   return (
-    <section className="relative isolate overflow-hidden bg-[#c8792d] py-24 text-white sm:py-32 lg:py-44">
+    <section className="relative isolate overflow-hidden bg-curry-orange py-24 text-white sm:py-32 lg:py-44">
       <ResponsiveImage
         image={studentLifeHero.image}
         sizes="100vw"
         preload
-        className="absolute inset-0 -z-30"
+        className="absolute inset-0 -z-20"
       />
       <div
         className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgba(17,24,39,0.88)_0%,rgba(17,24,39,0.7)_52%,rgba(17,24,39,0.3)_100%)]"

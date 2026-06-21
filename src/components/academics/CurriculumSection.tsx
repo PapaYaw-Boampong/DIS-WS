@@ -33,7 +33,7 @@ export function CurriculumSection() {
         />
         <CardCarousel
           label="Beyond the Classroom"
-          desktopVisible={3}
+          desktopVisible={4}
           className="mt-10"
         >
           {beyondClassroom.map((area) => (

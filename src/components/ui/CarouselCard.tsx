@@ -36,7 +36,7 @@ export function CarouselCard({
         <div className="relative aspect-[4/3] overflow-hidden bg-soft-cream">
           <ResponsiveImage
             image={image}
-            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 38vw, 75vw"
           />
         </div>
       ) : imageDescription ? (

@@ -14,6 +14,7 @@ export function PrincipalMessage() {
             label={principalProfile.role}
             description={principalProfile.imageDescription}
             icon={principalProfile.icon}
+            image={principalProfile.image}
             aspect="portrait"
           />
           <div className="mt-6 rounded-card border border-border bg-soft-white p-6">

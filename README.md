@@ -26,11 +26,19 @@ Open `http://localhost:3000`.
 
 ## Configuration
 
-Copy `.env.example` to `.env.local` when local URL overrides are needed.
-Set `NEXT_PUBLIC_SITE_URL` to the final custom production origin in Vercel.
-When it is omitted on Vercel, the generated project URL is detected
-automatically. Outside Vercel, the site falls back to
-`https://www.divineschool.edu.gh`.
+Copy `.env.example` to `.env.local`.
+
+- Set `NEXT_PUBLIC_SITE_URL` to the final production origin.
+- Set `RESEND_API_KEY`, `FORMS_FROM_EMAIL` and `FORMS_TO_EMAIL` to deliver
+  contact and admissions enquiries.
+- Set `RESEND_NEWSLETTER_SEGMENT_ID` when newsletter subscribers should be
+  added to a specific Resend segment.
+- Set the `NEXT_PUBLIC_*_URL` social variables only to verified official school
+  accounts.
+
+The domain used by `FORMS_FROM_EMAIL` must be verified in Resend. Without the
+server-side Resend settings, forms show a configuration error and do not claim
+that a submission was delivered.
 
 ## Vercel Deployment
 
@@ -67,9 +75,9 @@ page.
 ## Content And Images
 
 Current school copy, statistics, staff roles, news, events and map location are
-static local data. Approved school photography is stored as static imports under
-`src/assets/images/approved`; unavailable portraits and news images retain their
-accessible styled placeholders.
+static local data. The image manifest covers the approved archive, and generated
+WebP assets and registry data live under `src/assets/images/approved` and
+`src/lib/images.generated.ts`.
 
 The `pics/` directory is the source archive and is not served by the website.
 To regenerate the approved, metadata-stripped image set:
@@ -78,12 +86,12 @@ To regenerate the approved, metadata-stripped image set:
 npm.cmd run prepare:images
 ```
 
-The preparation script uses an explicit allowlist, auto-rotates photographs,
-limits the longest edge to 2400 pixels, exports progressive JPEG at quality 88,
-and verifies that EXIF, GPS, XMP and IPTC metadata were removed.
+The pipeline auto-rotates, converts to sRGB WebP, strips metadata, validates
+dimensions and hashes, and replaces generated assets only after verification.
 
-Forms are presentational only. Valid submissions display an inline notice and do
-not send data to a backend.
+Contact and admissions forms submit to server routes that deliver email through
+Resend. The footer newsletter form creates a Resend contact. All three include
+server-side validation, a honeypot and basic rate limiting.
 
 ## Verification
 

@@ -7,7 +7,6 @@ import { ContentIcon } from "@/components/ui/ContentIcon";
 import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { featuredEvents } from "@/data/events";
-import { routes } from "@/lib/routes";
 
 export function EventsPreview() {
   return (
@@ -45,15 +44,15 @@ export function EventsPreview() {
                   href={event.href}
                   className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-curry-orange transition-colors hover:text-deep-orange"
                 >
-                  View Calendar
+                  {event.actionLabel ?? "View Calendar"}
                   <ArrowRight aria-hidden="true" className="size-4" />
                 </Link>
                 <Button
-                  href={routes.calendar}
+                  href={event.href}
                   size="lg"
                   className="mt-7 w-full sm:w-fit"
                 >
-                  View Our Calendar
+                  {event.actionLabel ?? "View Our Calendar"}
                 </Button>
               </div>
             </article>

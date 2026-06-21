@@ -7,10 +7,14 @@
   },
   "scripts": {
     "dev": "next dev",
+    "prebuild": "npm run images:verify",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "prepare:images": "node scripts/prepare-images.mjs"
+    "prepare:images": "npm run images:prepare",
+    "images:prepare": "node scripts/image-pipeline.mjs prepare",
+    "images:verify": "node scripts/image-pipeline.mjs verify",
+    "images:report": "node scripts/image-pipeline.mjs report"
   },
   "dependencies": {
     "lucide-react": "^1.18.0",

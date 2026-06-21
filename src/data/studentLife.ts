@@ -2,7 +2,6 @@ import { routes } from "@/lib/routes";
 import { createPageMetadata } from "@/lib/metadata";
 import { siteImages } from "@/lib/images";
 import type {
-  GalleryItem,
   StudentActivity,
   StudentLifeSlide,
   StudentVoice,
@@ -11,7 +10,7 @@ import type {
 export const studentLifeMetadata = createPageMetadata({
   title: "Student Life",
   description:
-    "Explore student life at Divine International School, including campus experiences, activities, voices and gallery previews.",
+    "Explore student life at Divine International School, including campus experiences, activities, voices and the complete school photo gallery.",
   path: routes.studentLife,
 });
 
@@ -221,90 +220,3 @@ export const studentVoices = [
     image: siteImages.graduation,
   },
 ] satisfies readonly StudentVoice[];
-
-export const galleryItems = [
-  {
-    title: "Campus Moment",
-    description:
-      "Placeholder for an approved campus-life photograph.",
-    icon: "school",
-    image: siteImages.earlyLearningGallery,
-  },
-  {
-    title: "Classroom Learning",
-    description:
-      "Placeholder for an approved classroom-learning photograph.",
-    icon: "book-open",
-    image: siteImages.scienceGallery,
-  },
-  {
-    title: "Sports Activity",
-    description:
-      "Placeholder for an approved sports or wellbeing photograph.",
-    icon: "trophy",
-    image: siteImages.dance,
-  },
-  {
-    title: "Creative Work",
-    description:
-      "Placeholder for an approved creative arts photograph.",
-    icon: "palette",
-    image: siteImages.creativeConfidence,
-  },
-  {
-    title: "School Celebration",
-    description:
-      "Placeholder for an approved school celebration photograph.",
-    icon: "calendar",
-    image: siteImages.awardGallery,
-  },
-  {
-    title: "Community Life",
-    description:
-      "Placeholder for an approved school community photograph.",
-    icon: "users",
-    image: siteImages.recital,
-  },
-  {
-    title: "Student Speaker",
-    description:
-      "A pupil presenting confidently during a school programme.",
-    icon: "presentation",
-    image: siteImages.galleryStudentSpeaker,
-  },
-  {
-    title: "Creative Presentation",
-    description:
-      "A pupil participating in a creative school presentation.",
-    icon: "palette",
-    image: siteImages.galleryFashion,
-  },
-  {
-    title: "Stage Recital",
-    description:
-      "Pupils performing together during a school recital.",
-    icon: "music",
-    image: siteImages.galleryRecital,
-  },
-  {
-    title: "Cultural Performance",
-    description:
-      "Pupils sharing a cultural story through performance.",
-    icon: "users",
-    image: siteImages.galleryCulturalPlay,
-  },
-  {
-    title: "Award Moment",
-    description:
-      "A learner and family celebrating school achievement.",
-    icon: "trophy",
-    image: siteImages.galleryAward,
-  },
-  {
-    title: "Graduation Portrait",
-    description:
-      "A young learner ready for the school graduation ceremony.",
-    icon: "graduation-cap",
-    image: siteImages.galleryGraduate,
-  },
-] satisfies readonly GalleryItem[];
