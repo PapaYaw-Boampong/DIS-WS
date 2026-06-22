@@ -10,6 +10,15 @@ the architectural and product brief.
 Status: `complete`  
 Completed: June 15, 2026
 
+## Active Development Cycle
+
+**Portal Phase 1: Foundation**
+Status: `complete`
+Completed: June 22, 2026
+
+Portal delivery is tracked in `PORTAL_STATUS.md`. The public website remains
+complete while the private portal system is developed in isolated route groups.
+
 ## Phase History
 
 | Phase | Status | Completed | Delivered |
@@ -46,6 +55,5 @@ Phase 8 verification:
 
 ## Next Phase
 
-No planned implementation phase remains. The site is ready for content review,
-approved school photography, final domain confirmation and deployment
-preparation.
+The public website has no remaining implementation phase. The next portal task
+is **Portal Phase 2: Role Dashboards**, as tracked in `PORTAL_STATUS.md`.

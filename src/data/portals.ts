@@ -4,6 +4,7 @@ import type {
   PortalNotice,
 } from "@/types/content";
 import { createPageMetadata } from "@/lib/metadata";
+import { portalLoginForRole } from "@/lib/portal/routes";
 import { routes } from "@/lib/routes";
 
 export const portalMetadata = createPageMetadata({
@@ -23,7 +24,7 @@ export const portalOverview = {
   eyebrow: "Digital Access",
   title: "Divine International School Portals",
   description:
-    "The public portal landing page introduces future access areas for the school community. Full dashboard functionality will be activated only after official portal systems are approved.",
+    "The portal foundation now provides mock role access for development and review. Live school accounts and operational data will only be activated after the backend and security controls are approved.",
   imageLabel: "School portal access",
   imageDescription:
     "Placeholder visual representing secure school portal access for Divine International School.",
@@ -34,10 +35,11 @@ export const portalItems = [
     title: "Student Portal",
     audience: "Students",
     description:
-      "A future pathway for learner resources, school updates and academic information.",
+      "Preview the protected student shell prepared for future learner resources, school updates and academic information.",
     icon: "graduation-cap",
-    status: "Coming Soon",
+    status: "Mock Preview",
     actionLabel: "Student Login",
+    href: portalLoginForRole("student"),
     features: [
       "Learning resources",
       "School notices",
@@ -48,10 +50,11 @@ export const portalItems = [
     title: "Parent Portal",
     audience: "Families",
     description:
-      "A future access point for family communication, notices and learner support information.",
+      "Preview the protected parent shell prepared for family communication, payments, transport and learner information.",
     icon: "users",
-    status: "Coming Soon",
+    status: "Mock Preview",
     actionLabel: "Parent Login",
+    href: portalLoginForRole("parent"),
     features: [
       "Family updates",
       "Learner communication",
@@ -62,10 +65,11 @@ export const portalItems = [
     title: "Staff Portal",
     audience: "Staff",
     description:
-      "A future staff access area for internal school resources and administrative workflows.",
+      "Preview the protected staff shell prepared for classes, attendance, resources and administrative workflows.",
     icon: "briefcase",
-    status: "Coming Soon",
+    status: "Mock Preview",
     actionLabel: "Staff Login",
+    href: portalLoginForRole("staff"),
     features: [
       "Staff resources",
       "Internal notices",
@@ -110,13 +114,13 @@ export const portalAccessSteps = [
 ] satisfies readonly PortalAccessStep[];
 
 export const portalNotice = {
-  title: "Portal access is coming soon",
+  title: "Portal access is in mock preview",
   description:
-    "The selected portal is not active yet. Please contact the school office for current support or access information.",
+    "The current portal uses fictional accounts and data for development. It is not connected to live school systems.",
 } satisfies PortalNotice;
 
 export const portalPrivacyNotes = [
-  "Portal access will be limited to approved users and role-specific information.",
-  "Families and staff should use only official school communication channels until portal credentials are issued.",
-  "No authentication system, dashboard or private student information is included in this public website phase.",
+  "The current portal preview uses mock role accounts and fictional school records only.",
+  "No payment provider, database, live transport feed or production authentication service is connected.",
+  "Families and staff should continue using official school communication channels until production portal credentials are issued.",
 ] as const;

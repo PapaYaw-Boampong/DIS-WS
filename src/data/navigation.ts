@@ -1,4 +1,5 @@
 import { routes } from "@/lib/routes";
+import { portalLoginForRole } from "@/lib/portal/routes";
 import type { FooterLinkGroup, NavItem } from "@/types/content";
 
 export const mainNavigation = [
@@ -77,10 +78,10 @@ export const footerLinkGroups = [
   {
     title: "Portals",
     links: [
-      { label: "Student Portal", href: routes.portal },
-      { label: "Parent Portal", href: routes.portal },
-      { label: "Staff Portal", href: routes.portal },
-      { label: "Admin Login", href: routes.portal },
+      { label: "Student Portal", href: portalLoginForRole("student") },
+      { label: "Parent Portal", href: portalLoginForRole("parent") },
+      { label: "Staff Portal", href: portalLoginForRole("staff") },
+      { label: "Admin Login", href: portalLoginForRole("admin") },
     ],
   },
   {

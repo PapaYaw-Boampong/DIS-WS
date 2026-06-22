@@ -310,6 +310,7 @@ export type PortalItem = {
   readonly icon: ContentIcon;
   readonly status: string;
   readonly actionLabel: string;
+  readonly href: string;
   readonly features: readonly string[];
 };
 

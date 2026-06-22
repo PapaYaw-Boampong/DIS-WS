@@ -14,8 +14,8 @@ export function PortalAccessNotes() {
         <Container>
           <SectionHeader
             eyebrow="Access"
-            title="How access will work"
-            description="Portal access will be activated through official school processes once the system is approved."
+            title="How access is being built"
+            description="Phase 1 uses safe mock access so the school can review portal structure before production accounts and backend services are introduced."
             align="center"
           />
           <div className="mt-12 grid gap-6 md:grid-cols-3">
@@ -37,7 +37,7 @@ export function PortalAccessNotes() {
             <SectionHeader
               eyebrow="Privacy"
               title="Access and Privacy Notes"
-              description="These notes explain the public website scope while full portal systems are not active."
+              description="These notes define the boundary between the current mock preview and the future production portal."
             />
             <div className="mt-8 space-y-5 text-lg leading-8 text-muted-grey">
               {portalPrivacyNotes.map((note) => (
