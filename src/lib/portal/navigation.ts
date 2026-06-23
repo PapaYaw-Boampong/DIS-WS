@@ -106,6 +106,12 @@ export const portalNavigation: Record<
     { label: "Classes", icon: "school", href: portalRoutes.adminClasses, phase: 6 },
     { label: "Fees", icon: "wallet", href: portalRoutes.adminFees, phase: 6 },
     {
+      label: "Backend Readiness",
+      icon: "settings",
+      href: portalRoutes.adminBackendReadiness,
+      phase: 8,
+    },
+    {
       label: "Transport",
       icon: "bus",
       href: portalRoutes.adminTransport,

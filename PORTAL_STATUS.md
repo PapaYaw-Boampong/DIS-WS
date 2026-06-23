@@ -7,7 +7,7 @@ brief.
 
 ## Current Phase
 
-**Portal Phase 7: Course Workspace and To Do Alignment**
+**Portal Phase 8: Backend API Contract and Readiness**
 Status: `complete`
 Completed: June 23, 2026
 
@@ -22,6 +22,7 @@ Completed: June 23, 2026
 | Portal Phase 5: Staff Operations UI | `complete` | June 23, 2026 | Staff class and roster views, attendance marking, assignment management, gradebook records, and resource-upload previews using fictional data |
 | Portal Phase 6: Admin and Accounts Control | `complete` | June 23, 2026 | Admin student, parent, staff, class, and fee controls plus accounts invoice, payment, balance, feeding, transport-fee, and reporting views |
 | Portal Phase 7: Course Workspace and To Do Alignment | `complete` | June 23, 2026 | Admin-issued account rule documented, dashboard quick-action blocks removed, student To Do page added, Resources navigation replaced with Canvas-inspired Courses workspaces for students and staff |
+| Portal Phase 8: Backend API Contract and Readiness | `complete` | June 23, 2026 | Render API contract, typed endpoint/service/data ownership definitions, admin backend-readiness view, and implementation order for auth, database, audit, payments, storage, notifications, and optional LMS boundary |
 
 ## Phase 1 Delivered
 
@@ -189,31 +190,42 @@ Completed: June 23, 2026
 - New course and To Do controls perform no fetch, backend write, Canvas
   integration, notification, file upload, or real submission.
 
+## Phase 8 Delivered
+
+- Added `PORTAL_BACKEND_API_CONTRACT.md` as the working backend contract for the
+  future Render-hosted portal API.
+- Documented the production account rule again: no public sign-up endpoint;
+  accounts must be admin-issued or admin-approved.
+- Added typed API contract structures for response envelopes, errors,
+  pagination, endpoints, backend services, data ownership, and readiness checks.
+- Added a portal API contract data module mapping planned endpoints to roles,
+  frontend routes, audit requirements, current mock sources, and future stores.
+- Added protected `/portal/admin/backend-readiness` with service boundary,
+  endpoint contract, data ownership, readiness checks, and security-boundary
+  summaries.
+- Added the admin sidebar link for Backend Readiness.
+- Kept all backend work contract-only. No Render service, database, payment
+  provider, file storage, notification service, Canvas/LMS provider, production
+  credentials, or live records were connected.
+
 ## Latest Verification
 
-Portal Phase 7 verification:
+Portal Phase 8 verification:
 
 - ESLint: passed
 - TypeScript (`tsc --noEmit`): passed
 - Production build: passed
 - Image verification: 99 WebP images across 12 albums passed
-- Student `/courses`: returned `200`, rendered mock course content, and retained
+- Admin `/backend-readiness`: returned `200`, rendered the API contract,
+  service boundary, data ownership, readiness checks, and retained
   `noindex, nofollow`
-- Student `/todo`: returned `200`, rendered current To Do items, and retained
-  `noindex, nofollow`
-- Staff `/courses`: returned `200`, rendered course action previews, and
-  retained `noindex, nofollow`
-- Student dashboard cleanup: returned `200`, rendered the To Do summary, and no
-  longer rendered "Quick actions" or "Upcoming assignments"
-- Legacy `/portal/staff/resources` and `/portal/student/resources` redirected to
-  the matching Courses page and rendered expected course content
-- Login page rendered the no-public-sign-up guidance and mock demo accounts
-- Unauthenticated student To Do access returned `307` to the student login
-- Cross-role protection: parent access to student courses returned to the parent
-  dashboard
-- Operation boundary: source audit found no fetch, external client, server
-  action, backend form action, or file upload in the new Phase 7 course and To
-  Do files
+- Admin sidebar rendered the Backend Readiness navigation item
+- Unauthenticated admin Backend Readiness access returned `307` to admin login
+- Cross-role protection: accounts access to admin Backend Readiness returned to
+  the accounts dashboard
+- Source audit found no fetch, external client, server action, backend form
+  action, environment-secret access, provider integration, or database
+  integration in the new Phase 8 contract and readiness files
 
 ## Security and Integration Boundary
 
@@ -225,9 +237,7 @@ Portal Phase 7 verification:
 
 ## Next Phase
 
-The mock-data portal frontend cycle is complete through the Canvas-inspired
-course and To Do alignment. The next development cycle should define the Render
-API contract, production authentication and authorization, PostgreSQL schema,
-audit logging, secure file storage, notification services, Canvas/LMS integration
-boundaries if any, and payment-provider integration before replacing the mock
-controls.
+The mock-data portal frontend cycle is complete through backend contract
+readiness. The next development cycle should either scaffold the separate Render
+backend service or create database/schema design documents before replacing any
+mock frontend controls with live API calls.

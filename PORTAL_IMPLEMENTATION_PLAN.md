@@ -1105,6 +1105,25 @@ Use mock data only. Do not connect Canvas, do not copy Canvas branding, and do
 not add backend, file storage, notifications, real submissions, or production
 credentials in this phase.
 
+### Phase 8: Backend API Contract and Readiness
+
+Build:
+
+- `PORTAL_BACKEND_API_CONTRACT.md` as the working contract for the future Render
+  backend API
+- Typed frontend contract definitions for API envelopes, endpoint specs,
+  backend services, data ownership, errors, pagination, and readiness checks
+- Mock-safe admin Backend Readiness page that shows planned services, endpoints,
+  data stores, audit boundaries, and remaining backend decisions
+- Admin navigation link to the Backend Readiness page
+- Clear implementation order for authentication, PostgreSQL, audit logs,
+  identity/admin account management, read endpoints, write endpoints, payments,
+  storage, notifications, and optional LMS integration
+
+Do not create a real backend service in this phase. Do not connect a database,
+payment provider, file storage provider, notification provider, or Canvas/LMS
+provider. Do not add secrets or live school data to the frontend.
+
 ---
 
 ## 13. First Codex Prompt for Portal Cycle
@@ -1180,6 +1199,8 @@ The portal MVP is ready when:
 - Student dashboard exists
 - Student To Do page exists
 - Student and staff Courses pages exist
+- Backend API contract document exists
+- Admin Backend Readiness page exists
 - Parent dashboard exists
 - Staff dashboard exists
 - Admin dashboard shell exists
@@ -1213,6 +1234,8 @@ Role dashboards
 Fees/payment UI
 Transport tracking UI
 Admin/accounts management UI
+Course workspace and To Do UI
+API contract and backend readiness
 Backend/database
 Payment provider integration
 Live reconciliation/reporting

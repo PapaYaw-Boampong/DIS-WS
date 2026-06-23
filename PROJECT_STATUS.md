@@ -12,7 +12,7 @@ Completed: June 15, 2026
 
 ## Active Development Cycle
 
-**Portal Phase 7: Course Workspace and To Do Alignment**
+**Portal Phase 8: Backend API Contract and Readiness**
 Status: `complete`
 Completed: June 23, 2026
 
@@ -55,8 +55,7 @@ Phase 8 verification:
 
 ## Next Phase
 
-The public website and planned mock-data portal UI phases are complete through
-the Phase 7 course and To Do alignment. The next cycle is backend/API,
-production authentication, database, storage, notifications, payment-provider
-integration, and LMS/Course integration boundary planning, as noted in
-`PORTAL_STATUS.md`.
+The public website and planned mock-data portal/frontend-readiness phases are
+complete through Phase 8. The next cycle should scaffold the separate Render
+backend service or produce detailed database/schema design before replacing mock
+frontend controls with live API calls, as noted in `PORTAL_STATUS.md`.
