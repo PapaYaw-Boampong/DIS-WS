@@ -142,6 +142,85 @@ export type TransportTrip = {
   readonly nextStop?: string;
 };
 
+export type PortalAnnouncementAudience =
+  | "all"
+  | "student"
+  | "parent"
+  | "staff";
+
+export type PortalAnnouncement = {
+  readonly id: string;
+  readonly title: string;
+  readonly summary: string;
+  readonly publishedAt: string;
+  readonly audience: PortalAnnouncementAudience;
+  readonly priority: "normal" | "important";
+};
+
+export type PortalEvent = {
+  readonly id: string;
+  readonly title: string;
+  readonly date: string;
+  readonly time?: string;
+  readonly audience: PortalAnnouncementAudience;
+};
+
+export type TimetableEntry = {
+  readonly id: string;
+  readonly classId: string;
+  readonly className: string;
+  readonly subject: string;
+  readonly teacher: string;
+  readonly room: string;
+  readonly day: string;
+  readonly startTime: string;
+  readonly endTime: string;
+};
+
+export type AssignmentSummary = {
+  readonly id: string;
+  readonly classId: string;
+  readonly subject: string;
+  readonly title: string;
+  readonly dueDate: string;
+  readonly status: "not_started" | "in_progress" | "submitted" | "review";
+};
+
+export type ResultSummary = {
+  readonly id: string;
+  readonly studentId: string;
+  readonly subject: string;
+  readonly assessment: string;
+  readonly score: number;
+  readonly total: number;
+  readonly gradedAt: string;
+};
+
+export type AttendanceSummary = {
+  readonly id: string;
+  readonly studentId: string;
+  readonly term: string;
+  readonly present: number;
+  readonly absent: number;
+  readonly late: number;
+  readonly percentage: number;
+};
+
+export type ClassSummary = {
+  readonly id: string;
+  readonly name: string;
+  readonly level: string;
+  readonly studentCount: number;
+  readonly classTeacher: string;
+};
+
+export type DashboardAlert = {
+  readonly id: string;
+  readonly title: string;
+  readonly description: string;
+  readonly severity: "info" | "warning" | "critical";
+};
+
 export type PortalNavigationIcon =
   | "dashboard"
   | "user"

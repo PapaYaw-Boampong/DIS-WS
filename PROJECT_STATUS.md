@@ -12,9 +12,9 @@ Completed: June 15, 2026
 
 ## Active Development Cycle
 
-**Portal Phase 1: Foundation**
+**Portal Phase 2: Role Dashboards**
 Status: `complete`
-Completed: June 22, 2026
+Completed: June 23, 2026
 
 Portal delivery is tracked in `PORTAL_STATUS.md`. The public website remains
 complete while the private portal system is developed in isolated route groups.
@@ -56,4 +56,5 @@ Phase 8 verification:
 ## Next Phase
 
 The public website has no remaining implementation phase. The next portal task
-is **Portal Phase 2: Role Dashboards**, as tracked in `PORTAL_STATUS.md`.
+is **Portal Phase 3: Parent Payments and Fees UI**, as tracked in
+`PORTAL_STATUS.md`.

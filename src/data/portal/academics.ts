@@ -1,0 +1,180 @@
+import type {
+  AssignmentSummary,
+  AttendanceSummary,
+  ClassSummary,
+  ResultSummary,
+  TimetableEntry,
+} from "@/types/portal";
+
+export const mockClasses = [
+  {
+    id: "primary-6",
+    name: "Primary 6",
+    level: "Primary School",
+    studentCount: 32,
+    classTeacher: "Daniel Owusu",
+  },
+  {
+    id: "primary-5",
+    name: "Primary 5",
+    level: "Primary School",
+    studentCount: 30,
+    classTeacher: "Adwoa Frimpong",
+  },
+  {
+    id: "primary-3",
+    name: "Primary 3",
+    level: "Primary School",
+    studentCount: 28,
+    classTeacher: "Ruth Quaye",
+  },
+  {
+    id: "jhs-1",
+    name: "JHS 1",
+    level: "Junior High School",
+    studentCount: 34,
+    classTeacher: "Emmanuel Annan",
+  },
+] satisfies readonly ClassSummary[];
+
+export const mockTimetable = [
+  {
+    id: "timetable-001",
+    classId: "primary-6",
+    className: "Primary 6",
+    subject: "Mathematics",
+    teacher: "Daniel Owusu",
+    room: "P6 Classroom",
+    day: "Tuesday",
+    startTime: "08:00",
+    endTime: "09:00",
+  },
+  {
+    id: "timetable-002",
+    classId: "primary-6",
+    className: "Primary 6",
+    subject: "English Language",
+    teacher: "Adwoa Frimpong",
+    room: "P6 Classroom",
+    day: "Tuesday",
+    startTime: "09:15",
+    endTime: "10:15",
+  },
+  {
+    id: "timetable-003",
+    classId: "primary-6",
+    className: "Primary 6",
+    subject: "Science",
+    teacher: "Daniel Owusu",
+    room: "Science Room",
+    day: "Tuesday",
+    startTime: "11:00",
+    endTime: "12:00",
+  },
+  {
+    id: "timetable-004",
+    classId: "primary-5",
+    className: "Primary 5",
+    subject: "Mathematics",
+    teacher: "Daniel Owusu",
+    room: "P5 Classroom",
+    day: "Tuesday",
+    startTime: "13:00",
+    endTime: "14:00",
+  },
+] satisfies readonly TimetableEntry[];
+
+export const mockAssignments = [
+  {
+    id: "assignment-001",
+    classId: "primary-6",
+    subject: "Mathematics",
+    title: "Fractions practice set",
+    dueDate: "2026-06-25",
+    status: "in_progress",
+  },
+  {
+    id: "assignment-002",
+    classId: "primary-6",
+    subject: "Science",
+    title: "Plant growth observation",
+    dueDate: "2026-06-27",
+    status: "not_started",
+  },
+  {
+    id: "assignment-003",
+    classId: "primary-6",
+    subject: "English Language",
+    title: "Personal narrative draft",
+    dueDate: "2026-06-30",
+    status: "submitted",
+  },
+  {
+    id: "assignment-004",
+    classId: "primary-5",
+    subject: "Mathematics",
+    title: "Geometry worksheet",
+    dueDate: "2026-06-26",
+    status: "review",
+  },
+] satisfies readonly AssignmentSummary[];
+
+export const mockResults = [
+  {
+    id: "result-001",
+    studentId: "student-001",
+    subject: "Mathematics",
+    assessment: "Class Test 3",
+    score: 18,
+    total: 20,
+    gradedAt: "2026-06-19",
+  },
+  {
+    id: "result-002",
+    studentId: "student-001",
+    subject: "Science",
+    assessment: "Practical Exercise",
+    score: 16,
+    total: 20,
+    gradedAt: "2026-06-17",
+  },
+  {
+    id: "result-003",
+    studentId: "student-001",
+    subject: "English Language",
+    assessment: "Comprehension",
+    score: 24,
+    total: 30,
+    gradedAt: "2026-06-15",
+  },
+  {
+    id: "result-004",
+    studentId: "student-002",
+    subject: "Mathematics",
+    assessment: "Class Test 3",
+    score: 17,
+    total: 20,
+    gradedAt: "2026-06-19",
+  },
+] satisfies readonly ResultSummary[];
+
+export const mockAttendance = [
+  {
+    id: "attendance-001",
+    studentId: "student-001",
+    term: "Term 3",
+    present: 62,
+    absent: 3,
+    late: 1,
+    percentage: 94,
+  },
+  {
+    id: "attendance-002",
+    studentId: "student-002",
+    term: "Term 3",
+    present: 63,
+    absent: 2,
+    late: 1,
+    percentage: 96,
+  },
+] satisfies readonly AttendanceSummary[];

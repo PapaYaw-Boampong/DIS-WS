@@ -7,7 +7,7 @@ export const mockStaff = [
     fullName: "Daniel Owusu",
     staffId: "DIS-STF-014",
     title: "Primary Class Teacher",
-    classIds: ["primary-6"],
+    classIds: ["primary-6", "primary-5", "primary-3", "jhs-1"],
     subjectIds: ["mathematics", "science"],
   },
 ] satisfies readonly StaffProfile[];

@@ -8,6 +8,7 @@ type QuickActionCardProps = {
   readonly icon: ReactNode;
   readonly href?: string;
   readonly phase?: number;
+  readonly statusLabel?: string;
 };
 
 export function QuickActionCard({
@@ -16,6 +17,7 @@ export function QuickActionCard({
   icon,
   href,
   phase,
+  statusLabel,
 }: QuickActionCardProps) {
   const content = (
     <>
@@ -33,9 +35,9 @@ export function QuickActionCard({
           ) : null}
         </div>
         <p className="mt-1 text-sm leading-6 text-muted-grey">{description}</p>
-        {!href && phase ? (
+        {!href && (statusLabel || phase) ? (
           <p className="mt-2 text-xs font-bold tracking-wide text-deep-orange uppercase">
-            Planned for Phase {phase}
+            {statusLabel ?? `Planned for Phase ${phase}`}
           </p>
         ) : null}
       </div>
