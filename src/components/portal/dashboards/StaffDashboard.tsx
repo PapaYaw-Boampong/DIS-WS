@@ -1,10 +1,7 @@
 import {
-  BookOpen,
   CalendarCheck,
-  ClipboardCheck,
   FilePenLine,
   GraduationCap,
-  MessageSquare,
   Users,
 } from "lucide-react";
 
@@ -14,7 +11,6 @@ import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { NoticeList } from "@/components/portal/NoticeList";
 import { ProgressMeter } from "@/components/portal/ProgressMeter";
-import { QuickActionCard } from "@/components/portal/QuickActionCard";
 import { StatusBadge } from "@/components/portal/StatusBadge";
 import {
   mockAssignments,
@@ -24,7 +20,6 @@ import {
 import { mockAnnouncements } from "@/data/portal/announcements";
 import { mockStaff } from "@/data/portal/staff";
 import { formatPortalDate, formatPortalTime } from "@/lib/portal/format";
-import { portalRoutes } from "@/lib/portal/routes";
 
 type StaffDashboardProps = {
   readonly userId: string;
@@ -119,38 +114,6 @@ export function StaffDashboard({ userId, userName }: StaffDashboardProps) {
         />
       </div>
 
-      <section className="mt-10">
-        <h2 className="text-2xl font-extrabold text-charcoal">
-          Quick actions
-        </h2>
-        <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <QuickActionCard
-            title="Mark attendance"
-            description="Open the attendance register for today's classes."
-            icon={<ClipboardCheck aria-hidden="true" className="size-5" />}
-            href={portalRoutes.staffAttendance}
-          />
-          <QuickActionCard
-            title="Create assignment"
-            description="Prepare and publish class work."
-            icon={<FilePenLine aria-hidden="true" className="size-5" />}
-            href={portalRoutes.staffAssignments}
-          />
-          <QuickActionCard
-            title="Upload resource"
-            description="Share lesson notes and learning materials."
-            icon={<BookOpen aria-hidden="true" className="size-5" />}
-            href={portalRoutes.staffResources}
-          />
-          <QuickActionCard
-            title="Send message"
-            description="Communicate with assigned classes and families."
-            icon={<MessageSquare aria-hidden="true" className="size-5" />}
-            statusLabel="Future phase"
-          />
-        </div>
-      </section>
-
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.65fr)]">
         <div className="space-y-8">
           <DashboardCard
@@ -198,9 +161,9 @@ export function StaffDashboard({ userId, userName }: StaffDashboardProps) {
                 detail="Continuous assessment entries remain incomplete."
               />
               <ProgressMeter
-                label="Lesson resources"
+                label="Course materials"
                 value={85}
-                detail="Most planned weekly resources are prepared."
+                detail="Most planned weekly course materials are prepared."
                 tone="blue"
               />
             </div>

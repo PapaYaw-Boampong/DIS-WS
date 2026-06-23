@@ -2,6 +2,8 @@ import type {
   AssignmentSummary,
   AttendanceSummary,
   ClassSummary,
+  CourseModule,
+  CourseSummary,
   DailyAttendanceRecord,
   GradebookEntry,
   LearningResource,
@@ -39,6 +41,232 @@ export const mockClasses = [
     classTeacher: "Emmanuel Annan",
   },
 ] satisfies readonly ClassSummary[];
+
+export const mockCourses = [
+  {
+    id: "course-primary-6-math",
+    classId: "primary-6",
+    subjectId: "mathematics",
+    subject: "Mathematics",
+    title: "Primary 6 Mathematics",
+    courseCode: "P6-MATH-T3",
+    teacher: "Daniel Owusu",
+    term: "Term 3",
+    description:
+      "Fractions, geometry, word problems and continuous practice for the current term.",
+    progress: 68,
+  },
+  {
+    id: "course-primary-6-science",
+    classId: "primary-6",
+    subjectId: "science",
+    subject: "Science",
+    title: "Primary 6 Science",
+    courseCode: "P6-SCI-T3",
+    teacher: "Daniel Owusu",
+    term: "Term 3",
+    description:
+      "Living things, plant growth observation and practical science notebook work.",
+    progress: 54,
+  },
+  {
+    id: "course-primary-6-english",
+    classId: "primary-6",
+    subjectId: "english",
+    subject: "English Language",
+    title: "Primary 6 English Language",
+    courseCode: "P6-ENG-T3",
+    teacher: "Adwoa Frimpong",
+    term: "Term 3",
+    description:
+      "Reading comprehension, grammar, personal narratives and guided writing practice.",
+    progress: 73,
+  },
+  {
+    id: "course-primary-5-math",
+    classId: "primary-5",
+    subjectId: "mathematics",
+    subject: "Mathematics",
+    title: "Primary 5 Mathematics",
+    courseCode: "P5-MATH-T3",
+    teacher: "Daniel Owusu",
+    term: "Term 3",
+    description:
+      "Geometry, angles and practical problem-solving activities for Primary 5.",
+    progress: 61,
+  },
+  {
+    id: "course-primary-3-general",
+    classId: "primary-3",
+    subjectId: "general",
+    subject: "Integrated Studies",
+    title: "Primary 3 Integrated Studies",
+    courseCode: "P3-INT-T3",
+    teacher: "Ruth Quaye",
+    term: "Term 3",
+    description:
+      "Foundational class work, reading practice and weekly classroom activities.",
+    progress: 58,
+  },
+  {
+    id: "course-jhs-1-science",
+    classId: "jhs-1",
+    subjectId: "science",
+    subject: "Science",
+    title: "JHS 1 Science",
+    courseCode: "J1-SCI-T3",
+    teacher: "Emmanuel Annan",
+    term: "Term 3",
+    description:
+      "Introductory science concepts, observations and practical review work.",
+    progress: 46,
+  },
+] satisfies readonly CourseSummary[];
+
+export const mockCourseModules = [
+  {
+    id: "module-p6-math-fractions",
+    courseId: "course-primary-6-math",
+    title: "Module 5: Fractions and mixed numbers",
+    description:
+      "Lesson pages, practice activities and the active fractions assignment.",
+    status: "published",
+    position: 1,
+    items: [
+      {
+        id: "module-item-p6-math-001",
+        title: "Lesson page: Equivalent fractions",
+        type: "page",
+        status: "completed",
+      },
+      {
+        id: "module-item-p6-math-002",
+        title: "Fractions practice set",
+        type: "assignment",
+        status: "available",
+        dueDate: "2026-06-25",
+      },
+      {
+        id: "module-item-p6-math-003",
+        title: "Fractions revision notes",
+        type: "material",
+        status: "available",
+      },
+    ],
+  },
+  {
+    id: "module-p6-science-plants",
+    courseId: "course-primary-6-science",
+    title: "Module 3: Plant growth observation",
+    description:
+      "Observation guide, worksheet and class science practical follow-up.",
+    status: "published",
+    position: 2,
+    items: [
+      {
+        id: "module-item-p6-science-001",
+        title: "Observation guide",
+        type: "page",
+        status: "completed",
+      },
+      {
+        id: "module-item-p6-science-002",
+        title: "Plant growth observation",
+        type: "assignment",
+        status: "available",
+        dueDate: "2026-06-27",
+      },
+      {
+        id: "module-item-p6-science-003",
+        title: "Plant growth worksheet",
+        type: "material",
+        status: "available",
+      },
+    ],
+  },
+  {
+    id: "module-p6-english-writing",
+    courseId: "course-primary-6-english",
+    title: "Module 4: Personal narrative writing",
+    description:
+      "Writing prompts, draft guidance and the submitted narrative task.",
+    status: "published",
+    position: 3,
+    items: [
+      {
+        id: "module-item-p6-english-001",
+        title: "Draft planning page",
+        type: "page",
+        status: "completed",
+      },
+      {
+        id: "module-item-p6-english-002",
+        title: "Personal narrative draft",
+        type: "assignment",
+        status: "completed",
+        dueDate: "2026-06-30",
+      },
+    ],
+  },
+  {
+    id: "module-p5-math-geometry",
+    courseId: "course-primary-5-math",
+    title: "Module 6: Geometry review",
+    description:
+      "Angles, shapes, class practice and the geometry worksheet review queue.",
+    status: "published",
+    position: 1,
+    items: [
+      {
+        id: "module-item-p5-math-001",
+        title: "Geometry lesson slides",
+        type: "material",
+        status: "available",
+      },
+      {
+        id: "module-item-p5-math-002",
+        title: "Geometry worksheet",
+        type: "assignment",
+        status: "available",
+        dueDate: "2026-06-26",
+      },
+    ],
+  },
+  {
+    id: "module-p3-general-reading",
+    courseId: "course-primary-3-general",
+    title: "Module 2: Weekly reading practice",
+    description:
+      "Class reading routines and practice materials for younger learners.",
+    status: "draft",
+    position: 1,
+    items: [
+      {
+        id: "module-item-p3-general-001",
+        title: "Reading fluency checklist",
+        type: "material",
+        status: "locked",
+      },
+    ],
+  },
+  {
+    id: "module-jhs-1-science-observation",
+    courseId: "course-jhs-1-science",
+    title: "Module 1: Scientific observation",
+    description:
+      "Introductory practical notes and observation tasks for JHS 1.",
+    status: "published",
+    position: 1,
+    items: [
+      {
+        id: "module-item-jhs-science-001",
+        title: "Observation skills page",
+        type: "page",
+        status: "available",
+      },
+    ],
+  },
+] satisfies readonly CourseModule[];
 
 export const mockTimetable = [
   {
@@ -91,6 +319,7 @@ export const mockAssignments = [
   {
     id: "assignment-001",
     classId: "primary-6",
+    courseId: "course-primary-6-math",
     subject: "Mathematics",
     title: "Fractions practice set",
     instructions: "Complete questions 1 to 15 and show all working.",
@@ -102,6 +331,7 @@ export const mockAssignments = [
   {
     id: "assignment-002",
     classId: "primary-6",
+    courseId: "course-primary-6-science",
     subject: "Science",
     title: "Plant growth observation",
     instructions: "Record three observations from the class plant experiment.",
@@ -113,6 +343,7 @@ export const mockAssignments = [
   {
     id: "assignment-003",
     classId: "primary-6",
+    courseId: "course-primary-6-english",
     subject: "English Language",
     title: "Personal narrative draft",
     instructions: "Write a two-page personal narrative draft.",
@@ -124,6 +355,7 @@ export const mockAssignments = [
   {
     id: "assignment-004",
     classId: "primary-5",
+    courseId: "course-primary-5-math",
     subject: "Mathematics",
     title: "Geometry worksheet",
     instructions: "Complete the angles and shapes worksheet.",
@@ -274,6 +506,7 @@ export const mockLearningResources = [
   {
     id: "resource-001",
     classId: "primary-6",
+    courseId: "course-primary-6-math",
     subject: "Mathematics",
     title: "Fractions revision notes",
     fileName: "fractions-revision.pdf",
@@ -284,6 +517,7 @@ export const mockLearningResources = [
   {
     id: "resource-002",
     classId: "primary-6",
+    courseId: "course-primary-6-science",
     subject: "Science",
     title: "Plant growth worksheet",
     fileName: "plant-growth.docx",
@@ -294,6 +528,7 @@ export const mockLearningResources = [
   {
     id: "resource-003",
     classId: "primary-5",
+    courseId: "course-primary-5-math",
     subject: "Mathematics",
     title: "Geometry lesson slides",
     fileName: "geometry-slides.pptx",

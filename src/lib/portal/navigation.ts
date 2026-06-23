@@ -17,12 +17,22 @@ export const portalNavigation: Record<
 > = {
   student: [
     dashboardItem("student"),
+    {
+      label: "Courses",
+      icon: "book",
+      href: portalRoutes.studentCourses,
+      phase: 7,
+    },
+    {
+      label: "To Do",
+      icon: "clipboard",
+      href: portalRoutes.studentTodo,
+      phase: 7,
+    },
     { label: "Profile", icon: "user", phase: 2 },
     { label: "Timetable", icon: "calendar", phase: 2 },
-    { label: "Assignments", icon: "clipboard", phase: 2 },
     { label: "Results", icon: "chart", phase: 2 },
     { label: "Attendance", icon: "calendar", phase: 2 },
-    { label: "Resources", icon: "book", phase: 2 },
   ],
   parent: [
     dashboardItem("parent"),
@@ -63,6 +73,12 @@ export const portalNavigation: Record<
       phase: 5,
     },
     {
+      label: "Courses",
+      icon: "book",
+      href: portalRoutes.staffCourses,
+      phase: 7,
+    },
+    {
       label: "Attendance",
       icon: "clipboard",
       href: portalRoutes.staffAttendance,
@@ -78,12 +94,6 @@ export const portalNavigation: Record<
       label: "Gradebook",
       icon: "chart",
       href: portalRoutes.staffGradebook,
-      phase: 5,
-    },
-    {
-      label: "Resources",
-      icon: "book",
-      href: portalRoutes.staffResources,
       phase: 5,
     },
     { label: "Messages", icon: "message", phase: 5 },

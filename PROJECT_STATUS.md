@@ -12,7 +12,7 @@ Completed: June 15, 2026
 
 ## Active Development Cycle
 
-**Portal Phase 6: Admin and Accounts Control**
+**Portal Phase 7: Course Workspace and To Do Alignment**
 Status: `complete`
 Completed: June 23, 2026
 
@@ -55,7 +55,8 @@ Phase 8 verification:
 
 ## Next Phase
 
-The public website and planned mock-data portal UI phases are complete. The
-next cycle is backend/API, production authentication, database, storage,
-notifications, and payment-provider integration planning, as noted in
+The public website and planned mock-data portal UI phases are complete through
+the Phase 7 course and To Do alignment. The next cycle is backend/API,
+production authentication, database, storage, notifications, payment-provider
+integration, and LMS/Course integration boundary planning, as noted in
 `PORTAL_STATUS.md`.

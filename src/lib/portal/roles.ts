@@ -10,9 +10,9 @@ export const portalRoleLabels: Record<PortalRole, string> = {
 };
 
 export const portalRoleDescriptions: Record<PortalRole, string> = {
-  student: "Academic information and student resources",
+  student: "Courses, To Do, academic information and student records",
   parent: "Children, fees, transport and school communication",
-  staff: "Classes, attendance, assignments and learning resources",
+  staff: "Courses, classes, attendance, assignments and gradebook tools",
   admin: "School operations, people and academic administration",
   accounts: "Invoices, payments, balances and finance reporting",
   transport: "Routes, assigned students and trip status updates",

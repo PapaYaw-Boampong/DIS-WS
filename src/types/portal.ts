@@ -225,6 +225,7 @@ export type TimetableEntry = {
 export type AssignmentSummary = {
   readonly id: string;
   readonly classId: string;
+  readonly courseId?: string;
   readonly subject: string;
   readonly title: string;
   readonly instructions?: string;
@@ -232,6 +233,37 @@ export type AssignmentSummary = {
   readonly totalStudents?: number;
   readonly submittedCount?: number;
   readonly status: "not_started" | "in_progress" | "submitted" | "review";
+};
+
+export type CourseSummary = {
+  readonly id: string;
+  readonly classId: string;
+  readonly subjectId: string;
+  readonly subject: string;
+  readonly title: string;
+  readonly courseCode: string;
+  readonly teacher: string;
+  readonly term: string;
+  readonly description: string;
+  readonly progress: number;
+};
+
+export type CourseModuleItem = {
+  readonly id: string;
+  readonly title: string;
+  readonly type: "page" | "assignment" | "material" | "quiz" | "discussion";
+  readonly status: "available" | "completed" | "locked";
+  readonly dueDate?: string;
+};
+
+export type CourseModule = {
+  readonly id: string;
+  readonly courseId: string;
+  readonly title: string;
+  readonly description: string;
+  readonly status: "published" | "draft";
+  readonly position: number;
+  readonly items: readonly CourseModuleItem[];
 };
 
 export type ResultSummary = {
@@ -287,6 +319,7 @@ export type GradebookEntry = {
 export type LearningResource = {
   readonly id: string;
   readonly classId: string;
+  readonly courseId?: string;
   readonly subject: string;
   readonly title: string;
   readonly fileName: string;

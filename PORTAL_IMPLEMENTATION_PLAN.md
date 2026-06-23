@@ -8,6 +8,14 @@ The public website is mostly complete and serves as the school’s public-facing
 
 The portal system should be built gradually and non-invasively. It should support existing school workflows first, then expand into deeper automation.
 
+Current product decisions for the next portal cycle:
+
+- The portal must not allow public self sign-up. Student, parent, staff, accounts, transport, and admin accounts are created or approved by school administrators.
+- Dashboard quick-action blocks should be removed. Primary navigation should live in the sidebar and in the relevant page/workspace.
+- Student upcoming-assignment widgets should be replaced by a dedicated To Do page.
+- Learning materials should move into course pages instead of a standalone Resources area.
+- Canvas LMS by Instructure is the main UX reference for course areas: course home, course navigation, modules, assignments, To Do/sidebar context, and teacher/student course workflows. The DIS portal should use these ideas without copying Canvas branding or connecting to Canvas.
+
 ---
 
 ## 2. Portal Vision
@@ -77,10 +85,10 @@ Recommended deeper routes:
 /portal/student/dashboard
 /portal/student/profile
 /portal/student/timetable
-/portal/student/assignments
+/portal/student/courses
+/portal/student/todo
 /portal/student/results
 /portal/student/attendance
-/portal/student/resources
 /portal/student/announcements
 
 /portal/parent/dashboard
@@ -99,7 +107,7 @@ Recommended deeper routes:
 /portal/staff/attendance
 /portal/staff/assignments
 /portal/staff/gradebook
-/portal/staff/resources
+/portal/staff/courses
 /portal/staff/messages
 /portal/staff/timetable
 
@@ -138,13 +146,14 @@ The student portal should help students access their academic life in one place.
 - Class and grade information
 - Subjects
 - Timetable
-- Assignments
+- Courses
+- To Do
 - Homework
 - Results and report cards
 - Attendance summary
 - Announcements
 - Events calendar
-- Learning resources
+- Course modules and materials
 - Downloads
 - Notices
 
@@ -152,19 +161,19 @@ The student portal should help students access their academic life in one place.
 
 - Welcome message
 - Today’s timetable
-- Pending assignments
+- To Do summary
 - Recent results
 - Attendance status
 - School announcements
 - Upcoming events
-- Quick links
 
 ### Student Actions
 
-- View assignments
+- View To Do tasks
+- Open course pages
 - View homework
 - View grades
-- Download learning materials
+- Download or view course materials when storage is connected later
 - Check timetable
 - Read announcements
 - View academic calendar
@@ -174,6 +183,7 @@ The student portal should help students access their academic life in one place.
 ### Later Student Features
 
 - Assignment upload
+- Course module completion
 - Online quizzes
 - Teacher feedback
 - Progress charts
@@ -223,7 +233,6 @@ The parent portal should help parents monitor their child’s progress, pay scho
 - Upcoming events
 - Important announcements
 - Teacher messages
-- Quick actions
 
 ### Parent Payment Capabilities
 
@@ -308,7 +317,8 @@ The staff portal should help teachers and staff manage class-related tasks and c
 - Grades/marks entry
 - Announcements
 - Timetable
-- Resources
+- Courses
+- Course modules and materials
 - Student records
 - Parent communication
 
@@ -320,14 +330,14 @@ The staff portal should help teachers and staff manage class-related tasks and c
 - Assignments to review
 - Recent notices
 - Upcoming events
-- Quick actions
 
 ### Staff Actions
 
 - Mark attendance
 - View class lists
 - Create assignments
-- Upload learning resources
+- Add course materials
+- Manage course modules
 - Enter assessment marks
 - View student profiles
 - Send notices to class/parents
@@ -369,7 +379,8 @@ The admin portal controls the school data that appears in the student, parent, s
 - Results/report cards
 - News and announcements
 - Events/calendar
-- Resources/documents
+- Documents
+- Course setup oversight later
 - Website content management later
 - User roles and permissions
 
@@ -626,11 +637,20 @@ transport
 - Login
 - Logout
 - Forgot password
+- No public sign-up or self-registration
+- Admin-issued or admin-approved accounts
 - Protected routes
 - Role-based redirect
 - Role-based sidebar navigation
 - Session handling
 - Account status: active/inactive/suspended
+
+### Account Creation Rule
+
+The production portal must not expose a public "create account" or "sign up"
+flow. Accounts are created, approved, linked, activated, suspended, and reset by
+authorized school administrators. Parents, students, staff, accounts users, and
+transport users receive credentials only after the school approves the record.
 
 ### Role Redirects
 
@@ -667,7 +687,6 @@ Topbar
 Main content area
 Dashboard cards
 Tables
-Quick actions
 Notices panel
 Profile/account menu
 ```
@@ -682,7 +701,6 @@ DashboardCard
 MetricCard
 NoticeCard
 DataTable
-QuickActionCard
 ProfileSummary
 CalendarPreview
 StatusBadge
@@ -712,13 +730,13 @@ src/
           page.tsx
         timetable/
           page.tsx
-        assignments/
+        courses/
+          page.tsx
+        todo/
           page.tsx
         results/
           page.tsx
         attendance/
-          page.tsx
-        resources/
           page.tsx
       parent/
         dashboard/
@@ -750,7 +768,7 @@ src/
           page.tsx
         gradebook/
           page.tsx
-        resources/
+        courses/
           page.tsx
       admin/
         dashboard/
@@ -790,7 +808,6 @@ src/
       MetricCard.tsx
       DataTable.tsx
       StatusBadge.tsx
-      QuickActionCard.tsx
       ChildSwitcher.tsx
       PaymentSummaryCard.tsx
       TransportStatusCard.tsx
@@ -954,6 +971,42 @@ type TransportTrip = {
 };
 ```
 
+### Course
+
+Course pages should become the main academic workspace instead of a standalone
+resources area. The first mock version can model the Canvas-like concepts of a
+course home, course navigation, modules, assignments, materials, and progress.
+
+```ts
+type CourseSummary = {
+  id: string;
+  classId: string;
+  subjectId: string;
+  subject: string;
+  title: string;
+  courseCode: string;
+  teacher: string;
+  term: string;
+  description: string;
+  progress: number;
+};
+
+type CourseModule = {
+  id: string;
+  courseId: string;
+  title: string;
+  description: string;
+  status: "published" | "draft";
+  items: {
+    id: string;
+    title: string;
+    type: "page" | "assignment" | "material" | "quiz" | "discussion";
+    status: "available" | "completed" | "locked";
+    dueDate?: string;
+  }[];
+};
+```
+
 ---
 
 ## 12. MVP Scope for This Cycle
@@ -1023,7 +1076,7 @@ Build:
 - Attendance marking UI
 - Assignments page
 - Gradebook page
-- Resources upload UI placeholder
+- Course material upload UI placeholder
 
 ### Phase 6: Admin and Accounts Control
 
@@ -1036,6 +1089,21 @@ Build:
 - Invoice management UI
 - Payment management UI
 - Reports overview
+
+### Phase 7: Course Workspace and To Do Alignment
+
+Build:
+
+- Student To Do page to replace the old dashboard upcoming-assignment block
+- Student courses page with course cards, course home preview, course navigation, modules, assignments, course materials, and preview boundaries
+- Staff courses page with course cards, module/assignment/material views, assigned class context, and browser-only course action previews
+- Resources route compatibility redirect to Courses, with no Resources item in the sidebar
+- Remove dashboard quick-action sections and the QuickActionCard component
+- Confirm in login/public portal copy and the plan that there is no public self sign-up; admins create or approve accounts
+
+Use mock data only. Do not connect Canvas, do not copy Canvas branding, and do
+not add backend, file storage, notifications, real submissions, or production
+credentials in this phase.
 
 ---
 
@@ -1091,7 +1159,6 @@ Implement:
 - MetricCard
 - StatusBadge
 - DataTable placeholder component
-- QuickActionCard
 - mock data structure for users, students, parents, staff, fees, payments, and transport
 
 Do not build all portal pages yet.
@@ -1111,6 +1178,8 @@ The portal MVP is ready when:
 - Login UI exists
 - Role-based mock redirect works
 - Student dashboard exists
+- Student To Do page exists
+- Student and staff Courses pages exist
 - Parent dashboard exists
 - Staff dashboard exists
 - Admin dashboard shell exists
@@ -1125,6 +1194,8 @@ The portal MVP is ready when:
 - UI is responsive
 - No major TypeScript errors
 - No broken internal portal links
+- No public self sign-up flow exists
+- Dashboard quick-action blocks are removed
 
 ---
 

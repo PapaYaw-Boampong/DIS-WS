@@ -126,6 +126,11 @@ export default async function PortalLoginPage({
               Select a demo account to enter the protected portal shell. No
               password, live account or backend request is used.
             </p>
+            <p className="mt-4 rounded-2xl border border-curry-orange/25 bg-soft-cream p-4 text-sm font-semibold leading-6 text-charcoal">
+              Public sign-up is not part of the portal. In production, school
+              administrators create or approve student, parent, staff and
+              finance accounts before credentials are issued.
+            </p>
 
             {errorMessage ? (
               <p

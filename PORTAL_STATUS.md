@@ -7,7 +7,7 @@ brief.
 
 ## Current Phase
 
-**Portal Phase 6: Admin and Accounts Control**
+**Portal Phase 7: Course Workspace and To Do Alignment**
 Status: `complete`
 Completed: June 23, 2026
 
@@ -21,6 +21,7 @@ Completed: June 23, 2026
 | Portal Phase 4: Transport Tracking UI | `complete` | June 23, 2026 | Parent assigned-route tracking, trip timeline, pickup/drop-off and fee details, plus admin and transport-role route oversight with manual status-update previews |
 | Portal Phase 5: Staff Operations UI | `complete` | June 23, 2026 | Staff class and roster views, attendance marking, assignment management, gradebook records, and resource-upload previews using fictional data |
 | Portal Phase 6: Admin and Accounts Control | `complete` | June 23, 2026 | Admin student, parent, staff, class, and fee controls plus accounts invoice, payment, balance, feeding, transport-fee, and reporting views |
+| Portal Phase 7: Course Workspace and To Do Alignment | `complete` | June 23, 2026 | Admin-issued account rule documented, dashboard quick-action blocks removed, student To Do page added, Resources navigation replaced with Canvas-inspired Courses workspaces for students and staff |
 
 ## Phase 1 Delivered
 
@@ -116,15 +117,14 @@ Completed: June 23, 2026
   and a local assignment-creation preview.
 - Protected gradebook page with fictional assessment records, percentages,
   draft/published states, class average, and validated grade-entry preview.
-- Protected resources page with published/draft learning materials and a file
-  upload placeholder that keeps selected files on the user's device.
+- Protected staff learning-materials page with published/draft materials and a
+  file upload placeholder that kept selected files on the user's device. This
+  screen is superseded by the Phase 7 Courses workspace.
 - Expanded typed mock data for staff rosters, daily attendance, assignment
-  instructions and submission counts, gradebook entries, and learning
-  resources.
-- Staff dashboard quick actions and sidebar navigation now link to all five
-  Phase 5 operation routes.
-- Attendance, assignment, grade, and resource forms perform no fetch, backend
-  write, notification, student-result update, or file upload.
+  instructions and submission counts, gradebook entries, and course materials.
+- Staff sidebar navigation links to Phase 5 operation routes.
+- Attendance, assignment, grade, and former material-upload previews perform no
+  fetch, backend write, notification, student-result update, or file upload.
 
 ## Phase 6 Delivered
 
@@ -160,27 +160,60 @@ Completed: June 23, 2026
   previews with no credential creation, database write, reconciliation,
   provider call, email, or file generation.
 
+## Phase 7 Delivered
+
+- Updated `PORTAL_IMPLEMENTATION_PLAN.md` to confirm there is no public
+  self-sign-up flow. Production accounts must be created or approved by school
+  administrators before credentials are issued.
+- Added no-sign-up guidance to the public portal access notes and the mock login
+  page.
+- Updated admin account-creation previews to describe admin-issued accounts
+  instead of user self-registration.
+- Removed dashboard quick-action sections from student, parent, staff, admin,
+  and accounts dashboards.
+- Removed the `QuickActionCard` component because dashboard action blocks are no
+  longer part of the portal direction.
+- Added `/portal/student/todo` as the dedicated student To Do page, replacing
+  the old student dashboard upcoming-assignment block.
+- Added `/portal/student/courses` with Canvas-inspired course cards, course
+  navigation, course home sections, modules, assignments, course materials, and
+  a To Do sidebar summary.
+- Added `/portal/staff/courses` with Canvas-inspired course cards, course home
+  sections, module/assignment/material records, assigned-class context, and
+  browser-only course action previews.
+- Replaced student/staff Resources navigation with Courses navigation.
+- Kept `/portal/student/resources` and `/portal/staff/resources` as compatibility
+  redirects to the matching Courses page so old links do not break.
+- Expanded typed mock academic data with courses, modules, course-linked
+  assignments, and course-linked materials.
+- New course and To Do controls perform no fetch, backend write, Canvas
+  integration, notification, file upload, or real submission.
+
 ## Latest Verification
 
-Portal Phase 6 verification:
+Portal Phase 7 verification:
 
 - ESLint: passed
 - TypeScript (`tsc --noEmit`): passed
 - Production build: passed
 - Image verification: 99 WebP images across 12 albums passed
-- Admin `/students`, `/parents`, `/staff`, `/classes`, and `/fees`: returned
-  `200`, rendered the expected management content, and retained
+- Student `/courses`: returned `200`, rendered mock course content, and retained
   `noindex, nofollow`
-- Accounts `/invoices`, `/payments`, `/balances`, `/feeding`,
-  `/transport-fees`, and `/reports`: returned `200`, rendered the expected
-  finance controls, and retained `noindex, nofollow`
-- Unauthenticated admin students: returned `307` to admin login
-- Cross-role protection: parent access to admin fees returned to the parent
-  dashboard; admin access to accounts reports returned to the admin dashboard
-- Shared-route regressions: parent fees and staff classes returned `200` with
-  their original role-specific content
+- Student `/todo`: returned `200`, rendered current To Do items, and retained
+  `noindex, nofollow`
+- Staff `/courses`: returned `200`, rendered course action previews, and
+  retained `noindex, nofollow`
+- Student dashboard cleanup: returned `200`, rendered the To Do summary, and no
+  longer rendered "Quick actions" or "Upcoming assignments"
+- Legacy `/portal/staff/resources` and `/portal/student/resources` redirected to
+  the matching Courses page and rendered expected course content
+- Login page rendered the no-public-sign-up guidance and mock demo accounts
+- Unauthenticated student To Do access returned `307` to the student login
+- Cross-role protection: parent access to student courses returned to the parent
+  dashboard
 - Operation boundary: source audit found no fetch, external client, server
-  action, or backend form action in Phase 6 preview controls
+  action, backend form action, or file upload in the new Phase 7 course and To
+  Do files
 
 ## Security and Integration Boundary
 
@@ -192,10 +225,9 @@ Portal Phase 6 verification:
 
 ## Next Phase
 
-No additional portal UI implementation phase remains in the current plan.
-
-The mock-data portal frontend cycle is complete. The next development cycle
-should define the Render API contract, production authentication and
-authorization, PostgreSQL schema, audit logging, secure file storage,
-notification services, and payment-provider integration before replacing the
-mock controls.
+The mock-data portal frontend cycle is complete through the Canvas-inspired
+course and To Do alignment. The next development cycle should define the Render
+API contract, production authentication and authorization, PostgreSQL schema,
+audit logging, secure file storage, notification services, Canvas/LMS integration
+boundaries if any, and payment-provider integration before replacing the mock
+controls.

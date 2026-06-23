@@ -35,15 +35,15 @@ export const portalItems = [
     title: "Student Portal",
     audience: "Students",
     description:
-      "Preview the protected student shell prepared for future learner resources, school updates and academic information.",
+      "Preview the protected student shell prepared for courses, To Do items, school updates and academic information.",
     icon: "graduation-cap",
     status: "Mock Preview",
     actionLabel: "Student Login",
     href: portalLoginForRole("student"),
     features: [
-      "Learning resources",
+      "Course pages",
+      "To Do list",
       "School notices",
-      "Academic information",
     ],
   },
   {
@@ -58,20 +58,20 @@ export const portalItems = [
     features: [
       "Family updates",
       "Learner communication",
-      "School resources",
+      "School notices",
     ],
   },
   {
     title: "Staff Portal",
     audience: "Staff",
     description:
-      "Preview the protected staff shell prepared for classes, attendance, resources and administrative workflows.",
+      "Preview the protected staff shell prepared for courses, classes, attendance and administrative workflows.",
     icon: "briefcase",
     status: "Mock Preview",
     actionLabel: "Staff Login",
     href: portalLoginForRole("staff"),
     features: [
-      "Staff resources",
+      "Course workspaces",
       "Internal notices",
       "Administration tools",
     ],
@@ -102,7 +102,7 @@ export const portalAccessSteps = [
   {
     title: "Use official credentials",
     description:
-      "Portal access will require credentials issued or approved by Divine International School.",
+      "Portal access will require credentials issued by Divine International School. Families, students and staff cannot self-register.",
     icon: "shield-check",
   },
   {
@@ -121,6 +121,7 @@ export const portalNotice = {
 
 export const portalPrivacyNotes = [
   "The current portal preview uses mock role accounts and fictional school records only.",
+  "Production access will not allow public self sign-up. Administrators will create or approve accounts before credentials are issued.",
   "No payment provider, database, live transport feed or production authentication service is connected.",
   "Families and staff should continue using official school communication channels until production portal credentials are issued.",
 ] as const;

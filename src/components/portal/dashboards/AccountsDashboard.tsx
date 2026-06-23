@@ -1,5 +1,4 @@
 import {
-  ChartNoAxesColumnIncreasing,
   CircleDollarSign,
   FileText,
   ReceiptText,
@@ -11,7 +10,6 @@ import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { ProgressMeter } from "@/components/portal/ProgressMeter";
-import { QuickActionCard } from "@/components/portal/QuickActionCard";
 import { StatusBadge } from "@/components/portal/StatusBadge";
 import {
   mockAccountsAlerts,
@@ -24,7 +22,6 @@ import {
   formatPortalCurrency,
   formatPortalDate,
 } from "@/lib/portal/format";
-import { portalRoutes } from "@/lib/portal/routes";
 
 type AccountsDashboardProps = {
   readonly userName: string;
@@ -59,7 +56,7 @@ export function AccountsDashboard({ userName }: AccountsDashboardProps) {
       <DashboardHeader
         eyebrow="Finance overview"
         title={`Welcome back, ${userName.split(" ")[0]}`}
-        description="Review fictional collection indicators and open invoice, payment, balance, and reporting controls."
+        description="Review fictional collection indicators and use the role navigation for invoice, payment, balance, and reporting controls."
         badge="Accounts controls"
       />
 
@@ -89,43 +86,6 @@ export function AccountsDashboard({ userName }: AccountsDashboardProps) {
           icon={<ReceiptText aria-hidden="true" className="size-5" />}
         />
       </div>
-
-      <section className="mt-10">
-        <h2 className="text-2xl font-extrabold text-charcoal">
-          Finance shortcuts
-        </h2>
-        <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <QuickActionCard
-            title="Invoices"
-            description="Review and assign fee invoices."
-            icon={<FileText aria-hidden="true" className="size-5" />}
-            href={portalRoutes.accountsInvoices}
-          />
-          <QuickActionCard
-            title="Payments"
-            description="Review transaction and manual payment records."
-            icon={<ReceiptText aria-hidden="true" className="size-5" />}
-            href={portalRoutes.accountsPayments}
-          />
-          <QuickActionCard
-            title="Balances"
-            description="Filter outstanding balances by class and student."
-            icon={<WalletCards aria-hidden="true" className="size-5" />}
-            href={portalRoutes.accountsBalances}
-          />
-          <QuickActionCard
-            title="Reports"
-            description="Prepare term collection and reconciliation reports."
-            icon={
-              <ChartNoAxesColumnIncreasing
-                aria-hidden="true"
-                className="size-5"
-              />
-            }
-            href={portalRoutes.accountsReports}
-          />
-        </div>
-      </section>
 
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.65fr)]">
         <div className="space-y-8">

@@ -3,15 +3,15 @@
 import { useState } from "react";
 import { Upload } from "lucide-react";
 
-import type { ClassSummary } from "@/types/portal";
+import type { CourseSummary } from "@/types/portal";
 
-type MockResourceUploadProps = {
-  readonly classes: readonly ClassSummary[];
+type MockCourseMaterialFormProps = {
+  readonly courses: readonly CourseSummary[];
 };
 
-export function MockResourceUpload({
-  classes,
-}: MockResourceUploadProps) {
+export function MockCourseMaterialForm({
+  courses,
+}: MockCourseMaterialFormProps) {
   const [message, setMessage] = useState<string | null>(null);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -19,59 +19,47 @@ export function MockResourceUpload({
     const formData = new FormData(event.currentTarget);
     const title = String(formData.get("title")).trim();
     const file = formData.get("file");
-    const classId = String(formData.get("class"));
-    const classItem = classes.find((item) => item.id === classId);
+    const courseId = String(formData.get("course"));
+    const course = courses.find((item) => item.id === courseId);
 
-    if (!title || !classItem || !(file instanceof File) || !file.name) {
-      setMessage("Choose a class, add a title, and select a file to preview.");
+    if (!title || !course || !(file instanceof File) || !file.name) {
+      setMessage("Choose a course, add a title, and select a file to preview.");
       return;
     }
 
     setMessage(
-      `${file.name} would be shared with ${classItem.name} as "${title}". No file was uploaded.`,
+      `${file.name} would be added to ${course.title} as "${title}". No file was uploaded.`,
     );
   }
 
   return (
     <div>
       <p className="rounded-2xl border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-900">
-        Upload placeholder only. Files remain on your device and are not sent
-        to storage or a backend.
+        Course material preview only. Files remain on your device and are not
+        sent to storage, students, or a backend.
       </p>
       <form onSubmit={handleSubmit} className="mt-6 space-y-5">
         <label className="block text-sm font-bold text-charcoal">
-          Resource title
+          Material title
           <input
             name="title"
             placeholder="Example: Fractions revision notes"
             className="mt-2 min-h-12 w-full rounded-2xl border border-border bg-white px-4 font-normal"
           />
         </label>
-        <div className="grid gap-5 sm:grid-cols-2">
-          <label className="text-sm font-bold text-charcoal">
-            Class
-            <select
-              name="class"
-              className="mt-2 min-h-12 w-full rounded-2xl border border-border bg-white px-4 font-normal"
-            >
-              {classes.map((classItem) => (
-                <option key={classItem.id} value={classItem.id}>
-                  {classItem.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="text-sm font-bold text-charcoal">
-            Subject
-            <select
-              name="subject"
-              className="mt-2 min-h-12 w-full rounded-2xl border border-border bg-white px-4 font-normal"
-            >
-              <option>Mathematics</option>
-              <option>Science</option>
-            </select>
-          </label>
-        </div>
+        <label className="block text-sm font-bold text-charcoal">
+          Course
+          <select
+            name="course"
+            className="mt-2 min-h-12 w-full rounded-2xl border border-border bg-white px-4 font-normal"
+          >
+            {courses.map((course) => (
+              <option key={course.id} value={course.id}>
+                {course.title}
+              </option>
+            ))}
+          </select>
+        </label>
         <label className="block text-sm font-bold text-charcoal">
           Select file
           <input
@@ -86,7 +74,7 @@ export function MockResourceUpload({
           className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-curry-orange px-6 font-bold text-white transition-colors hover:bg-deep-orange"
         >
           <Upload aria-hidden="true" className="size-5" />
-          Preview resource upload
+          Preview course material
         </button>
       </form>
       {message ? (

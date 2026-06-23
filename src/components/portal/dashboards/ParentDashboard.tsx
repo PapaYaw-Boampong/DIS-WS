@@ -1,10 +1,7 @@
 import Link from "next/link";
 import {
-  Bus,
   CalendarDays,
-  ChartNoAxesColumnIncreasing,
   MessageSquare,
-  ReceiptText,
   Users,
   WalletCards,
 } from "lucide-react";
@@ -15,7 +12,6 @@ import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { NoticeList } from "@/components/portal/NoticeList";
 import { ProgressMeter } from "@/components/portal/ProgressMeter";
-import { QuickActionCard } from "@/components/portal/QuickActionCard";
 import { StatusBadge } from "@/components/portal/StatusBadge";
 import {
   mockAttendance,
@@ -169,43 +165,6 @@ export function ParentDashboard({
           icon={<MessageSquare aria-hidden="true" className="size-5" />}
         />
       </div>
-
-      <section className="mt-10">
-        <h2 className="text-2xl font-extrabold text-charcoal">
-          Quick actions
-        </h2>
-        <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <QuickActionCard
-            title="My children"
-            description="Open linked learner profiles and records."
-            icon={<Users aria-hidden="true" className="size-5" />}
-            statusLabel="Page planned"
-          />
-          <QuickActionCard
-            title="Results"
-            description="Review detailed assessment reports."
-            icon={
-              <ChartNoAxesColumnIncreasing
-                aria-hidden="true"
-                className="size-5"
-              />
-            }
-            statusLabel="Page planned"
-          />
-          <QuickActionCard
-            title="Fees"
-            description="Review invoices, balances and payment previews."
-            icon={<ReceiptText aria-hidden="true" className="size-5" />}
-            href={portalRoutes.parentFees}
-          />
-          <QuickActionCard
-            title="Transport"
-            description="View the assigned route and current trip status."
-            icon={<Bus aria-hidden="true" className="size-5" />}
-            href={portalRoutes.parentTransport}
-          />
-        </div>
-      </section>
 
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.65fr)]">
         <div className="space-y-8">

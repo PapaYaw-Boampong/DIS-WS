@@ -1,5 +1,5 @@
+import Link from "next/link";
 import {
-  BookOpen,
   CalendarDays,
   ChartNoAxesColumnIncreasing,
   ClipboardCheck,
@@ -13,7 +13,6 @@ import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { NoticeList } from "@/components/portal/NoticeList";
 import { ProgressMeter } from "@/components/portal/ProgressMeter";
-import { QuickActionCard } from "@/components/portal/QuickActionCard";
 import { StatusBadge } from "@/components/portal/StatusBadge";
 import {
   mockAssignments,
@@ -28,6 +27,7 @@ import {
   formatPortalTime,
   percentageScore,
 } from "@/lib/portal/format";
+import { portalRoutes } from "@/lib/portal/routes";
 
 type StudentDashboardProps = {
   readonly userId: string;
@@ -60,11 +60,14 @@ export function StudentDashboard({
     (item) => item.studentId === student.id,
   );
   const assignments = mockAssignments.filter(
-    (item) => item.classId === "primary-6",
+    (item) => item.classId === student.classId,
+  );
+  const openAssignments = assignments.filter(
+    (item) => item.status !== "submitted",
   );
   const results = mockResults.filter((item) => item.studentId === student.id);
   const timetable = mockTimetable.filter(
-    (item) => item.classId === "primary-6",
+    (item) => item.classId === student.classId,
   );
   const announcements = mockAnnouncements.filter(
     (item) => item.audience === "all" || item.audience === "student",
@@ -86,18 +89,6 @@ export function StudentDashboard({
       entry.room,
     ],
   }));
-
-  const assignmentRows: readonly DataTableRow[] = assignments.map(
-    (assignment) => ({
-      id: assignment.id,
-      cells: [
-        assignment.subject,
-        assignment.title,
-        formatPortalDate(assignment.dueDate),
-        assignmentBadge(assignment.status),
-      ],
-    }),
-  );
 
   return (
     <>
@@ -142,43 +133,6 @@ export function StudentDashboard({
         />
       </div>
 
-      <section className="mt-10">
-        <h2 className="text-2xl font-extrabold text-charcoal">
-          Quick actions
-        </h2>
-        <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <QuickActionCard
-            title="Assignments"
-            description="Review current homework and due dates."
-            icon={<ClipboardCheck aria-hidden="true" className="size-5" />}
-            statusLabel="Page planned"
-          />
-          <QuickActionCard
-            title="Results"
-            description="Review assessment scores and progress."
-            icon={
-              <ChartNoAxesColumnIncreasing
-                aria-hidden="true"
-                className="size-5"
-              />
-            }
-            statusLabel="Page planned"
-          />
-          <QuickActionCard
-            title="Timetable"
-            description="View the complete weekly lesson schedule."
-            icon={<CalendarDays aria-hidden="true" className="size-5" />}
-            statusLabel="Page planned"
-          />
-          <QuickActionCard
-            title="Resources"
-            description="Open learning materials shared by teachers."
-            icon={<BookOpen aria-hidden="true" className="size-5" />}
-            statusLabel="Page planned"
-          />
-        </div>
-      </section>
-
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.65fr)]">
         <div className="space-y-8">
           <DashboardCard
@@ -193,14 +147,34 @@ export function StudentDashboard({
           </DashboardCard>
 
           <DashboardCard
-            title="Upcoming assignments"
-            description="Submission controls will be added in a later portal cycle."
+            title="To Do summary"
+            description="Open coursework now lives on the dedicated To Do page."
           >
-            <DataTable
-              caption="Upcoming student assignments"
-              columns={["Subject", "Assignment", "Due", "Status"]}
-              rows={assignmentRows}
-            />
+            <div className="space-y-4">
+              {openAssignments.slice(0, 3).map((assignment) => (
+                <div
+                  key={assignment.id}
+                  className="rounded-2xl border border-border bg-soft-white p-4"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <p className="font-bold text-charcoal">
+                      {assignment.title}
+                    </p>
+                    {assignmentBadge(assignment.status)}
+                  </div>
+                  <p className="mt-1 text-sm text-muted-grey">
+                    {assignment.subject} · Due{" "}
+                    {formatPortalDate(assignment.dueDate)}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <Link
+              href={portalRoutes.studentTodo}
+              className="mt-5 inline-flex min-h-10 items-center rounded-full border border-curry-orange px-4 text-sm font-bold text-deep-orange transition-colors hover:bg-soft-cream"
+            >
+              Open To Do page
+            </Link>
           </DashboardCard>
         </div>
 

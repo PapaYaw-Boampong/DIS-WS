@@ -29,8 +29,8 @@ export function MockPersonForm({ entity }: MockPersonFormProps) {
   return (
     <div>
       <p className="rounded-2xl border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-900">
-        Account creation preview only. No user, credential, email, or database
-        record will be created.
+        Admin-issued account preview only. There is no public sign-up flow, and
+        no user, credential, email, or database record will be created.
       </p>
       <form onSubmit={handleSubmit} className="mt-6 space-y-5">
         <label className="block text-sm font-bold text-charcoal">
@@ -90,7 +90,7 @@ export function MockPersonForm({ entity }: MockPersonFormProps) {
           className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-curry-orange px-6 font-bold text-white transition-colors hover:bg-deep-orange"
         >
           <UserPlus aria-hidden="true" className="size-5" />
-          Preview {entity} account
+          Preview admin-issued {entity} account
         </button>
       </form>
       {message ? (

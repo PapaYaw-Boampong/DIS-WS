@@ -1,11 +1,9 @@
 import {
-  Bus,
   CalendarDays,
   GraduationCap,
   School,
   UserPlus,
   Users,
-  WalletCards,
 } from "lucide-react";
 
 import { DashboardCard } from "@/components/portal/DashboardCard";
@@ -14,7 +12,6 @@ import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { NoticeList } from "@/components/portal/NoticeList";
 import { ProgressMeter } from "@/components/portal/ProgressMeter";
-import { QuickActionCard } from "@/components/portal/QuickActionCard";
 import { StatusBadge } from "@/components/portal/StatusBadge";
 import { mockClasses } from "@/data/portal/academics";
 import { mockAnnouncements, mockPortalEvents } from "@/data/portal/announcements";
@@ -29,7 +26,6 @@ import {
   formatPortalDate,
   formatPortalTime,
 } from "@/lib/portal/format";
-import { portalRoutes } from "@/lib/portal/routes";
 
 type AdminDashboardProps = {
   readonly userName: string;
@@ -63,7 +59,7 @@ export function AdminDashboard({ userName }: AdminDashboardProps) {
       <DashboardHeader
         eyebrow="School operations"
         title={`Welcome back, ${userName.split(" ")[0]}`}
-        description="Review school-wide mock indicators and open administrative people, class, fee, and transport controls."
+        description="Review school-wide mock indicators and use the role navigation for administrative people, class, fee, and transport controls."
         badge="Admin controls"
       />
 
@@ -93,44 +89,6 @@ export function AdminDashboard({ userName }: AdminDashboardProps) {
           icon={<CalendarDays aria-hidden="true" className="size-5" />}
         />
       </div>
-
-      <section className="mt-10">
-        <h2 className="text-2xl font-extrabold text-charcoal">
-          Management shortcuts
-        </h2>
-        <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <QuickActionCard
-            title="Student records"
-            description="Manage enrolment and learner profiles."
-            icon={<GraduationCap aria-hidden="true" className="size-5" />}
-            href={portalRoutes.adminStudents}
-          />
-          <QuickActionCard
-            title="People"
-            description="Manage parent and staff accounts."
-            icon={<Users aria-hidden="true" className="size-5" />}
-            href={portalRoutes.adminParents}
-          />
-          <QuickActionCard
-            title="Staff"
-            description="Review staff accounts and assignments."
-            icon={<UserPlus aria-hidden="true" className="size-5" />}
-            href={portalRoutes.adminStaff}
-          />
-          <QuickActionCard
-            title="Fees overview"
-            description="Open fee configuration and finance summaries."
-            icon={<WalletCards aria-hidden="true" className="size-5" />}
-            href={portalRoutes.adminFees}
-          />
-          <QuickActionCard
-            title="Transport"
-            description="Review routes, buses and manually updated trips."
-            icon={<Bus aria-hidden="true" className="size-5" />}
-            href={portalRoutes.adminTransport}
-          />
-        </div>
-      </section>
 
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.65fr)]">
         <div className="space-y-8">
