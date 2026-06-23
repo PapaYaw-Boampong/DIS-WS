@@ -29,6 +29,7 @@ export type StudentProfile = {
   readonly userId?: string;
   readonly fullName: string;
   readonly studentId: string;
+  readonly classId: string;
   readonly className: string;
   readonly level: string;
   readonly parentIds: readonly string[];
@@ -223,7 +224,10 @@ export type AssignmentSummary = {
   readonly classId: string;
   readonly subject: string;
   readonly title: string;
+  readonly instructions?: string;
   readonly dueDate: string;
+  readonly totalStudents?: number;
+  readonly submittedCount?: number;
   readonly status: "not_started" | "in_progress" | "submitted" | "review";
 };
 
@@ -253,6 +257,39 @@ export type ClassSummary = {
   readonly level: string;
   readonly studentCount: number;
   readonly classTeacher: string;
+};
+
+export type AttendanceMark = "present" | "absent" | "late" | "excused";
+
+export type DailyAttendanceRecord = {
+  readonly id: string;
+  readonly classId: string;
+  readonly studentId: string;
+  readonly date: string;
+  readonly mark: AttendanceMark;
+  readonly note?: string;
+};
+
+export type GradebookEntry = {
+  readonly id: string;
+  readonly classId: string;
+  readonly studentId: string;
+  readonly subject: string;
+  readonly assessment: string;
+  readonly score: number;
+  readonly total: number;
+  readonly status: "draft" | "published";
+};
+
+export type LearningResource = {
+  readonly id: string;
+  readonly classId: string;
+  readonly subject: string;
+  readonly title: string;
+  readonly fileName: string;
+  readonly fileType: "pdf" | "document" | "presentation" | "link";
+  readonly sharedAt: string;
+  readonly status: "published" | "draft";
 };
 
 export type DashboardAlert = {

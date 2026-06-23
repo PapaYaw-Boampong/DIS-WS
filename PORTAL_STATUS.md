@@ -7,7 +7,7 @@ brief.
 
 ## Current Phase
 
-**Portal Phase 4: Transport Tracking UI**
+**Portal Phase 5: Staff Operations UI**
 Status: `complete`
 Completed: June 23, 2026
 
@@ -19,7 +19,7 @@ Completed: June 23, 2026
 | Portal Phase 2: Role Dashboards | `complete` | June 23, 2026 | Student, parent, and staff dashboards plus admin and accounts summary shells using organized mock academic, communication, operational, and finance data |
 | Portal Phase 3: Parent Payments and Fees UI | `complete` | June 23, 2026 | Parent fee summaries, invoice list, payment history, receipt placeholders, feeding balances and ledger, transport-fee category, and advance-payment previews |
 | Portal Phase 4: Transport Tracking UI | `complete` | June 23, 2026 | Parent assigned-route tracking, trip timeline, pickup/drop-off and fee details, plus admin and transport-role route oversight with manual status-update previews |
-| Portal Phase 5: Staff Operations UI | `not started` | - | Classes, attendance, assignments, gradebook, and resources interfaces |
+| Portal Phase 5: Staff Operations UI | `complete` | June 23, 2026 | Staff class and roster views, attendance marking, assignment management, gradebook records, and resource-upload previews using fictional data |
 | Portal Phase 6: Admin and Accounts Control | `not started` | - | People management, fee setup, invoices, payments, balances, and reports |
 
 ## Phase 1 Delivered
@@ -106,27 +106,43 @@ Completed: June 23, 2026
   assignments, and transport notices.
 - Parent and admin navigation now link to their role-specific transport views.
 
+## Phase 5 Delivered
+
+- Protected staff class-list page with assigned class cards, role indicators,
+  subject totals, and a focused fictional student roster.
+- Protected daily attendance page with editable present, late, absent, and
+  excused marks plus live browser-only totals and submission preview.
+- Protected assignment page with due dates, submission counts, status labels,
+  and a local assignment-creation preview.
+- Protected gradebook page with fictional assessment records, percentages,
+  draft/published states, class average, and validated grade-entry preview.
+- Protected resources page with published/draft learning materials and a file
+  upload placeholder that keeps selected files on the user's device.
+- Expanded typed mock data for staff rosters, daily attendance, assignment
+  instructions and submission counts, gradebook entries, and learning
+  resources.
+- Staff dashboard quick actions and sidebar navigation now link to all five
+  Phase 5 operation routes.
+- Attendance, assignment, grade, and resource forms perform no fetch, backend
+  write, notification, student-result update, or file upload.
+
 ## Latest Verification
 
-Portal Phase 4 verification:
+Portal Phase 5 verification:
 
 - ESLint: passed
 - TypeScript (`tsc --noEmit`): passed
 - Production build: passed
 - Image verification: 99 WebP images across 12 albums passed
-- Parent `/transport`: returned `200`, rendered current-trip and transport-fee
-  details, and retained `noindex, nofollow`
-- Admin `/transport`: returned `200` with route overview and manual update
-  preview
-- Transport dashboard: returned `200` with the operations overview and manual
-  update preview
-- Unauthenticated parent transport: returned `307` to parent login
-- Cross-role protection: parent and admin sessions requesting the other role's
-  transport route were redirected to their own dashboards
-- Phase 3 regression: parent fees still returned `200` with invoice and advance
-  payment preview content
-- Integration boundary: transport pages explicitly identify data as manual and
-  mock; no GPS, notification service, backend write, or API call is connected
+- Staff `/classes`, `/attendance`, `/assignments`, `/gradebook`, and
+  `/resources`: returned `200`, rendered required Phase 5 content, and retained
+  `noindex, nofollow`
+- Unauthenticated staff attendance: returned `307` to staff login
+- Cross-role protection: a student session requesting staff gradebook was
+  redirected to the student dashboard
+- Phase 3 regression: parent fees returned `200` and retained invoice content
+- Operation boundary: route content identifies all mutation controls as
+  previews; source audit found no fetch or backend action in Phase 5 forms
 
 ## Security and Integration Boundary
 
@@ -138,7 +154,7 @@ Portal Phase 4 verification:
 
 ## Next Phase
 
-**Portal Phase 5: Staff Operations UI**
+**Portal Phase 6: Admin and Accounts Control**
 
-Build staff class lists, attendance marking, assignments, gradebook, and
-resource-upload placeholders using mock data only.
+Build student, parent, and staff management, fee setup, invoice and payment
+management, balances, and reports using mock data only.

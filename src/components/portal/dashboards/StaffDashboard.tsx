@@ -24,6 +24,7 @@ import {
 import { mockAnnouncements } from "@/data/portal/announcements";
 import { mockStaff } from "@/data/portal/staff";
 import { formatPortalDate, formatPortalTime } from "@/lib/portal/format";
+import { portalRoutes } from "@/lib/portal/routes";
 
 type StaffDashboardProps = {
   readonly userId: string;
@@ -127,25 +128,25 @@ export function StaffDashboard({ userId, userName }: StaffDashboardProps) {
             title="Mark attendance"
             description="Open the attendance register for today's classes."
             icon={<ClipboardCheck aria-hidden="true" className="size-5" />}
-            statusLabel="Phase 5"
+            href={portalRoutes.staffAttendance}
           />
           <QuickActionCard
             title="Create assignment"
             description="Prepare and publish class work."
             icon={<FilePenLine aria-hidden="true" className="size-5" />}
-            statusLabel="Phase 5"
+            href={portalRoutes.staffAssignments}
           />
           <QuickActionCard
             title="Upload resource"
             description="Share lesson notes and learning materials."
             icon={<BookOpen aria-hidden="true" className="size-5" />}
-            statusLabel="Phase 5"
+            href={portalRoutes.staffResources}
           />
           <QuickActionCard
             title="Send message"
             description="Communicate with assigned classes and families."
             icon={<MessageSquare aria-hidden="true" className="size-5" />}
-            statusLabel="Phase 5"
+            statusLabel="Future phase"
           />
         </div>
       </section>
@@ -165,7 +166,7 @@ export function StaffDashboard({ userId, userName }: StaffDashboardProps) {
 
           <DashboardCard
             title="Assigned classes"
-            description="Class management controls will be delivered in Phase 5."
+            description="Review assigned class totals and staff responsibilities."
           >
             <DataTable
               caption="Assigned staff classes"

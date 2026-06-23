@@ -56,11 +56,36 @@ export const portalNavigation: Record<
   ],
   staff: [
     dashboardItem("staff"),
-    { label: "My Classes", icon: "school", phase: 5 },
-    { label: "Attendance", icon: "clipboard", phase: 5 },
-    { label: "Assignments", icon: "file", phase: 5 },
-    { label: "Gradebook", icon: "chart", phase: 5 },
-    { label: "Resources", icon: "book", phase: 5 },
+    {
+      label: "My Classes",
+      icon: "school",
+      href: portalRoutes.staffClasses,
+      phase: 5,
+    },
+    {
+      label: "Attendance",
+      icon: "clipboard",
+      href: portalRoutes.staffAttendance,
+      phase: 5,
+    },
+    {
+      label: "Assignments",
+      icon: "file",
+      href: portalRoutes.staffAssignments,
+      phase: 5,
+    },
+    {
+      label: "Gradebook",
+      icon: "chart",
+      href: portalRoutes.staffGradebook,
+      phase: 5,
+    },
+    {
+      label: "Resources",
+      icon: "book",
+      href: portalRoutes.staffResources,
+      phase: 5,
+    },
     { label: "Messages", icon: "message", phase: 5 },
   ],
   admin: [

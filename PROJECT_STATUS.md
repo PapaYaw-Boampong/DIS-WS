@@ -12,7 +12,7 @@ Completed: June 15, 2026
 
 ## Active Development Cycle
 
-**Portal Phase 4: Transport Tracking UI**
+**Portal Phase 5: Staff Operations UI**
 Status: `complete`
 Completed: June 23, 2026
 
@@ -56,4 +56,5 @@ Phase 8 verification:
 ## Next Phase
 
 The public website has no remaining implementation phase. The next portal task
-is **Portal Phase 5: Staff Operations UI**, as tracked in `PORTAL_STATUS.md`.
+is **Portal Phase 6: Admin and Accounts Control**, as tracked in
+`PORTAL_STATUS.md`.
