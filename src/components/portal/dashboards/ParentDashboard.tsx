@@ -35,6 +35,7 @@ import {
   formatPortalTime,
   percentageScore,
 } from "@/lib/portal/format";
+import { portalRoutes } from "@/lib/portal/routes";
 
 type ParentDashboardProps = {
   readonly userId: string;
@@ -151,7 +152,7 @@ export function ParentDashboard({
         <MetricCard
           label="Outstanding fees"
           value={formatPortalCurrency(outstanding)}
-          detail="Read-only Phase 2 summary"
+          detail="Open fees for details"
           icon={<WalletCards aria-hidden="true" className="size-5" />}
         />
         <MetricCard
@@ -192,9 +193,9 @@ export function ParentDashboard({
           />
           <QuickActionCard
             title="Fees"
-            description="Invoices and payment controls begin in Phase 3."
+            description="Review invoices, balances and payment previews."
             icon={<ReceiptText aria-hidden="true" className="size-5" />}
-            statusLabel="Phase 3"
+            href={portalRoutes.parentFees}
           />
           <QuickActionCard
             title="Transport"

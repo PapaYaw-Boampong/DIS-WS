@@ -29,3 +29,29 @@ export function formatPortalTime(value: string) {
 export function percentageScore(score: number, total: number) {
   return Math.round((score / total) * 100);
 }
+
+export function formatFeeCategory(value: string) {
+  const labels: Record<string, string> = {
+    school_fees: "School Fees",
+    feeding: "Feeding Fees",
+    transport: "Transport Fees",
+    uniform: "Uniform Fees",
+    books: "Books & Materials",
+    exam: "Examination Fees",
+    other: "Other Charges",
+  };
+
+  return labels[value] ?? value;
+}
+
+export function formatPaymentMethod(value: string) {
+  const labels: Record<string, string> = {
+    momo: "Mobile Money",
+    card: "Card",
+    bank_transfer: "Bank Transfer",
+    cash: "Cash",
+    manual: "Manual Entry",
+  };
+
+  return labels[value] ?? value;
+}

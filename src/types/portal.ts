@@ -113,6 +113,25 @@ export type Payment = {
   readonly paidAt: string;
 };
 
+export type FeedingBalance = {
+  readonly id: string;
+  readonly studentId: string;
+  readonly balance: number;
+  readonly lastTopUpAt?: string;
+  readonly status: "active" | "low_balance" | "empty";
+};
+
+export type WalletTransaction = {
+  readonly id: string;
+  readonly studentId: string;
+  readonly wallet: "feeding" | "transport";
+  readonly type: "credit" | "debit";
+  readonly amount: number;
+  readonly description: string;
+  readonly reference: string;
+  readonly occurredAt: string;
+};
+
 export type TransportRoute = {
   readonly id: string;
   readonly routeName: string;

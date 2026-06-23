@@ -27,8 +27,24 @@ export const portalNavigation: Record<
   parent: [
     dashboardItem("parent"),
     { label: "My Children", icon: "users", phase: 2 },
-    { label: "Fees & Payments", icon: "wallet", phase: 3 },
-    { label: "Feeding", icon: "wallet", phase: 3 },
+    {
+      label: "Fees",
+      icon: "wallet",
+      href: portalRoutes.parentFees,
+      phase: 3,
+    },
+    {
+      label: "Payment History",
+      icon: "file",
+      href: portalRoutes.parentPayments,
+      phase: 3,
+    },
+    {
+      label: "Feeding",
+      icon: "wallet",
+      href: portalRoutes.parentFeeding,
+      phase: 3,
+    },
     { label: "Transport", icon: "bus", phase: 4 },
     { label: "Results", icon: "chart", phase: 2 },
     { label: "Messages", icon: "message", phase: 2 },

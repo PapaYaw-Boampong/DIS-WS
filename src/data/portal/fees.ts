@@ -1,4 +1,9 @@
-import type { FeeItem, Invoice } from "@/types/portal";
+import type {
+  FeedingBalance,
+  FeeItem,
+  Invoice,
+  WalletTransaction,
+} from "@/types/portal";
 
 export const mockFeeItems = [
   {
@@ -28,17 +33,119 @@ export const mockFeeItems = [
     academicYear: "2026/2027",
     dueDate: "2026-09-18",
   },
+  {
+    id: "fee-school-primary-3",
+    title: "Term 1 School Fees",
+    category: "school_fees",
+    amount: 4200,
+    term: "Term 1",
+    academicYear: "2026/2027",
+    dueDate: "2026-09-18",
+  },
+  {
+    id: "fee-feeding-primary-3",
+    title: "Term 1 Feeding Plan",
+    category: "feeding",
+    amount: 950,
+    term: "Term 1",
+    academicYear: "2026/2027",
+    dueDate: "2026-09-18",
+  },
 ] satisfies readonly FeeItem[];
 
 export const mockInvoices = [
   {
     id: "invoice-001",
     studentId: "student-001",
-    feeItemIds: ["fee-school-term-1", "fee-feeding-term-1"],
-    totalAmount: 5150,
-    amountPaid: 3000,
-    balance: 2150,
+    feeItemIds: [
+      "fee-school-term-1",
+      "fee-feeding-term-1",
+      "fee-transport-term-1",
+    ],
+    totalAmount: 6350,
+    amountPaid: 3600,
+    balance: 2750,
     status: "partially_paid",
     dueDate: "2026-09-18",
   },
+  {
+    id: "invoice-002",
+    studentId: "student-002",
+    feeItemIds: ["fee-school-primary-3", "fee-feeding-primary-3"],
+    totalAmount: 5150,
+    amountPaid: 5150,
+    balance: 0,
+    status: "paid",
+    dueDate: "2026-09-18",
+  },
 ] satisfies readonly Invoice[];
+
+export const mockFeedingBalances = [
+  {
+    id: "feeding-balance-001",
+    studentId: "student-001",
+    balance: 420,
+    lastTopUpAt: "2026-06-20T10:30:00.000Z",
+    status: "active",
+  },
+  {
+    id: "feeding-balance-002",
+    studentId: "student-002",
+    balance: 85,
+    lastTopUpAt: "2026-06-18T09:15:00.000Z",
+    status: "low_balance",
+  },
+] satisfies readonly FeedingBalance[];
+
+export const mockWalletTransactions = [
+  {
+    id: "wallet-001",
+    studentId: "student-001",
+    wallet: "feeding",
+    type: "credit",
+    amount: 500,
+    description: "Mock feeding wallet top-up",
+    reference: "DIS-FEED-0001",
+    occurredAt: "2026-06-20T10:30:00.000Z",
+  },
+  {
+    id: "wallet-002",
+    studentId: "student-001",
+    wallet: "feeding",
+    type: "debit",
+    amount: 40,
+    description: "Mock weekly meal deduction",
+    reference: "DIS-FEED-USE-001",
+    occurredAt: "2026-06-22T12:00:00.000Z",
+  },
+  {
+    id: "wallet-003",
+    studentId: "student-001",
+    wallet: "feeding",
+    type: "debit",
+    amount: 40,
+    description: "Mock weekly meal deduction",
+    reference: "DIS-FEED-USE-002",
+    occurredAt: "2026-06-23T12:00:00.000Z",
+  },
+  {
+    id: "wallet-004",
+    studentId: "student-002",
+    wallet: "feeding",
+    type: "credit",
+    amount: 125,
+    description: "Mock feeding wallet top-up",
+    reference: "DIS-FEED-0002",
+    occurredAt: "2026-06-18T09:15:00.000Z",
+  },
+  {
+    id: "wallet-005",
+    studentId: "student-002",
+    wallet: "feeding",
+    type: "debit",
+    amount: 40,
+    description: "Mock weekly meal deduction",
+    reference: "DIS-FEED-USE-003",
+    occurredAt: "2026-06-23T12:00:00.000Z",
+  },
+] satisfies readonly WalletTransaction[];
