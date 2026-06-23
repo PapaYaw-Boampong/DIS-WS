@@ -124,6 +124,12 @@ export const portalNavigation: Record<
       phase: 10,
     },
     {
+      label: "Payment Readiness",
+      icon: "wallet",
+      href: portalRoutes.adminPaymentReadiness,
+      phase: 11,
+    },
+    {
       label: "Transport",
       icon: "bus",
       href: portalRoutes.adminTransport,
@@ -139,6 +145,7 @@ export const portalNavigation: Record<
     { label: "Feeding", icon: "wallet", href: portalRoutes.accountsFeeding, phase: 6 },
     { label: "Transport Fees", icon: "bus", href: portalRoutes.accountsTransportFees, phase: 6 },
     { label: "Reports", icon: "file", href: portalRoutes.accountsReports, phase: 6 },
+    { label: "Payment Readiness", icon: "wallet", href: portalRoutes.accountsPaymentReadiness, phase: 11 },
   ],
   transport: [
     dashboardItem("transport"),

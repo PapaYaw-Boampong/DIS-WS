@@ -419,6 +419,9 @@ Constraints:
 - unique `reference`
 - unique `provider_reference` when present
 
+The provider integration, receipt, refund, and reconciliation policy is tracked
+in `PORTAL_PAYMENT_INTEGRATION_PLAN.md`.
+
 ### wallet_transactions
 
 Stores feeding and transport wallet activity.

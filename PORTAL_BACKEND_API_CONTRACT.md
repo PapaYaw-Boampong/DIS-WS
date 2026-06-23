@@ -177,6 +177,8 @@ a separate backend adapter.
 | `GET` | `/v1/reports/finance` | Generate report metadata/export links | accounts, admin |
 
 Payment provider secrets and webhook verification must stay on the backend.
+The detailed payment-provider and reconciliation policy is tracked in
+`PORTAL_PAYMENT_INTEGRATION_PLAN.md`.
 
 ### Transport
 

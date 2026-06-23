@@ -62,6 +62,9 @@ The frontend should treat backend session data as read-only.
 | accounts | finance scope | Invoices, payments, balances, feeding wallets, finance reports |
 | transport | transport scope | Assigned route and trip operations |
 
+Payment-provider integration and reconciliation boundaries are tracked in
+`PORTAL_PAYMENT_INTEGRATION_PLAN.md`.
+
 ## 5. Route Authorization
 
 Every protected route needs two checks:

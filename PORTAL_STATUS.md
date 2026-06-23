@@ -7,7 +7,7 @@ brief.
 
 ## Current Phase
 
-**Portal Phase 10: Authentication and Authorization Readiness**
+**Portal Phase 11: Payment Provider and Reconciliation Readiness**
 Status: `complete`
 Completed: June 23, 2026
 
@@ -25,6 +25,7 @@ Completed: June 23, 2026
 | Portal Phase 8: Backend API Contract and Readiness | `complete` | June 23, 2026 | Render API contract, typed endpoint/service/data ownership definitions, admin backend-readiness view, and implementation order for auth, database, audit, payments, storage, notifications, and optional LMS boundary |
 | Portal Phase 9: Database Schema Readiness | `complete` | June 23, 2026 | PostgreSQL schema plan, typed table/relationship/index/migration/retention map, admin database-readiness view, and schema migration order without adding a database client or live data |
 | Portal Phase 10: Authentication and Authorization Readiness | `complete` | June 23, 2026 | Production auth policy plan, typed role/route/session/account-lifecycle/password-reset maps, admin auth-readiness view, and backend-owned authorization boundaries without adding real credentials or auth provider code |
+| Portal Phase 11: Payment Provider and Reconciliation Readiness | `complete` | June 23, 2026 | Payment-provider policy plan, typed provider/flow/ledger/webhook/reconciliation/receipt maps, admin/accounts payment-readiness view, and backend-owned payment boundaries without adding provider SDKs, keys, or live payments |
 
 ## Phase 1 Delivered
 
@@ -244,26 +245,46 @@ Completed: June 23, 2026
   reset token generation, session signing, MFA integration, credential storage,
   production users, secrets, or backend calls were added.
 
+## Phase 11 Delivered
+
+- Added `PORTAL_PAYMENT_INTEGRATION_PLAN.md` as the payment-provider, ledger,
+  receipt, refund, and reconciliation policy draft.
+- Added typed payment planning structures for provider candidates, payment flow
+  steps, ledger rules, reconciliation controls, webhook events, receipt rules,
+  and readiness checks.
+- Added a payment contract data module covering Paystack, Hubtel, Flutterwave,
+  manual office payments, provider-safe checkout boundaries, idempotent webhook
+  rules, manual payment controls, settlement review, receipts, refunds, and
+  reversals.
+- Added protected `/portal/admin/payment-readiness` and
+  `/portal/accounts/payment-readiness` for management and finance review.
+- Added admin and accounts sidebar links for Payment Readiness.
+- Kept the work policy-only. No payment provider SDK, checkout script, provider
+  key, webhook secret, live checkout session, live receipt, bank settlement
+  import, backend call, or live payment record was added.
+
 ## Latest Verification
 
-Portal Phase 10 verification:
+Portal Phase 11 verification:
 
 - ESLint: passed
 - TypeScript (`tsc --noEmit`): passed
 - Production build: passed
 - Image verification: 99 WebP images across 12 albums passed
-- Admin `/auth-readiness`: returned `200`, rendered role permissions, route
-  ownership policies, account lifecycle, session controls, password reset
-  policy, readiness checks, and retained
+- Admin `/payment-readiness`: returned `200`, rendered provider candidates,
+  payment flow, ledger rules, webhook rules, reconciliation controls, receipt
+  rules, readiness checks, and retained
   `noindex, nofollow`
-- Admin sidebar rendered the Auth Readiness navigation item
-- Unauthenticated admin Auth Readiness access returned `307` to admin login
-- Cross-role protection: parent access to admin Auth Readiness returned to the
-  parent dashboard
+- Accounts `/payment-readiness`: returned `200` with the same payment readiness
+  content and retained `noindex, nofollow`
+- Admin and accounts sidebars rendered the Payment Readiness navigation item
+- Unauthenticated admin Payment Readiness access returned `307` to admin login
+- Cross-role protection: parent access to accounts Payment Readiness returned
+  to the parent dashboard
 - Source audit found no fetch, external client, server action, backend form
-  action, environment-secret access, auth provider integration, password
-  handling, reset token generation, MFA integration, or backend session code in
-  the new Phase 10 auth and readiness files
+  action, environment-secret access, provider SDK, checkout script, provider
+  key, webhook secret, backend payment call, or live payment integration in the
+  new Phase 11 payment and readiness files
 
 ## Security and Integration Boundary
 
@@ -275,8 +296,8 @@ Portal Phase 10 verification:
 
 ## Next Phase
 
-The mock-data portal frontend cycle is complete through backend, database, and
-auth readiness planning. The next development cycle should scaffold the
-separate Render backend service, choose an ORM/migration tool, or define payment
-provider integration details before replacing any mock frontend controls with
-live API calls.
+The mock-data portal frontend cycle is complete through backend, database, auth,
+and payment readiness planning. The next development cycle should scaffold the
+separate Render backend service, choose an ORM/migration tool, or define secure
+file storage/notification integration details before replacing any mock frontend
+controls with live API calls.

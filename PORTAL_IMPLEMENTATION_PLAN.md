@@ -1164,6 +1164,27 @@ Do not add a real authentication provider, password hashing, reset-token
 generation, session signing, MFA provider, credential storage, secrets, live
 users, or backend calls in this phase.
 
+### Phase 11: Payment Provider and Reconciliation Readiness
+
+Build:
+
+- `PORTAL_PAYMENT_INTEGRATION_PLAN.md` as the payment-provider, ledger, receipt,
+  refund, and reconciliation policy draft
+- Typed payment planning structures for provider candidates, payment flow steps,
+  ledger rules, reconciliation controls, webhook events, receipt rules, and
+  readiness checks
+- Mock-safe Payment Readiness page for admin and accounts roles showing provider
+  candidates, production flow, ledger rules, webhook handling, reconciliation,
+  receipts, and implementation boundaries
+- Admin and accounts navigation links to Payment Readiness
+- Clear rule that provider secrets, webhook verification, payment ledger writes,
+  receipt generation, refunds/reversals, and reconciliation belong to the
+  backend/accounts workflow, not direct frontend code
+
+Do not add payment provider SDKs, checkout scripts, provider keys, webhook
+secrets, live checkout sessions, live receipts, bank settlement imports, backend
+calls, or live payment records in this phase.
+
 ---
 
 ## 13. First Codex Prompt for Portal Cycle
@@ -1245,6 +1266,8 @@ The portal MVP is ready when:
 - Admin Database Readiness page exists
 - Auth and authorization plan document exists
 - Admin Auth Readiness page exists
+- Payment integration plan document exists
+- Admin/accounts Payment Readiness page exists
 - Parent dashboard exists
 - Staff dashboard exists
 - Admin dashboard shell exists
@@ -1282,6 +1305,7 @@ Course workspace and To Do UI
 API contract and backend readiness
 Database schema readiness
 Authentication and authorization readiness
+Payment provider and reconciliation readiness
 Backend/database
 Payment provider integration
 Live reconciliation/reporting

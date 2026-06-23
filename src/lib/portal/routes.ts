@@ -24,12 +24,14 @@ export const portalRoutes = {
   adminBackendReadiness: "/portal/admin/backend-readiness",
   adminDatabaseReadiness: "/portal/admin/database-readiness",
   adminAuthReadiness: "/portal/admin/auth-readiness",
+  adminPaymentReadiness: "/portal/admin/payment-readiness",
   accountsInvoices: "/portal/accounts/invoices",
   accountsPayments: "/portal/accounts/payments",
   accountsBalances: "/portal/accounts/balances",
   accountsFeeding: "/portal/accounts/feeding",
   accountsTransportFees: "/portal/accounts/transport-fees",
   accountsReports: "/portal/accounts/reports",
+  accountsPaymentReadiness: "/portal/accounts/payment-readiness",
 } as const;
 
 export function portalLoginForRole(role: PortalRole) {
