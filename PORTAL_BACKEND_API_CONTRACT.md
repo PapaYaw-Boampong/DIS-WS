@@ -114,6 +114,9 @@ Required backend behavior:
 - Record audit logs for login attempts, account changes, financial writes,
   attendance writes, transport updates, exports, and file operations.
 
+The detailed authentication and authorization policy draft is tracked in
+`PORTAL_AUTHORIZATION_PLAN.md`.
+
 ## 6. Core Endpoint Groups
 
 ### Auth

@@ -572,6 +572,9 @@ Required audited actions:
 Do not enable live frontend writes until the relevant migration group, role
 authorization, audit logging, and smoke tests are complete.
 
+The production role and route authorization policy is tracked in
+`PORTAL_AUTHORIZATION_PLAN.md`.
+
 ## 12. Backend ORM Decision
 
 Prisma or Drizzle can be selected later. Do not add either package to the

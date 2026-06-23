@@ -7,7 +7,7 @@ brief.
 
 ## Current Phase
 
-**Portal Phase 9: Database Schema Readiness**
+**Portal Phase 10: Authentication and Authorization Readiness**
 Status: `complete`
 Completed: June 23, 2026
 
@@ -24,6 +24,7 @@ Completed: June 23, 2026
 | Portal Phase 7: Course Workspace and To Do Alignment | `complete` | June 23, 2026 | Admin-issued account rule documented, dashboard quick-action blocks removed, student To Do page added, Resources navigation replaced with Canvas-inspired Courses workspaces for students and staff |
 | Portal Phase 8: Backend API Contract and Readiness | `complete` | June 23, 2026 | Render API contract, typed endpoint/service/data ownership definitions, admin backend-readiness view, and implementation order for auth, database, audit, payments, storage, notifications, and optional LMS boundary |
 | Portal Phase 9: Database Schema Readiness | `complete` | June 23, 2026 | PostgreSQL schema plan, typed table/relationship/index/migration/retention map, admin database-readiness view, and schema migration order without adding a database client or live data |
+| Portal Phase 10: Authentication and Authorization Readiness | `complete` | June 23, 2026 | Production auth policy plan, typed role/route/session/account-lifecycle/password-reset maps, admin auth-readiness view, and backend-owned authorization boundaries without adding real credentials or auth provider code |
 
 ## Phase 1 Delivered
 
@@ -226,24 +227,43 @@ Completed: June 23, 2026
   client, database URL, seed data, production records, or backend connection was
   added.
 
+## Phase 10 Delivered
+
+- Added `PORTAL_AUTHORIZATION_PLAN.md` as the production authentication and
+  authorization policy draft.
+- Added typed auth planning structures for role permissions, route access
+  policies, account lifecycle, session controls, password reset rules, and auth
+  readiness checks.
+- Added an auth contract data module covering student, parent, staff, admin,
+  accounts, and transport access scopes.
+- Added protected `/portal/admin/auth-readiness` with role scopes, route
+  ownership rules, account lifecycle, session controls, password reset policy,
+  readiness checks, and implementation boundaries.
+- Added the admin sidebar link for Auth Readiness.
+- Kept the work policy-only. No real authentication provider, password hashing,
+  reset token generation, session signing, MFA integration, credential storage,
+  production users, secrets, or backend calls were added.
+
 ## Latest Verification
 
-Portal Phase 9 verification:
+Portal Phase 10 verification:
 
 - ESLint: passed
 - TypeScript (`tsc --noEmit`): passed
 - Production build: passed
 - Image verification: 99 WebP images across 12 albums passed
-- Admin `/database-readiness`: returned `200`, rendered planned tables,
-  relationships, indexes, migration order, retention rules, and retained
+- Admin `/auth-readiness`: returned `200`, rendered role permissions, route
+  ownership policies, account lifecycle, session controls, password reset
+  policy, readiness checks, and retained
   `noindex, nofollow`
-- Admin sidebar rendered the Database Readiness navigation item
-- Unauthenticated admin Database Readiness access returned `307` to admin login
-- Cross-role protection: staff access to admin Database Readiness returned to
-  the staff dashboard
+- Admin sidebar rendered the Auth Readiness navigation item
+- Unauthenticated admin Auth Readiness access returned `307` to admin login
+- Cross-role protection: parent access to admin Auth Readiness returned to the
+  parent dashboard
 - Source audit found no fetch, external client, server action, backend form
-  action, environment-secret access, provider integration, ORM dependency, or
-  database client in the new Phase 9 schema and readiness files
+  action, environment-secret access, auth provider integration, password
+  handling, reset token generation, MFA integration, or backend session code in
+  the new Phase 10 auth and readiness files
 
 ## Security and Integration Boundary
 
@@ -255,8 +275,8 @@ Portal Phase 9 verification:
 
 ## Next Phase
 
-The mock-data portal frontend cycle is complete through backend and database
-readiness planning. The next development cycle should scaffold the separate
-Render backend service, choose an ORM/migration tool, or define production auth
-implementation details before replacing any mock frontend controls with live API
-calls.
+The mock-data portal frontend cycle is complete through backend, database, and
+auth readiness planning. The next development cycle should scaffold the
+separate Render backend service, choose an ORM/migration tool, or define payment
+provider integration details before replacing any mock frontend controls with
+live API calls.

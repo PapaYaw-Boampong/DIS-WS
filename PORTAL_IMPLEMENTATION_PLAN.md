@@ -1143,6 +1143,27 @@ Build:
 Do not add Prisma, Drizzle, migration files, a PostgreSQL client, database
 credentials, seed data, or any live backend integration in this phase.
 
+### Phase 10: Authentication and Authorization Readiness
+
+Build:
+
+- `PORTAL_AUTHORIZATION_PLAN.md` as the production auth and authorization policy
+  draft
+- Typed auth planning structures for role permissions, route access policies,
+  account lifecycle, session controls, password reset rules, and readiness
+  checks
+- Mock-safe admin Auth Readiness page showing role scopes, route ownership
+  rules, account lifecycle, session rules, password reset boundaries, and
+  remaining production auth decisions
+- Admin navigation link to the Auth Readiness page
+- Clear production rule that the future backend owns credential verification,
+  role authorization, record ownership, session expiry/revocation, password
+  reset tokens, and auth audit logs
+
+Do not add a real authentication provider, password hashing, reset-token
+generation, session signing, MFA provider, credential storage, secrets, live
+users, or backend calls in this phase.
+
 ---
 
 ## 13. First Codex Prompt for Portal Cycle
@@ -1222,6 +1243,8 @@ The portal MVP is ready when:
 - Admin Backend Readiness page exists
 - Database schema plan document exists
 - Admin Database Readiness page exists
+- Auth and authorization plan document exists
+- Admin Auth Readiness page exists
 - Parent dashboard exists
 - Staff dashboard exists
 - Admin dashboard shell exists
@@ -1258,6 +1281,7 @@ Admin/accounts management UI
 Course workspace and To Do UI
 API contract and backend readiness
 Database schema readiness
+Authentication and authorization readiness
 Backend/database
 Payment provider integration
 Live reconciliation/reporting
