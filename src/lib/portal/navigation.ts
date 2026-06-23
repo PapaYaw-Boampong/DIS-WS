@@ -45,7 +45,12 @@ export const portalNavigation: Record<
       href: portalRoutes.parentFeeding,
       phase: 3,
     },
-    { label: "Transport", icon: "bus", phase: 4 },
+    {
+      label: "Transport",
+      icon: "bus",
+      href: portalRoutes.parentTransport,
+      phase: 4,
+    },
     { label: "Results", icon: "chart", phase: 2 },
     { label: "Messages", icon: "message", phase: 2 },
   ],
@@ -65,7 +70,12 @@ export const portalNavigation: Record<
     { label: "Staff", icon: "users", phase: 6 },
     { label: "Classes", icon: "school", phase: 6 },
     { label: "Fees", icon: "wallet", phase: 6 },
-    { label: "Transport", icon: "bus", phase: 4 },
+    {
+      label: "Transport",
+      icon: "bus",
+      href: portalRoutes.adminTransport,
+      phase: 4,
+    },
     { label: "Announcements", icon: "message", phase: 6 },
   ],
   accounts: [

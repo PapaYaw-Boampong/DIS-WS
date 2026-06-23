@@ -7,6 +7,8 @@ export const portalRoutes = {
   parentFees: "/portal/parent/fees",
   parentPayments: "/portal/parent/payments",
   parentFeeding: "/portal/parent/feeding",
+  parentTransport: "/portal/parent/transport",
+  adminTransport: "/portal/admin/transport",
 } as const;
 
 export function portalLoginForRole(role: PortalRole) {

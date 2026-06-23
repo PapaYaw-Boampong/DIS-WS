@@ -12,7 +12,7 @@ Completed: June 15, 2026
 
 ## Active Development Cycle
 
-**Portal Phase 3: Parent Payments and Fees UI**
+**Portal Phase 4: Transport Tracking UI**
 Status: `complete`
 Completed: June 23, 2026
 
@@ -56,5 +56,4 @@ Phase 8 verification:
 ## Next Phase
 
 The public website has no remaining implementation phase. The next portal task
-is **Portal Phase 4: Transport Tracking UI**, as tracked in
-`PORTAL_STATUS.md`.
+is **Portal Phase 5: Staff Operations UI**, as tracked in `PORTAL_STATUS.md`.

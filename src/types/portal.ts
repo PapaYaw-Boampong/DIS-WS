@@ -136,6 +136,8 @@ export type TransportRoute = {
   readonly id: string;
   readonly routeName: string;
   readonly busName: string;
+  readonly vehicleRegistration: string;
+  readonly capacity: number;
   readonly driverName?: string;
   readonly driverPhone?: string;
   readonly stops: readonly string[];
@@ -155,10 +157,30 @@ export type TransportTrip = {
   readonly id: string;
   readonly routeId: string;
   readonly date: string;
+  readonly direction: "morning" | "afternoon";
   readonly status: TransportTripStatus;
   readonly lastUpdated: string;
   readonly currentLocationLabel?: string;
   readonly nextStop?: string;
+};
+
+export type TransportAssignment = {
+  readonly id: string;
+  readonly studentId: string;
+  readonly routeId: string;
+  readonly pickupPoint: string;
+  readonly dropOffPoint: string;
+  readonly estimatedPickupTime: string;
+  readonly estimatedDropOffTime: string;
+  readonly feeStatus: "unpaid" | "partially_paid" | "paid";
+};
+
+export type TransportNotice = {
+  readonly id: string;
+  readonly title: string;
+  readonly description: string;
+  readonly publishedAt: string;
+  readonly routeId?: string;
 };
 
 export type PortalAnnouncementAudience =

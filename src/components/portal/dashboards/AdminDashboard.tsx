@@ -1,4 +1,5 @@
 import {
+  Bus,
   CalendarDays,
   GraduationCap,
   School,
@@ -28,6 +29,7 @@ import {
   formatPortalDate,
   formatPortalTime,
 } from "@/lib/portal/format";
+import { portalRoutes } from "@/lib/portal/routes";
 
 type AdminDashboardProps = {
   readonly userName: string;
@@ -120,6 +122,12 @@ export function AdminDashboard({ userName }: AdminDashboardProps) {
             description="Open fee configuration and finance summaries."
             icon={<WalletCards aria-hidden="true" className="size-5" />}
             statusLabel="Phase 6"
+          />
+          <QuickActionCard
+            title="Transport"
+            description="Review routes, buses and manually updated trips."
+            icon={<Bus aria-hidden="true" className="size-5" />}
+            href={portalRoutes.adminTransport}
           />
         </div>
       </section>

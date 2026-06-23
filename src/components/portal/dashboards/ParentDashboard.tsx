@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   Bus,
   CalendarDays,
@@ -199,9 +200,9 @@ export function ParentDashboard({
           />
           <QuickActionCard
             title="Transport"
-            description="Detailed trip tracking begins in Phase 4."
+            description="View the assigned route and current trip status."
             icon={<Bus aria-hidden="true" className="size-5" />}
-            statusLabel="Phase 4"
+            href={portalRoutes.parentTransport}
           />
         </div>
       </section>
@@ -248,7 +249,7 @@ export function ParentDashboard({
 
           <DashboardCard
             title="Transport preview"
-            description="Read-only mock status; tracking controls remain Phase 4."
+            description="Latest manually updated mock trip status."
           >
             {route && trip ? (
               <div className="space-y-4">
@@ -267,6 +268,12 @@ export function ParentDashboard({
                     Updated {formatPortalTime(trip.lastUpdated.slice(11, 16))}
                   </p>
                 </div>
+                <Link
+                  href={portalRoutes.parentTransport}
+                  className="inline-flex min-h-10 items-center rounded-full border border-curry-orange px-4 text-sm font-bold text-deep-orange transition-colors hover:bg-soft-cream"
+                >
+                  Open transport tracking
+                </Link>
               </div>
             ) : (
               <p className="text-sm text-muted-grey">

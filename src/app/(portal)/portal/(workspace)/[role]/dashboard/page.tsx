@@ -3,10 +3,10 @@ import { notFound } from "next/navigation";
 
 import { AccountsDashboard } from "@/components/portal/dashboards/AccountsDashboard";
 import { AdminDashboard } from "@/components/portal/dashboards/AdminDashboard";
-import { FoundationDashboard } from "@/components/portal/dashboards/FoundationDashboard";
 import { ParentDashboard } from "@/components/portal/dashboards/ParentDashboard";
 import { StaffDashboard } from "@/components/portal/dashboards/StaffDashboard";
 import { StudentDashboard } from "@/components/portal/dashboards/StudentDashboard";
+import { TransportOperationsDashboard } from "@/components/portal/dashboards/TransportOperationsDashboard";
 import { mockPortalUsers } from "@/data/portal/users";
 import { isPortalRole } from "@/lib/portal/roles";
 
@@ -47,6 +47,11 @@ export default async function PortalDashboardPage({
     case "accounts":
       return <AccountsDashboard userName={user.name} />;
     case "transport":
-      return <FoundationDashboard role={role} />;
+      return (
+        <TransportOperationsDashboard
+          userName={user.name}
+          mode="transport"
+        />
+      );
   }
 }

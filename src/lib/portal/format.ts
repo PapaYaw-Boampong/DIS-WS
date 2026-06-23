@@ -55,3 +55,18 @@ export function formatPaymentMethod(value: string) {
 
   return labels[value] ?? value;
 }
+
+export function formatTransportStatus(value: string) {
+  const labels: Record<string, string> = {
+    not_started: "Not Started",
+    on_route: "On Route",
+    picked_up: "Picked Up",
+    arrived: "Arrived at School",
+    departed: "Departed School",
+    dropped_off: "Dropped Off",
+    delayed: "Delayed",
+    cancelled: "Cancelled",
+  };
+
+  return labels[value] ?? value;
+}
