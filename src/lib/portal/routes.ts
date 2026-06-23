@@ -22,6 +22,7 @@ export const portalRoutes = {
   adminClasses: "/portal/admin/classes",
   adminFees: "/portal/admin/fees",
   adminBackendReadiness: "/portal/admin/backend-readiness",
+  adminDatabaseReadiness: "/portal/admin/database-readiness",
   accountsInvoices: "/portal/accounts/invoices",
   accountsPayments: "/portal/accounts/payments",
   accountsBalances: "/portal/accounts/balances",

@@ -112,6 +112,12 @@ export const portalNavigation: Record<
       phase: 8,
     },
     {
+      label: "Database Readiness",
+      icon: "file",
+      href: portalRoutes.adminDatabaseReadiness,
+      phase: 9,
+    },
+    {
       label: "Transport",
       icon: "bus",
       href: portalRoutes.adminTransport,

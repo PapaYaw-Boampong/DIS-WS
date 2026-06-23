@@ -1124,6 +1124,25 @@ Do not create a real backend service in this phase. Do not connect a database,
 payment provider, file storage provider, notification provider, or Canvas/LMS
 provider. Do not add secrets or live school data to the frontend.
 
+### Phase 9: Database Schema Readiness
+
+Build:
+
+- `PORTAL_DATABASE_SCHEMA_PLAN.md` as the working PostgreSQL schema design plan
+  for the future Render backend
+- Typed schema planning structures for database domains, table specs,
+  relationships, indexes, migration groups, audit levels, sensitivity levels,
+  and retention rules
+- Mock-safe admin Database Readiness page showing planned tables,
+  relationships, indexes, migration order, retention rules, and implementation
+  boundaries
+- Admin navigation link to the Database Readiness page
+- A migration order that starts with identity and audit logs before people,
+  academics, courses, finance, transport, files, and notifications
+
+Do not add Prisma, Drizzle, migration files, a PostgreSQL client, database
+credentials, seed data, or any live backend integration in this phase.
+
 ---
 
 ## 13. First Codex Prompt for Portal Cycle
@@ -1201,6 +1220,8 @@ The portal MVP is ready when:
 - Student and staff Courses pages exist
 - Backend API contract document exists
 - Admin Backend Readiness page exists
+- Database schema plan document exists
+- Admin Database Readiness page exists
 - Parent dashboard exists
 - Staff dashboard exists
 - Admin dashboard shell exists
@@ -1236,6 +1257,7 @@ Transport tracking UI
 Admin/accounts management UI
 Course workspace and To Do UI
 API contract and backend readiness
+Database schema readiness
 Backend/database
 Payment provider integration
 Live reconciliation/reporting

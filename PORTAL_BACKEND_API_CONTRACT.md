@@ -214,6 +214,8 @@ Minimum PostgreSQL areas:
 
 File binaries should live in private object storage, not in PostgreSQL.
 
+The detailed schema draft is tracked in `PORTAL_DATABASE_SCHEMA_PLAN.md`.
+
 ## 8. Audit Requirements
 
 Audit records should capture:

@@ -12,7 +12,7 @@ Completed: June 15, 2026
 
 ## Active Development Cycle
 
-**Portal Phase 8: Backend API Contract and Readiness**
+**Portal Phase 9: Database Schema Readiness**
 Status: `complete`
 Completed: June 23, 2026
 
@@ -56,6 +56,7 @@ Phase 8 verification:
 ## Next Phase
 
 The public website and planned mock-data portal/frontend-readiness phases are
-complete through Phase 8. The next cycle should scaffold the separate Render
-backend service or produce detailed database/schema design before replacing mock
-frontend controls with live API calls, as noted in `PORTAL_STATUS.md`.
+complete through Phase 9. The next cycle should scaffold the separate Render
+backend service, choose an ORM/migration tool, or define production auth details
+before replacing mock frontend controls with live API calls, as noted in
+`PORTAL_STATUS.md`.

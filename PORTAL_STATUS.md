@@ -7,7 +7,7 @@ brief.
 
 ## Current Phase
 
-**Portal Phase 8: Backend API Contract and Readiness**
+**Portal Phase 9: Database Schema Readiness**
 Status: `complete`
 Completed: June 23, 2026
 
@@ -23,6 +23,7 @@ Completed: June 23, 2026
 | Portal Phase 6: Admin and Accounts Control | `complete` | June 23, 2026 | Admin student, parent, staff, class, and fee controls plus accounts invoice, payment, balance, feeding, transport-fee, and reporting views |
 | Portal Phase 7: Course Workspace and To Do Alignment | `complete` | June 23, 2026 | Admin-issued account rule documented, dashboard quick-action blocks removed, student To Do page added, Resources navigation replaced with Canvas-inspired Courses workspaces for students and staff |
 | Portal Phase 8: Backend API Contract and Readiness | `complete` | June 23, 2026 | Render API contract, typed endpoint/service/data ownership definitions, admin backend-readiness view, and implementation order for auth, database, audit, payments, storage, notifications, and optional LMS boundary |
+| Portal Phase 9: Database Schema Readiness | `complete` | June 23, 2026 | PostgreSQL schema plan, typed table/relationship/index/migration/retention map, admin database-readiness view, and schema migration order without adding a database client or live data |
 
 ## Phase 1 Delivered
 
@@ -208,24 +209,41 @@ Completed: June 23, 2026
   provider, file storage, notification service, Canvas/LMS provider, production
   credentials, or live records were connected.
 
+## Phase 9 Delivered
+
+- Added `PORTAL_DATABASE_SCHEMA_PLAN.md` as the working PostgreSQL schema design
+  document for the future Render backend.
+- Added typed schema planning structures for domains, table specs,
+  relationships, indexes, migration groups, audit levels, sensitivity levels,
+  and retention rules.
+- Added a schema contract data module covering identity, academics, courses,
+  finance, transport, files, notifications, and audit-log tables.
+- Added protected `/portal/admin/database-readiness` with planned tables,
+  relationships, indexes, migration order, retention rules, and implementation
+  boundaries.
+- Added the admin sidebar link for Database Readiness.
+- Kept the work design-only. No Prisma, Drizzle, migration files, PostgreSQL
+  client, database URL, seed data, production records, or backend connection was
+  added.
+
 ## Latest Verification
 
-Portal Phase 8 verification:
+Portal Phase 9 verification:
 
 - ESLint: passed
 - TypeScript (`tsc --noEmit`): passed
 - Production build: passed
 - Image verification: 99 WebP images across 12 albums passed
-- Admin `/backend-readiness`: returned `200`, rendered the API contract,
-  service boundary, data ownership, readiness checks, and retained
+- Admin `/database-readiness`: returned `200`, rendered planned tables,
+  relationships, indexes, migration order, retention rules, and retained
   `noindex, nofollow`
-- Admin sidebar rendered the Backend Readiness navigation item
-- Unauthenticated admin Backend Readiness access returned `307` to admin login
-- Cross-role protection: accounts access to admin Backend Readiness returned to
-  the accounts dashboard
+- Admin sidebar rendered the Database Readiness navigation item
+- Unauthenticated admin Database Readiness access returned `307` to admin login
+- Cross-role protection: staff access to admin Database Readiness returned to
+  the staff dashboard
 - Source audit found no fetch, external client, server action, backend form
-  action, environment-secret access, provider integration, or database
-  integration in the new Phase 8 contract and readiness files
+  action, environment-secret access, provider integration, ORM dependency, or
+  database client in the new Phase 9 schema and readiness files
 
 ## Security and Integration Boundary
 
@@ -237,7 +255,8 @@ Portal Phase 8 verification:
 
 ## Next Phase
 
-The mock-data portal frontend cycle is complete through backend contract
-readiness. The next development cycle should either scaffold the separate Render
-backend service or create database/schema design documents before replacing any
-mock frontend controls with live API calls.
+The mock-data portal frontend cycle is complete through backend and database
+readiness planning. The next development cycle should scaffold the separate
+Render backend service, choose an ORM/migration tool, or define production auth
+implementation details before replacing any mock frontend controls with live API
+calls.
