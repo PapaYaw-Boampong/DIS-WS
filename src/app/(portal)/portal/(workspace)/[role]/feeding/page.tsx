@@ -13,6 +13,7 @@ import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { FinancialStatusBadge } from "@/components/portal/FinancialStatusBadge";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { MockPaymentForm } from "@/components/portal/MockPaymentForm";
+import { AccountsFeedingView } from "@/components/portal/dashboards/AccountsFeedingView";
 import {
   mockFeedingBalances,
   mockWalletTransactions,
@@ -22,12 +23,27 @@ import {
   formatPortalDate,
 } from "@/lib/portal/format";
 import { getMockParentPortalContext } from "@/lib/portal/mock-parent";
+import { getMockRoleSession } from "@/lib/portal/mock-role";
 
 export const metadata: Metadata = {
   title: "Feeding",
 };
 
-export default async function ParentFeedingPage() {
+type FeedingPageProps = {
+  readonly params: Promise<{ role: string }>;
+};
+
+export default async function FeedingPage({ params }: FeedingPageProps) {
+  const { role } = await params;
+
+  if (role === "accounts") {
+    if (!(await getMockRoleSession("accounts"))) {
+      notFound();
+    }
+
+    return <AccountsFeedingView />;
+  }
+
   const context = await getMockParentPortalContext();
 
   if (!context) {

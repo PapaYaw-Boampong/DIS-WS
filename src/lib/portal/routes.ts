@@ -14,6 +14,17 @@ export const portalRoutes = {
   staffAssignments: "/portal/staff/assignments",
   staffGradebook: "/portal/staff/gradebook",
   staffResources: "/portal/staff/resources",
+  adminStudents: "/portal/admin/students",
+  adminParents: "/portal/admin/parents",
+  adminStaff: "/portal/admin/staff",
+  adminClasses: "/portal/admin/classes",
+  adminFees: "/portal/admin/fees",
+  accountsInvoices: "/portal/accounts/invoices",
+  accountsPayments: "/portal/accounts/payments",
+  accountsBalances: "/portal/accounts/balances",
+  accountsFeeding: "/portal/accounts/feeding",
+  accountsTransportFees: "/portal/accounts/transport-fees",
+  accountsReports: "/portal/accounts/reports",
 } as const;
 
 export function portalLoginForRole(role: PortalRole) {

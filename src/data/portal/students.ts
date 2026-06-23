@@ -10,6 +10,7 @@ export const mockStudents = [
     className: "Primary 6",
     level: "Primary School",
     parentIds: ["parent-001"],
+    status: "active",
     transportRouteId: "route-east-legon",
     feedingPlan: "termly",
   },
@@ -21,6 +22,7 @@ export const mockStudents = [
     className: "Primary 3",
     level: "Primary School",
     parentIds: ["parent-001"],
+    status: "active",
     feedingPlan: "weekly",
   },
   {
@@ -31,6 +33,7 @@ export const mockStudents = [
     className: "Primary 6",
     level: "Primary School",
     parentIds: [],
+    status: "active",
     feedingPlan: "daily",
   },
   {
@@ -41,6 +44,7 @@ export const mockStudents = [
     className: "Primary 6",
     level: "Primary School",
     parentIds: [],
+    status: "active",
     feedingPlan: "termly",
   },
   {
@@ -51,6 +55,7 @@ export const mockStudents = [
     className: "Primary 6",
     level: "Primary School",
     parentIds: [],
+    status: "inactive",
     feedingPlan: "weekly",
   },
   {
@@ -61,6 +66,7 @@ export const mockStudents = [
     className: "Primary 5",
     level: "Primary School",
     parentIds: [],
+    status: "active",
     feedingPlan: "termly",
   },
   {
@@ -71,6 +77,7 @@ export const mockStudents = [
     className: "Primary 5",
     level: "Primary School",
     parentIds: [],
+    status: "suspended",
     feedingPlan: "none",
   },
   {
@@ -81,6 +88,7 @@ export const mockStudents = [
     className: "JHS 1",
     level: "Junior High School",
     parentIds: [],
+    status: "active",
     feedingPlan: "weekly",
   },
 ] satisfies readonly StudentProfile[];

@@ -16,6 +16,7 @@ import { FinancialStatusBadge } from "@/components/portal/FinancialStatusBadge";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { MockPaymentForm } from "@/components/portal/MockPaymentForm";
 import { ProgressMeter } from "@/components/portal/ProgressMeter";
+import { AdminFeesView } from "@/components/portal/dashboards/AdminFeesView";
 import { mockFeeItems, mockInvoices } from "@/data/portal/fees";
 import {
   formatFeeCategory,
@@ -23,13 +24,28 @@ import {
   formatPortalDate,
 } from "@/lib/portal/format";
 import { getMockParentPortalContext } from "@/lib/portal/mock-parent";
+import { getMockRoleSession } from "@/lib/portal/mock-role";
 import { portalRoutes } from "@/lib/portal/routes";
 
 export const metadata: Metadata = {
   title: "Fees",
 };
 
-export default async function ParentFeesPage() {
+type FeesPageProps = {
+  readonly params: Promise<{ role: string }>;
+};
+
+export default async function FeesPage({ params }: FeesPageProps) {
+  const { role } = await params;
+
+  if (role === "admin") {
+    if (!(await getMockRoleSession("admin"))) {
+      notFound();
+    }
+
+    return <AdminFeesView />;
+  }
+
   const context = await getMockParentPortalContext();
 
   if (!context) {

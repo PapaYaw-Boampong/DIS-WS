@@ -51,6 +51,24 @@ export const mockFeeItems = [
     academicYear: "2026/2027",
     dueDate: "2026-09-18",
   },
+  {
+    id: "fee-books-term-1",
+    title: "Books and Learning Materials",
+    category: "books",
+    amount: 480,
+    term: "Term 1",
+    academicYear: "2026/2027",
+    dueDate: "2026-09-18",
+  },
+  {
+    id: "fee-exam-term-1",
+    title: "Term 1 Examination Fee",
+    category: "exam",
+    amount: 250,
+    term: "Term 1",
+    academicYear: "2026/2027",
+    dueDate: "2026-10-02",
+  },
 ] satisfies readonly FeeItem[];
 
 export const mockInvoices = [
@@ -76,6 +94,26 @@ export const mockInvoices = [
     amountPaid: 5150,
     balance: 0,
     status: "paid",
+    dueDate: "2026-09-18",
+  },
+  {
+    id: "invoice-003",
+    studentId: "student-003",
+    feeItemIds: ["fee-school-term-1", "fee-books-term-1"],
+    totalAmount: 4680,
+    amountPaid: 2000,
+    balance: 2680,
+    status: "partially_paid",
+    dueDate: "2026-09-18",
+  },
+  {
+    id: "invoice-004",
+    studentId: "student-004",
+    feeItemIds: ["fee-school-term-1", "fee-exam-term-1"],
+    totalAmount: 4450,
+    amountPaid: 0,
+    balance: 4450,
+    status: "unpaid",
     dueDate: "2026-09-18",
   },
 ] satisfies readonly Invoice[];

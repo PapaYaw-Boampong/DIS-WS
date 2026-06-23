@@ -12,13 +12,29 @@ import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { StatusBadge } from "@/components/portal/StatusBadge";
+import { AdminClassesView } from "@/components/portal/dashboards/AdminClassesView";
+import { getMockRoleSession } from "@/lib/portal/mock-role";
 import { getMockStaffPortalContext } from "@/lib/portal/mock-staff";
 
 export const metadata: Metadata = {
   title: "My Classes",
 };
 
-export default async function StaffClassesPage() {
+type ClassesPageProps = {
+  readonly params: Promise<{ role: string }>;
+};
+
+export default async function ClassesPage({ params }: ClassesPageProps) {
+  const { role } = await params;
+
+  if (role === "admin") {
+    if (!(await getMockRoleSession("admin"))) {
+      notFound();
+    }
+
+    return <AdminClassesView />;
+  }
+
   const context = await getMockStaffPortalContext();
 
   if (!context) {

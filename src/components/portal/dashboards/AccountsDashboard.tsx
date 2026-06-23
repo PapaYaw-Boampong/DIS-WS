@@ -24,6 +24,7 @@ import {
   formatPortalCurrency,
   formatPortalDate,
 } from "@/lib/portal/format";
+import { portalRoutes } from "@/lib/portal/routes";
 
 type AccountsDashboardProps = {
   readonly userName: string;
@@ -58,8 +59,8 @@ export function AccountsDashboard({ userName }: AccountsDashboardProps) {
       <DashboardHeader
         eyebrow="Finance overview"
         title={`Welcome back, ${userName.split(" ")[0]}`}
-        description="Review fictional collection indicators and transaction summaries before finance management tools are built."
-        badge="Accounts shell"
+        description="Review fictional collection indicators and open invoice, payment, balance, and reporting controls."
+        badge="Accounts controls"
       />
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
@@ -98,19 +99,19 @@ export function AccountsDashboard({ userName }: AccountsDashboardProps) {
             title="Invoices"
             description="Review and assign fee invoices."
             icon={<FileText aria-hidden="true" className="size-5" />}
-            statusLabel="Phase 6"
+            href={portalRoutes.accountsInvoices}
           />
           <QuickActionCard
             title="Payments"
             description="Review transaction and manual payment records."
             icon={<ReceiptText aria-hidden="true" className="size-5" />}
-            statusLabel="Phase 6"
+            href={portalRoutes.accountsPayments}
           />
           <QuickActionCard
             title="Balances"
             description="Filter outstanding balances by class and student."
             icon={<WalletCards aria-hidden="true" className="size-5" />}
-            statusLabel="Phase 6"
+            href={portalRoutes.accountsBalances}
           />
           <QuickActionCard
             title="Reports"
@@ -121,7 +122,7 @@ export function AccountsDashboard({ userName }: AccountsDashboardProps) {
                 className="size-5"
               />
             }
-            statusLabel="Phase 6"
+            href={portalRoutes.accountsReports}
           />
         </div>
       </section>

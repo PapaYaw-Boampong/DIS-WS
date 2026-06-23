@@ -12,7 +12,7 @@ Completed: June 15, 2026
 
 ## Active Development Cycle
 
-**Portal Phase 5: Staff Operations UI**
+**Portal Phase 6: Admin and Accounts Control**
 Status: `complete`
 Completed: June 23, 2026
 
@@ -55,6 +55,7 @@ Phase 8 verification:
 
 ## Next Phase
 
-The public website has no remaining implementation phase. The next portal task
-is **Portal Phase 6: Admin and Accounts Control**, as tracked in
+The public website and planned mock-data portal UI phases are complete. The
+next cycle is backend/API, production authentication, database, storage,
+notifications, and payment-provider integration planning, as noted in
 `PORTAL_STATUS.md`.

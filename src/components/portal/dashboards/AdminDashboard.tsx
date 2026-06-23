@@ -63,8 +63,8 @@ export function AdminDashboard({ userName }: AdminDashboardProps) {
       <DashboardHeader
         eyebrow="School operations"
         title={`Welcome back, ${userName.split(" ")[0]}`}
-        description="Review school-wide mock indicators before management pages and operational controls are introduced."
-        badge="Admin shell"
+        description="Review school-wide mock indicators and open administrative people, class, fee, and transport controls."
+        badge="Admin controls"
       />
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
@@ -103,25 +103,25 @@ export function AdminDashboard({ userName }: AdminDashboardProps) {
             title="Student records"
             description="Manage enrolment and learner profiles."
             icon={<GraduationCap aria-hidden="true" className="size-5" />}
-            statusLabel="Phase 6"
+            href={portalRoutes.adminStudents}
           />
           <QuickActionCard
             title="People"
             description="Manage parent and staff accounts."
             icon={<Users aria-hidden="true" className="size-5" />}
-            statusLabel="Phase 6"
+            href={portalRoutes.adminParents}
           />
           <QuickActionCard
-            title="Admissions"
-            description="Review pending admission records."
+            title="Staff"
+            description="Review staff accounts and assignments."
             icon={<UserPlus aria-hidden="true" className="size-5" />}
-            statusLabel="Phase 6"
+            href={portalRoutes.adminStaff}
           />
           <QuickActionCard
             title="Fees overview"
             description="Open fee configuration and finance summaries."
             icon={<WalletCards aria-hidden="true" className="size-5" />}
-            statusLabel="Phase 6"
+            href={portalRoutes.adminFees}
           />
           <QuickActionCard
             title="Transport"

@@ -33,6 +33,7 @@ export type StudentProfile = {
   readonly className: string;
   readonly level: string;
   readonly parentIds: readonly string[];
+  readonly status: PortalAccountStatus;
   readonly transportRouteId?: string;
   readonly feedingPlan?: "none" | "daily" | "weekly" | "termly";
 };
@@ -44,6 +45,7 @@ export type ParentProfile = {
   readonly phone: string;
   readonly email: string;
   readonly childIds: readonly string[];
+  readonly status: PortalAccountStatus;
 };
 
 export type StaffProfile = {
@@ -54,6 +56,7 @@ export type StaffProfile = {
   readonly title: string;
   readonly classIds: readonly string[];
   readonly subjectIds: readonly string[];
+  readonly status: PortalAccountStatus;
 };
 
 export type FeeCategory =

@@ -14,6 +14,7 @@ import { FinancialStatusBadge } from "@/components/portal/FinancialStatusBadge";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { MockPaymentForm } from "@/components/portal/MockPaymentForm";
 import { ReceiptPlaceholderButton } from "@/components/portal/ReceiptPlaceholderButton";
+import { AccountsPaymentsView } from "@/components/portal/dashboards/AccountsPaymentsView";
 import { mockPayments } from "@/data/portal/payments";
 import {
   formatFeeCategory,
@@ -22,12 +23,27 @@ import {
   formatPortalDate,
 } from "@/lib/portal/format";
 import { getMockParentPortalContext } from "@/lib/portal/mock-parent";
+import { getMockRoleSession } from "@/lib/portal/mock-role";
 
 export const metadata: Metadata = {
   title: "Payment History",
 };
 
-export default async function ParentPaymentsPage() {
+type PaymentsPageProps = {
+  readonly params: Promise<{ role: string }>;
+};
+
+export default async function PaymentsPage({ params }: PaymentsPageProps) {
+  const { role } = await params;
+
+  if (role === "accounts") {
+    if (!(await getMockRoleSession("accounts"))) {
+      notFound();
+    }
+
+    return <AccountsPaymentsView />;
+  }
+
   const context = await getMockParentPortalContext();
 
   if (!context) {

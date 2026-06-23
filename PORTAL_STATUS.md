@@ -7,7 +7,7 @@ brief.
 
 ## Current Phase
 
-**Portal Phase 5: Staff Operations UI**
+**Portal Phase 6: Admin and Accounts Control**
 Status: `complete`
 Completed: June 23, 2026
 
@@ -20,7 +20,7 @@ Completed: June 23, 2026
 | Portal Phase 3: Parent Payments and Fees UI | `complete` | June 23, 2026 | Parent fee summaries, invoice list, payment history, receipt placeholders, feeding balances and ledger, transport-fee category, and advance-payment previews |
 | Portal Phase 4: Transport Tracking UI | `complete` | June 23, 2026 | Parent assigned-route tracking, trip timeline, pickup/drop-off and fee details, plus admin and transport-role route oversight with manual status-update previews |
 | Portal Phase 5: Staff Operations UI | `complete` | June 23, 2026 | Staff class and roster views, attendance marking, assignment management, gradebook records, and resource-upload previews using fictional data |
-| Portal Phase 6: Admin and Accounts Control | `not started` | - | People management, fee setup, invoices, payments, balances, and reports |
+| Portal Phase 6: Admin and Accounts Control | `complete` | June 23, 2026 | Admin student, parent, staff, class, and fee controls plus accounts invoice, payment, balance, feeding, transport-fee, and reporting views |
 
 ## Phase 1 Delivered
 
@@ -126,23 +126,61 @@ Completed: June 23, 2026
 - Attendance, assignment, grade, and resource forms perform no fetch, backend
   write, notification, student-result update, or file upload.
 
+## Phase 6 Delivered
+
+- Protected admin student-management page with account states, class and parent
+  links, and a local student-account creation preview.
+- Protected admin parent-management page with contact details, child
+  relationships, account states, and parent-account creation preview.
+- Protected admin staff-management page with roles, class and subject
+  assignments, account states, and staff-account creation preview.
+- Admin class-management view integrated into the existing role-aware class
+  route with class totals, teacher assignments, sample rosters, and class setup
+  preview.
+- Admin fee-item setup integrated into the existing role-aware fee route with
+  category, term, academic year, amount, due date, and fee creation preview.
+- Protected accounts invoice page with invoice status, balances, due dates, and
+  student fee-assignment preview.
+- Accounts payment management integrated into the existing role-aware payment
+  route with successful, pending, and failed transaction records plus manual
+  payment preview.
+- Protected balances page with student, class, invoiced, paid, outstanding, and
+  status records.
+- Accounts feeding management integrated into the existing role-aware feeding
+  route with wallet, top-up, balance, and low-balance summaries.
+- Protected transport-fee page with route, bus, charge, paid, balance, and fee
+  status records.
+- Protected reports overview with collection metrics, category progress, and
+  CSV/PDF/Excel export placeholders.
+- Admin and accounts dashboards and sidebars now link to all Phase 6 controls.
+- Expanded fictional people, fee, invoice, and payment datasets to exercise
+  active, inactive, suspended, paid, partial, unpaid, pending, and failed
+  states.
+- All creation, assignment, payment, and export controls are browser-only
+  previews with no credential creation, database write, reconciliation,
+  provider call, email, or file generation.
+
 ## Latest Verification
 
-Portal Phase 5 verification:
+Portal Phase 6 verification:
 
 - ESLint: passed
 - TypeScript (`tsc --noEmit`): passed
 - Production build: passed
 - Image verification: 99 WebP images across 12 albums passed
-- Staff `/classes`, `/attendance`, `/assignments`, `/gradebook`, and
-  `/resources`: returned `200`, rendered required Phase 5 content, and retained
+- Admin `/students`, `/parents`, `/staff`, `/classes`, and `/fees`: returned
+  `200`, rendered the expected management content, and retained
   `noindex, nofollow`
-- Unauthenticated staff attendance: returned `307` to staff login
-- Cross-role protection: a student session requesting staff gradebook was
-  redirected to the student dashboard
-- Phase 3 regression: parent fees returned `200` and retained invoice content
-- Operation boundary: route content identifies all mutation controls as
-  previews; source audit found no fetch or backend action in Phase 5 forms
+- Accounts `/invoices`, `/payments`, `/balances`, `/feeding`,
+  `/transport-fees`, and `/reports`: returned `200`, rendered the expected
+  finance controls, and retained `noindex, nofollow`
+- Unauthenticated admin students: returned `307` to admin login
+- Cross-role protection: parent access to admin fees returned to the parent
+  dashboard; admin access to accounts reports returned to the admin dashboard
+- Shared-route regressions: parent fees and staff classes returned `200` with
+  their original role-specific content
+- Operation boundary: source audit found no fetch, external client, server
+  action, or backend form action in Phase 6 preview controls
 
 ## Security and Integration Boundary
 
@@ -154,7 +192,10 @@ Portal Phase 5 verification:
 
 ## Next Phase
 
-**Portal Phase 6: Admin and Accounts Control**
+No additional portal UI implementation phase remains in the current plan.
 
-Build student, parent, and staff management, fee setup, invoice and payment
-management, balances, and reports using mock data only.
+The mock-data portal frontend cycle is complete. The next development cycle
+should define the Render API contract, production authentication and
+authorization, PostgreSQL schema, audit logging, secure file storage,
+notification services, and payment-provider integration before replacing the
+mock controls.
