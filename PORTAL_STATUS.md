@@ -7,7 +7,7 @@ brief.
 
 ## Current Phase
 
-**Portal Phase 12: Secure File Storage Readiness**
+**Portal Phase 13: Parent Portal UX Polish and Tracking Readiness**
 Status: `complete`
 Completed: June 25, 2026
 
@@ -27,6 +27,7 @@ Completed: June 25, 2026
 | Portal Phase 10: Authentication and Authorization Readiness | `complete` | June 23, 2026 | Production auth policy plan, typed role/route/session/account-lifecycle/password-reset maps, admin auth-readiness view, and backend-owned authorization boundaries without adding real credentials or auth provider code |
 | Portal Phase 11: Payment Provider and Reconciliation Readiness | `complete` | June 23, 2026 | Payment-provider policy plan, typed provider/flow/ledger/webhook/reconciliation/receipt maps, admin/accounts payment-readiness view, and backend-owned payment boundaries without adding provider SDKs, keys, or live payments |
 | Portal Phase 12: Secure File Storage Readiness | `complete` | June 25, 2026 | Private file storage policy plan, typed provider/category/flow/access/security/readiness maps, admin storage-readiness view, and backend-owned storage boundaries without adding provider SDKs, keys, signed URLs, upload endpoints, or live files |
+| Portal Phase 13: Parent Portal UX Polish and Tracking Readiness | `complete` | June 25, 2026 | Smooth portal page transitions, dashboard title bounce, cleaned parent dashboard, parent Events page, grouped Fees navigation, ward-filtered finance pages, backend-gated Pay Now route, mock map-style transport tracking, and local-only pickup/drop-off preferences |
 
 ## Phase 1 Delivered
 
@@ -287,25 +288,57 @@ Completed: June 25, 2026
   integration, backend call, live file upload, live file download, or production
   file metadata was added.
 
+## Phase 13 Delivered
+
+- Added smooth portal route-enter animation and dashboard title bounce while
+  preserving reduced-motion behavior.
+- Removed the parent dashboard Messages metric card and dashboard Upcoming
+  Events side card.
+- Added the parent message count to the header notification control.
+- Added protected `/portal/parent/events` as the dedicated parent Events page.
+- Grouped parent finance navigation under Fees with Overview, Pay Now, Payment
+  History, and Feeding Wallet subtabs.
+- Added ward filtering to parent Fees Overview, Pay Now, Payment History, and
+  Feeding Wallet views.
+- Added protected `/portal/parent/fees/pay` as the prominent Pay Now route while
+  keeping checkout backend-gated.
+- Updated parent payment copy so payment action is prominent without implying a
+  frontend payment provider is connected.
+- Added mock route coordinates, a map-style transport tracking panel, and
+  local-only pickup/drop-off preference controls.
+- Kept the work frontend-only. No payment provider SDK, checkout script,
+  provider key, map provider key, GPS feed, backend call, live payment write,
+  invoice mutation, transport assignment write, notification, or audit-log write
+  was added.
+
 ## Latest Verification
 
-Portal Phase 12 verification:
+Portal Phase 13 verification:
 
 - ESLint: passed
 - TypeScript (`tsc --noEmit`): passed
 - Production build: passed
 - Image verification: 99 WebP images across 12 albums passed
-- Admin `/storage-readiness`: returned `200`, rendered storage provider options,
-  file categories, upload/download flow, access rules, security controls,
-  readiness checks, the Storage Readiness navigation item, and retained
-  `noindex, nofollow`
-- Unauthenticated admin Storage Readiness access returned `307` to admin login
-- Cross-role protection: parent access to admin Storage Readiness returned to
-  the parent dashboard
+- Parent dashboard returned `200`, rendered no Messages metric card, rendered no
+  Upcoming Events side card, and retained the notification badge.
+- Parent Events returned `200` for a parent session and unauthenticated Events
+  access returned `307` to parent login.
+- Parent Fees Overview returned `200` with the expandable Fees navigation group,
+  ward selector, filtered invoice list, Pay Now link, and no Total Invoiced or
+  Payment Progress cards.
+- Parent Pay Now returned `200`, rendered Start secure payment and backend
+  checkout-required copy, and made no provider/backend call.
+- Parent Payment History returned `200` as a history-only page with ward filter
+  and no payment form.
+- Parent Feeding Wallet returned `200` with ward filter and backend-gated
+  feeding payment copy.
+- Parent Transport returned `200` with the map-style tracking panel and
+  pickup/drop-off preference controls.
 - Source audit found no fetch, external client, server action, backend form
-  action, environment-secret access, provider SDK/client initialization, live
-  signed URL generation, upload intent call, download URL call, or live storage
-  integration in the new Phase 12 storage and readiness files
+  action, environment-secret access, payment provider SDK/client initialization,
+  checkout script, provider key, map provider SDK/key, GPS feed, live payment
+  write, invoice mutation, transport assignment write, notification send, or
+  audit-log write in the new Phase 13 parent portal files
 
 ## Security and Integration Boundary
 
@@ -318,7 +351,8 @@ Portal Phase 12 verification:
 ## Next Phase
 
 The mock-data portal frontend cycle is complete through backend, database, auth,
-payment, and secure file-storage readiness planning. The next development cycle
-should scaffold the separate Render backend service, choose an ORM/migration
-tool, or define notification integration details before replacing any mock
-frontend controls with live API calls.
+payment, secure file-storage readiness planning, parent UX polish, and transport
+tracking readiness. The next development cycle should scaffold the separate
+Render backend service, choose an ORM/migration tool, connect a payment
+provider through backend-owned checkout/webhooks, or design the GPS/location
+feed before replacing any mock frontend controls with live API calls.

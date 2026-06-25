@@ -145,6 +145,13 @@ export type TransportRoute = {
   readonly driverName?: string;
   readonly driverPhone?: string;
   readonly stops: readonly string[];
+  readonly stopCoordinates?: readonly TransportMapPoint[];
+};
+
+export type TransportMapPoint = {
+  readonly label: string;
+  readonly x: number;
+  readonly y: number;
 };
 
 export type TransportTripStatus =
@@ -165,6 +172,7 @@ export type TransportTrip = {
   readonly status: TransportTripStatus;
   readonly lastUpdated: string;
   readonly currentLocationLabel?: string;
+  readonly currentLocationPoint?: TransportMapPoint;
   readonly nextStop?: string;
 };
 
@@ -355,4 +363,5 @@ export type PortalNavigationItem = {
   readonly icon: PortalNavigationIcon;
   readonly href?: string;
   readonly phase: number;
+  readonly children?: readonly PortalNavigationItem[];
 };

@@ -12,6 +12,8 @@ import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { FinancialStatusBadge } from "@/components/portal/FinancialStatusBadge";
 import { MetricCard } from "@/components/portal/MetricCard";
+import { MockTransportPreferenceForm } from "@/components/portal/MockTransportPreferenceForm";
+import { TransportMapPreview } from "@/components/portal/TransportMapPreview";
 import { TransportStatusBadge } from "@/components/portal/TransportStatusBadge";
 import { TripTimeline } from "@/components/portal/TripTimeline";
 import { mockFeeItems, mockInvoices } from "@/data/portal/fees";
@@ -39,9 +41,7 @@ export function ParentTransportDashboard({
   const assignment = mockTransportAssignments.find((item) =>
     students.some((student) => student.id === item.studentId),
   );
-  const student = students.find(
-    (item) => item.id === assignment?.studentId,
-  );
+  const student = students.find((item) => item.id === assignment?.studentId);
   const route = mockTransportRoutes.find(
     (item) => item.id === assignment?.routeId,
   );
@@ -53,8 +53,7 @@ export function ParentTransportDashboard({
   );
   const transportFeeItem = mockFeeItems.find(
     (item) =>
-      item.category === "transport" &&
-      invoice?.feeItemIds.includes(item.id),
+      item.category === "transport" && invoice?.feeItemIds.includes(item.id),
   );
   const transportPaid = mockPayments
     .filter(
@@ -95,8 +94,8 @@ export function ParentTransportDashboard({
       <DashboardHeader
         eyebrow={`${student.fullName} · ${route.routeName}`}
         title="Transport tracking"
-        description="Review the assigned bus, pickup and drop-off details, manually updated trip status and transport fee summary."
-        badge="Manual mock tracking"
+        description="Review map-style mock tracking, assigned bus details, pickup/drop-off preferences, and transport fee status."
+        badge="Provider-ready mock map"
       />
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
@@ -129,8 +128,15 @@ export function ParentTransportDashboard({
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.2fr)_minmax(20rem,0.8fr)]">
         <div className="space-y-8">
           <DashboardCard
+            title="Live tracking map"
+            description="Mock route coordinates only. No map provider, GPS feed, or backend transport API is connected."
+          >
+            <TransportMapPreview route={route} trip={trip} />
+          </DashboardCard>
+
+          <DashboardCard
             title="Current trip"
-            description="Status is manually maintained mock data, not live GPS."
+            description="Status is manually maintained mock data while the future backend GPS feed is planned."
           >
             <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
               <div>
@@ -202,6 +208,17 @@ export function ParentTransportDashboard({
                 </p>
               </div>
             </div>
+          </DashboardCard>
+
+          <DashboardCard
+            title="Pickup and drop-off preferences"
+            description="Parents can choose preferred route stops locally. Production changes require transport-office approval."
+          >
+            <MockTransportPreferenceForm
+              stops={route.stops}
+              defaultPickup={assignment.pickupPoint}
+              defaultDropOff={assignment.dropOffPoint}
+            />
           </DashboardCard>
         </div>
 

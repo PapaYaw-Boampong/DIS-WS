@@ -19,7 +19,7 @@ export function DashboardHeader({
         <p className="text-sm font-bold tracking-[0.14em] text-curry-orange uppercase">
           {eyebrow}
         </p>
-        <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.04em] text-charcoal sm:text-4xl">
+        <h1 className="portal-title-bounce mt-2 text-3xl font-extrabold tracking-[-0.04em] text-charcoal sm:text-4xl">
           {title}
         </h1>
         <p className="mt-3 max-w-2xl leading-7 text-muted-grey">

@@ -179,6 +179,8 @@ a separate backend adapter.
 Payment provider secrets and webhook verification must stay on the backend.
 The detailed payment-provider and reconciliation policy is tracked in
 `PORTAL_PAYMENT_INTEGRATION_PLAN.md`.
+The Phase 13 parent Pay Now page remains frontend-only until this backend
+initialization/webhook flow exists.
 
 ### Transport
 
@@ -188,7 +190,14 @@ The detailed payment-provider and reconciliation policy is tracked in
 | `POST` | `/v1/transport/routes` | Create/update route | admin, transport |
 | `GET` | `/v1/transport/trips/current` | Return current trip statuses | parent scoped, admin, transport |
 | `PATCH` | `/v1/transport/trips/{tripId}` | Update manual trip status | admin, transport |
+| `PATCH` | `/v1/transport/assignments/{assignmentId}/preferences` | Submit parent pickup/drop-off preference for review | parent scoped |
 | `POST` | `/v1/transport/announcements` | Publish route notice | admin, transport |
+
+Production live tracking should add backend-owned GPS/location ingestion,
+route-stop coordinates, current vehicle coordinates, parent-visible polling or
+streaming rules, pickup/drop-off preference approval, notification triggers, and
+audit logging. The Vercel frontend must not contain map provider keys or write
+transport assignment changes directly.
 
 ### Files and Notifications
 

@@ -15,6 +15,11 @@ export const mockTransportRoutes = [
     driverName: "Kwame Asare",
     driverPhone: "+233 20 000 0002",
     stops: ["Lakeside Junction", "American House", "School Campus"],
+    stopCoordinates: [
+      { label: "Lakeside Junction", x: 16, y: 74 },
+      { label: "American House", x: 54, y: 46 },
+      { label: "School Campus", x: 84, y: 24 },
+    ],
   },
   {
     id: "route-adenta",
@@ -25,6 +30,11 @@ export const mockTransportRoutes = [
     driverName: "Esi Tetteh",
     driverPhone: "+233 20 000 0003",
     stops: ["Adenta Barrier", "Frafraha", "School Campus"],
+    stopCoordinates: [
+      { label: "Adenta Barrier", x: 18, y: 68 },
+      { label: "Frafraha", x: 50, y: 42 },
+      { label: "School Campus", x: 82, y: 22 },
+    ],
   },
   {
     id: "route-spintex",
@@ -35,6 +45,11 @@ export const mockTransportRoutes = [
     driverName: "Joseph Nartey",
     driverPhone: "+233 20 000 0004",
     stops: ["Baatsona", "Flower Pot", "School Campus"],
+    stopCoordinates: [
+      { label: "Baatsona", x: 14, y: 76 },
+      { label: "Flower Pot", x: 52, y: 56 },
+      { label: "School Campus", x: 84, y: 26 },
+    ],
   },
 ] satisfies readonly TransportRoute[];
 
@@ -47,6 +62,7 @@ export const mockTransportTrips = [
     status: "on_route",
     lastUpdated: "2026-06-23T07:15:00.000Z",
     currentLocationLabel: "American House",
+    currentLocationPoint: { label: "American House", x: 54, y: 46 },
     nextStop: "School Campus",
   },
   {
@@ -57,6 +73,7 @@ export const mockTransportTrips = [
     status: "arrived",
     lastUpdated: "2026-06-23T07:35:00.000Z",
     currentLocationLabel: "School Campus",
+    currentLocationPoint: { label: "School Campus", x: 82, y: 22 },
   },
   {
     id: "trip-spintex-001",
@@ -66,6 +83,7 @@ export const mockTransportTrips = [
     status: "delayed",
     lastUpdated: "2026-06-23T07:10:00.000Z",
     currentLocationLabel: "Flower Pot",
+    currentLocationPoint: { label: "Flower Pot", x: 52, y: 56 },
     nextStop: "School Campus",
   },
 ] satisfies readonly TransportTrip[];

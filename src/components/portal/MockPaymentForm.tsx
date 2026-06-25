@@ -20,13 +20,16 @@ type MockPaymentFormProps = {
   readonly categories: readonly PaymentCategory[];
   readonly defaultCategory?: string;
   readonly title?: string;
+  readonly notice?: string;
+  readonly submitLabel?: string;
 };
 
 export function MockPaymentForm({
   students,
   categories,
   defaultCategory,
-  title = "Payment preview",
+  notice = "Secure payment is prepared here, but no payment provider, mobile money prompt, card charge, or backend request will start until the Render payment API is connected.",
+  submitLabel = "Start secure payment",
 }: MockPaymentFormProps) {
   const [amount, setAmount] = useState("500");
   const [preview, setPreview] = useState<string | null>(null);
@@ -49,7 +52,7 @@ export function MockPaymentForm({
     }
 
     setPreview(
-      `${formatPortalCurrency(numericAmount)} ${category.label.toLowerCase()} payment for ${child.name} by ${method}. This preview was not submitted.`,
+      `${formatPortalCurrency(numericAmount)} ${category.label.toLowerCase()} payment for ${child.name} by ${method} is ready for backend-secured checkout. No payment was submitted or recorded.`,
     );
   }
 
@@ -57,10 +60,7 @@ export function MockPaymentForm({
     <div>
       <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
         <CircleAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
-        <p>
-          Preview only. No payment provider, mobile money prompt, card charge,
-          or backend request will be started.
-        </p>
+        <p>{notice}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-5">
@@ -126,7 +126,7 @@ export function MockPaymentForm({
           className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-curry-orange px-6 font-bold text-white transition-colors hover:bg-deep-orange"
         >
           <CreditCard aria-hidden="true" className="size-5" />
-          Preview {title.toLowerCase()}
+          {submitLabel}
         </button>
       </form>
 

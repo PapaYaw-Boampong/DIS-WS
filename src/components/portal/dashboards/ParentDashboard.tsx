@@ -1,23 +1,17 @@
 import Link from "next/link";
-import {
-  CalendarDays,
-  MessageSquare,
-  Users,
-  WalletCards,
-} from "lucide-react";
+import { CalendarDays, Users, WalletCards } from "lucide-react";
 
 import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { NoticeList } from "@/components/portal/NoticeList";
-import { ProgressMeter } from "@/components/portal/ProgressMeter";
 import { StatusBadge } from "@/components/portal/StatusBadge";
 import {
   mockAttendance,
   mockResults,
 } from "@/data/portal/academics";
-import { mockAnnouncements, mockPortalEvents } from "@/data/portal/announcements";
+import { mockAnnouncements } from "@/data/portal/announcements";
 import { mockInvoices } from "@/data/portal/fees";
 import { mockParents } from "@/data/portal/parents";
 import { mockPayments } from "@/data/portal/payments";
@@ -55,10 +49,12 @@ export function ParentDashboard({
   const childAttendance = mockAttendance.filter((item) =>
     parent.childIds.includes(item.studentId),
   );
-  const combinedAttendance = Math.round(
-    childAttendance.reduce((total, item) => total + item.percentage, 0) /
-      childAttendance.length,
-  );
+  const combinedAttendance = childAttendance.length
+    ? Math.round(
+        childAttendance.reduce((total, item) => total + item.percentage, 0) /
+          childAttendance.length,
+      )
+    : 0;
   const invoices = mockInvoices.filter((invoice) =>
     parent.childIds.includes(invoice.studentId),
   );
@@ -66,18 +62,7 @@ export function ParentDashboard({
     (total, invoice) => total + invoice.balance,
     0,
   );
-  const totalInvoiced = invoices.reduce(
-    (total, invoice) => total + invoice.totalAmount,
-    0,
-  );
-  const totalPaid = invoices.reduce(
-    (total, invoice) => total + invoice.amountPaid,
-    0,
-  );
   const announcements = mockAnnouncements.filter(
-    (item) => item.audience === "all" || item.audience === "parent",
-  );
-  const events = mockPortalEvents.filter(
     (item) => item.audience === "all" || item.audience === "parent",
   );
   const transportStudent = children.find((student) => student.transportRouteId);
@@ -114,21 +99,23 @@ export function ParentDashboard({
     };
   });
 
-  const paymentRows: readonly DataTableRow[] = mockPayments.map((payment) => {
-    const student = children.find((item) => item.id === payment.studentId);
+  const paymentRows: readonly DataTableRow[] = mockPayments
+    .filter((payment) => parent.childIds.includes(payment.studentId))
+    .map((payment) => {
+      const student = children.find((item) => item.id === payment.studentId);
 
-    return {
-      id: payment.id,
-      cells: [
-        student?.fullName ?? "Student",
-        formatPortalDate(payment.paidAt.slice(0, 10)),
-        formatPortalCurrency(payment.amount),
-        <StatusBadge key={payment.id} variant="success">
-          Successful
-        </StatusBadge>,
-      ],
-    };
-  });
+      return {
+        id: payment.id,
+        cells: [
+          student?.fullName ?? "Student",
+          formatPortalDate(payment.paidAt.slice(0, 10)),
+          formatPortalCurrency(payment.amount),
+          <StatusBadge key={payment.id} variant="success">
+            Successful
+          </StatusBadge>,
+        ],
+      };
+    });
 
   return (
     <>
@@ -139,7 +126,7 @@ export function ParentDashboard({
         badge="Parent mock data"
       />
 
-      <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         <MetricCard
           label="Linked children"
           value={String(children.length)}
@@ -155,14 +142,8 @@ export function ParentDashboard({
         <MetricCard
           label="Attendance"
           value={`${combinedAttendance}%`}
-          detail="Combined current term"
+          detail="Current attendance"
           icon={<CalendarDays aria-hidden="true" className="size-5" />}
-        />
-        <MetricCard
-          label="Messages"
-          value="3"
-          detail="Mock unread count"
-          icon={<MessageSquare aria-hidden="true" className="size-5" />}
         />
       </div>
 
@@ -181,16 +162,22 @@ export function ParentDashboard({
 
           <DashboardCard
             title="Fees snapshot"
-            description="This is a read-only preview. Payment actions are not connected."
+            description="Review recent payments and open the grouped Fees area to pay or inspect balances."
           >
-            <ProgressMeter
-              label="Invoice payment progress"
-              value={
-                totalInvoiced ? Math.round((totalPaid / totalInvoiced) * 100) : 0
-              }
-              detail={`${formatPortalCurrency(totalPaid)} paid of ${formatPortalCurrency(totalInvoiced)}`}
-              tone="green"
-            />
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href={portalRoutes.parentFeesPay}
+                className="inline-flex min-h-11 items-center rounded-full bg-curry-orange px-5 text-sm font-bold text-white transition-colors hover:bg-deep-orange"
+              >
+                Pay now
+              </Link>
+              <Link
+                href={portalRoutes.parentFees}
+                className="inline-flex min-h-11 items-center rounded-full border border-border px-5 text-sm font-bold text-charcoal transition-colors hover:bg-soft-white"
+              >
+                Open fees
+              </Link>
+            </div>
             <div className="mt-6">
               <DataTable
                 caption="Recent parent payments"
@@ -239,23 +226,6 @@ export function ParentDashboard({
                 No transport route is assigned.
               </p>
             )}
-          </DashboardCard>
-
-          <DashboardCard title="Upcoming events">
-            <ul className="space-y-3">
-              {events.map((event) => (
-                <li
-                  key={event.id}
-                  className="rounded-2xl border border-border bg-soft-white p-4"
-                >
-                  <p className="font-bold text-charcoal">{event.title}</p>
-                  <p className="mt-1 text-sm text-muted-grey">
-                    {formatPortalDate(event.date)}
-                    {event.time ? ` · ${formatPortalTime(event.time)}` : ""}
-                  </p>
-                </li>
-              ))}
-            </ul>
           </DashboardCard>
         </div>
       </div>

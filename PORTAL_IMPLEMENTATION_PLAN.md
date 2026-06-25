@@ -1207,6 +1207,29 @@ endpoints, signed URL generation, malware scanning integrations, backend calls,
 live file uploads, live file downloads, or production file metadata in this
 phase.
 
+### Phase 13: Parent Portal UX Polish and Tracking Readiness
+
+Build:
+
+- Smooth portal route-enter animation and subtle dashboard title bounce using
+  existing CSS/Tailwind only, with reduced-motion support
+- Parent dashboard cleanup: remove Messages metric card, move the count to the
+  notification control, remove the dashboard Upcoming Events side card, and add
+  a dedicated parent Events page
+- Group parent finance navigation under Fees with Overview, Pay Now, Payment
+  History, and Feeding Wallet subtabs
+- Ward selector for parent finance pages so guardians can focus all wards or a
+  single linked child
+- Prominent Pay Now route that prepares a backend-secured payment flow without
+  charging, creating payment records, or changing balances
+- Map-style mock transport tracking with route stop coordinates, bus marker,
+  current location, next stop, and last update
+- Local-only parent pickup/drop-off preference controls
+
+Do not add payment provider SDKs, checkout scripts, provider keys, map provider
+keys, GPS feeds, backend calls, live payment writes, invoice mutations,
+transport assignment writes, notifications, or audit-log writes in this phase.
+
 ---
 
 ## 13. First Codex Prompt for Portal Cycle
@@ -1297,7 +1320,9 @@ The portal MVP is ready when:
 - Admin dashboard shell exists
 - Accounts dashboard shell exists
 - Parent fees page exists
+- Parent Pay Now page exists
 - Parent payment history page exists
+- Parent Events page exists
 - Feeding balance UI exists
 - Transport tracking page exists
 - Shared portal layout is reusable
@@ -1331,6 +1356,7 @@ Database schema readiness
 Authentication and authorization readiness
 Payment provider and reconciliation readiness
 Secure file storage readiness
+Parent portal UX polish and tracking readiness
 Backend/database
 Payment provider integration
 Live reconciliation/reporting

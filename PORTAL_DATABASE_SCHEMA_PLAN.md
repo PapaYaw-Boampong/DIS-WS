@@ -454,6 +454,7 @@ Recommended fields:
 - `driver_name`
 - `driver_phone`
 - `stops`
+- `stop_coordinates`
 - `status`
 
 ### transport_assignments
@@ -467,6 +468,9 @@ Recommended fields:
 - `route_id`
 - `pickup_point`
 - `drop_off_point`
+- `parent_preferred_pickup_point`
+- `parent_preferred_drop_off_point`
+- `preference_status`
 - `estimated_pickup_time`
 - `estimated_drop_off_time`
 - `fee_status`
@@ -483,9 +487,16 @@ Recommended fields:
 - `direction`
 - `status`
 - `current_location_label`
+- `current_latitude`
+- `current_longitude`
+- `gps_provider_reference`
 - `next_stop`
 - `last_updated_at`
 - `updated_by`
+
+Live tracking should wait for backend GPS ingestion, map/location provider
+configuration, parent preference approval workflow, notifications, and audit
+logging. The frontend mock map must not be treated as a source of truth.
 
 ## 9. Files and Notifications
 

@@ -7,13 +7,38 @@ import { PortalSidebar } from "@/components/portal/PortalSidebar";
 import { PortalTopbar } from "@/components/portal/PortalTopbar";
 import { portalNavigation } from "@/lib/portal/navigation";
 import { portalRoleLabels } from "@/lib/portal/roles";
-import type { MockPortalSession, PortalRole } from "@/types/portal";
+import type {
+  MockPortalSession,
+  PortalNavigationItem,
+  PortalRole,
+} from "@/types/portal";
 
 type PortalLayoutProps = {
   readonly children: ReactNode;
   readonly role: PortalRole;
   readonly session: MockPortalSession;
 };
+
+function findActiveNavigationItem(
+  items: readonly PortalNavigationItem[],
+  pathname: string,
+): PortalNavigationItem | undefined {
+  for (const item of items) {
+    if (item.href === pathname) {
+      return item;
+    }
+
+    if (item.children) {
+      const child = findActiveNavigationItem(item.children, pathname);
+
+      if (child) {
+        return child;
+      }
+    }
+  }
+
+  return undefined;
+}
 
 export function PortalLayout({
   children,
@@ -23,8 +48,9 @@ export function PortalLayout({
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigation = portalNavigation[role];
-  const activeItem = navigation.find((item) => item.href === pathname);
+  const activeItem = findActiveNavigationItem(navigation, pathname);
   const pageTitle = activeItem?.label ?? "Portal";
+  const notificationCount = role === "parent" ? 3 : undefined;
 
   return (
     <div className="min-h-screen bg-soft-white lg:flex">
@@ -46,6 +72,7 @@ export function PortalLayout({
           pageTitle={pageTitle}
           roleLabel={portalRoleLabels[role]}
           user={session.user}
+          notificationCount={notificationCount}
           onMenuOpen={() => setMobileOpen(true)}
         />
         <main
@@ -53,7 +80,9 @@ export function PortalLayout({
           tabIndex={-1}
           className="px-4 py-8 sm:px-6 lg:px-8 lg:py-10"
         >
-          <div className="mx-auto max-w-[1180px]">{children}</div>
+          <div key={pathname} className="portal-route-enter mx-auto max-w-[1180px]">
+            {children}
+          </div>
         </main>
       </div>
     </div>

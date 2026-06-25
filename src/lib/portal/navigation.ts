@@ -40,20 +40,33 @@ export const portalNavigation: Record<
     {
       label: "Fees",
       icon: "wallet",
-      href: portalRoutes.parentFees,
       phase: 3,
-    },
-    {
-      label: "Payment History",
-      icon: "file",
-      href: portalRoutes.parentPayments,
-      phase: 3,
-    },
-    {
-      label: "Feeding",
-      icon: "wallet",
-      href: portalRoutes.parentFeeding,
-      phase: 3,
+      children: [
+        {
+          label: "Overview",
+          icon: "wallet",
+          href: portalRoutes.parentFees,
+          phase: 13,
+        },
+        {
+          label: "Pay Now",
+          icon: "wallet",
+          href: portalRoutes.parentFeesPay,
+          phase: 13,
+        },
+        {
+          label: "Payment History",
+          icon: "file",
+          href: portalRoutes.parentPayments,
+          phase: 3,
+        },
+        {
+          label: "Feeding Wallet",
+          icon: "wallet",
+          href: portalRoutes.parentFeeding,
+          phase: 3,
+        },
+      ],
     },
     {
       label: "Transport",
@@ -61,8 +74,13 @@ export const portalNavigation: Record<
       href: portalRoutes.parentTransport,
       phase: 4,
     },
+    {
+      label: "Events",
+      icon: "calendar",
+      href: portalRoutes.parentEvents,
+      phase: 13,
+    },
     { label: "Results", icon: "chart", phase: 2 },
-    { label: "Messages", icon: "message", phase: 2 },
   ],
   staff: [
     dashboardItem("staff"),

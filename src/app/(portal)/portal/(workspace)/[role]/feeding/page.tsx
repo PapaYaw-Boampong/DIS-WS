@@ -13,6 +13,7 @@ import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { FinancialStatusBadge } from "@/components/portal/FinancialStatusBadge";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { MockPaymentForm } from "@/components/portal/MockPaymentForm";
+import { WardFilterSelect } from "@/components/portal/WardFilterSelect";
 import { AccountsFeedingView } from "@/components/portal/dashboards/AccountsFeedingView";
 import {
   mockFeedingBalances,
@@ -31,9 +32,13 @@ export const metadata: Metadata = {
 
 type FeedingPageProps = {
   readonly params: Promise<{ role: string }>;
+  readonly searchParams?: Promise<{ ward?: string }>;
 };
 
-export default async function FeedingPage({ params }: FeedingPageProps) {
+export default async function FeedingPage({
+  params,
+  searchParams,
+}: FeedingPageProps) {
   const { role } = await params;
 
   if (role === "accounts") {
@@ -50,8 +55,20 @@ export default async function FeedingPage({ params }: FeedingPageProps) {
     notFound();
   }
 
+  const query = await searchParams;
+  const requestedWard = query?.ward;
+  const selectedWard =
+    requestedWard && context.parent.childIds.includes(requestedWard)
+      ? requestedWard
+      : "all";
+  const selectedStudentIds =
+    selectedWard === "all" ? context.parent.childIds : [selectedWard];
+  const selectedStudents = context.students.filter((student) =>
+    selectedStudentIds.includes(student.id),
+  );
+
   const balances = mockFeedingBalances.filter((balance) =>
-    context.parent.childIds.includes(balance.studentId),
+    selectedStudentIds.includes(balance.studentId),
   );
   const totalBalance = balances.reduce(
     (total, balance) => total + balance.balance,
@@ -64,8 +81,7 @@ export default async function FeedingPage({ params }: FeedingPageProps) {
   const ledgerRows: readonly DataTableRow[] = mockWalletTransactions
     .filter(
       (entry) =>
-        entry.wallet === "feeding" &&
-        context.parent.childIds.includes(entry.studentId),
+        entry.wallet === "feeding" && selectedStudentIds.includes(entry.studentId),
     )
     .toSorted((a, b) => b.occurredAt.localeCompare(a.occurredAt))
     .map((entry) => {
@@ -98,37 +114,53 @@ export default async function FeedingPage({ params }: FeedingPageProps) {
   return (
     <>
       <DashboardHeader
-        eyebrow="Feeding wallet"
+        eyebrow="Fees · Feeding wallet"
         title="Feeding balances"
-        description="Review fictional child-level balances, top-ups and usage records before previewing an advance payment."
+        description="Review filtered child-level balances, top-ups and usage records before preparing an advance feeding payment."
         badge="Mock wallet data"
       />
 
-      <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard
-          label="Family balance"
-          value={formatPortalCurrency(totalBalance)}
-          detail="Across linked children"
-          icon={<WalletCards aria-hidden="true" className="size-5" />}
-        />
-        <MetricCard
-          label="Active plans"
-          value={String(balances.length)}
-          detail="Fictional feeding accounts"
-          icon={<Soup aria-hidden="true" className="size-5" />}
-        />
-        <MetricCard
-          label="Low balances"
-          value={String(lowBalanceCount)}
-          detail="Needs parent review"
-          icon={<CircleAlert aria-hidden="true" className="size-5" />}
-        />
-        <MetricCard
-          label="Advance payments"
-          value="Enabled"
-          detail="Preview only"
-          icon={<CircleDollarSign aria-hidden="true" className="size-5" />}
-        />
+      <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.35fr)]">
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+          <MetricCard
+            label="Wallet balance"
+            value={formatPortalCurrency(totalBalance)}
+            detail="Filtered ward view"
+            icon={<WalletCards aria-hidden="true" className="size-5" />}
+          />
+          <MetricCard
+            label="Active plans"
+            value={String(balances.length)}
+            detail="Fictional feeding accounts"
+            icon={<Soup aria-hidden="true" className="size-5" />}
+          />
+          <MetricCard
+            label="Low balances"
+            value={String(lowBalanceCount)}
+            detail="Needs parent review"
+            icon={<CircleAlert aria-hidden="true" className="size-5" />}
+          />
+          <MetricCard
+            label="Advance payments"
+            value="Ready"
+            detail="Backend required"
+            icon={<CircleDollarSign aria-hidden="true" className="size-5" />}
+          />
+        </div>
+
+        <DashboardCard
+          title="Ward focus"
+          description="Filter feeding wallet records by one child."
+          className="h-fit"
+        >
+          <WardFilterSelect
+            selectedWard={selectedWard}
+            students={context.students.map((student) => ({
+              id: student.id,
+              name: student.fullName,
+            }))}
+          />
+        </DashboardCard>
       </div>
 
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.2fr)_minmax(20rem,0.8fr)]">
@@ -180,13 +212,7 @@ export default async function FeedingPage({ params }: FeedingPageProps) {
           >
             <DataTable
               caption="Feeding wallet activity"
-              columns={[
-                "Date",
-                "Child",
-                "Description",
-                "Reference",
-                "Amount",
-              ]}
+              columns={["Date", "Child", "Description", "Reference", "Amount"]}
               rows={ledgerRows}
             />
           </DashboardCard>
@@ -194,19 +220,19 @@ export default async function FeedingPage({ params }: FeedingPageProps) {
 
         <DashboardCard
           title="Advance feeding payment"
-          description="Preview a top-up without charging a payment method."
+          description="Prepare a feeding top-up. Charging and reconciliation still require the backend payment API."
           className="h-fit"
         >
           <MockPaymentForm
-            students={context.students.map((student) => ({
+            students={selectedStudents.map((student) => ({
               id: student.id,
               name: student.fullName,
             }))}
-            categories={[
-              { value: "feeding", label: "Feeding Advance" },
-            ]}
+            categories={[{ value: "feeding", label: "Feeding Advance" }]}
             defaultCategory="feeding"
             title="Feeding top-up"
+            notice="Feeding top-up checkout is backend-gated. No wallet balance changes until a future provider callback is verified by the Render API."
+            submitLabel="Start feeding payment"
           />
         </DashboardCard>
       </div>

@@ -7,6 +7,7 @@ import {
   BookOpen,
   Bus,
   CalendarDays,
+  ChevronDown,
   ClipboardCheck,
   FileText,
   LayoutDashboard,
@@ -51,6 +52,17 @@ const navigationIcons: Record<PortalNavigationIcon, LucideIcon> = {
   file: FileText,
   school: School,
 };
+
+function isNavigationItemActive(
+  item: PortalNavigationItem,
+  pathname: string,
+): boolean {
+  return (
+    item.href === pathname ||
+    item.children?.some((child) => isNavigationItemActive(child, pathname)) ||
+    false
+  );
+}
 
 export function PortalSidebar({
   items,
@@ -101,11 +113,70 @@ export function PortalSidebar({
         <ul className="space-y-1.5">
           {items.map((item) => {
             const Icon = navigationIcons[item.icon];
-            const active = item.href === pathname;
+            const active = isNavigationItemActive(item, pathname);
 
             return (
               <li key={item.label}>
-                {item.href ? (
+                {item.children?.length ? (
+                  <details open={active} className="group">
+                    <summary
+                      className={cn(
+                        "flex min-h-12 cursor-pointer list-none items-center gap-3 rounded-2xl px-4 text-sm font-semibold transition-colors [&::-webkit-details-marker]:hidden",
+                        active
+                          ? "bg-white/10 text-white"
+                          : "text-white/75 hover:bg-white/10 hover:text-white",
+                      )}
+                    >
+                      <Icon aria-hidden="true" className="size-5 shrink-0" />
+                      <span className="flex-1">{item.label}</span>
+                      <ChevronDown
+                        aria-hidden="true"
+                        className="size-4 shrink-0 transition-transform group-open:rotate-180"
+                      />
+                    </summary>
+                    <ul className="mt-1 space-y-1 pl-8">
+                      {item.children.map((child) => {
+                        const ChildIcon = navigationIcons[child.icon];
+                        const childActive = child.href === pathname;
+
+                        return (
+                          <li key={child.label}>
+                            {child.href ? (
+                              <Link
+                                href={child.href}
+                                onClick={onClose}
+                                aria-current={childActive ? "page" : undefined}
+                                className={cn(
+                                  "flex min-h-10 items-center gap-2 rounded-xl px-3 text-xs font-bold transition-colors",
+                                  childActive
+                                    ? "bg-curry-orange text-white"
+                                    : "text-white/60 hover:bg-white/10 hover:text-white",
+                                )}
+                              >
+                                <ChildIcon
+                                  aria-hidden="true"
+                                  className="size-4 shrink-0"
+                                />
+                                {child.label}
+                              </Link>
+                            ) : (
+                              <span
+                                className="flex min-h-10 items-center gap-2 rounded-xl px-3 text-xs font-medium text-white/35"
+                                title={`Planned for portal Phase ${child.phase}`}
+                              >
+                                <ChildIcon
+                                  aria-hidden="true"
+                                  className="size-4 shrink-0"
+                                />
+                                <span className="flex-1">{child.label}</span>
+                              </span>
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </details>
+                ) : item.href ? (
                   <Link
                     href={item.href}
                     onClick={onClose}

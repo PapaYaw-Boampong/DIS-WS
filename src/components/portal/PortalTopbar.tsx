@@ -9,6 +9,7 @@ type PortalTopbarProps = {
   readonly pageTitle: string;
   readonly roleLabel: string;
   readonly user: PortalUser;
+  readonly notificationCount?: number;
   readonly onMenuOpen: () => void;
 };
 
@@ -16,8 +17,11 @@ export function PortalTopbar({
   pageTitle,
   roleLabel,
   user,
+  notificationCount,
   onMenuOpen,
 }: PortalTopbarProps) {
+  const hasNotifications = typeof notificationCount === "number" && notificationCount > 0;
+
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-white/95 backdrop-blur">
       <div className="flex min-h-20 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
@@ -44,11 +48,21 @@ export function PortalTopbar({
           <button
             type="button"
             disabled
-            className="hidden min-h-11 items-center gap-2 rounded-full border border-border bg-soft-cream px-4 text-sm font-semibold text-deep-orange opacity-70 sm:inline-flex"
+            className="relative inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-soft-cream px-3 text-sm font-semibold text-deep-orange opacity-80 sm:px-4"
             title="Notifications are planned for a later phase"
+            aria-label={
+              hasNotifications
+                ? `${notificationCount} mock notifications`
+                : "Notifications"
+            }
           >
             <Bell aria-hidden="true" className="size-4" />
-            Notifications
+            <span className="hidden sm:inline">Notifications</span>
+            {hasNotifications ? (
+              <span className="absolute -top-1 -right-1 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-curry-orange px-1.5 text-[0.65rem] font-extrabold text-white ring-2 ring-white">
+                {notificationCount}
+              </span>
+            ) : null}
           </button>
 
           <div

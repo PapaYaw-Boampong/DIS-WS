@@ -14,18 +14,20 @@ import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { FinancialStatusBadge } from "@/components/portal/FinancialStatusBadge";
 import { MetricCard } from "@/components/portal/MetricCard";
-import { MockPaymentForm } from "@/components/portal/MockPaymentForm";
-import { ProgressMeter } from "@/components/portal/ProgressMeter";
+import { WardFilterSelect } from "@/components/portal/WardFilterSelect";
 import { AdminFeesView } from "@/components/portal/dashboards/AdminFeesView";
 import { mockFeeItems, mockInvoices } from "@/data/portal/fees";
+import { mockPayments } from "@/data/portal/payments";
 import {
   formatFeeCategory,
+  formatPaymentMethod,
   formatPortalCurrency,
   formatPortalDate,
 } from "@/lib/portal/format";
 import { getMockParentPortalContext } from "@/lib/portal/mock-parent";
 import { getMockRoleSession } from "@/lib/portal/mock-role";
 import { portalRoutes } from "@/lib/portal/routes";
+import type { FeeCategory } from "@/types/portal";
 
 export const metadata: Metadata = {
   title: "Fees",
@@ -33,9 +35,19 @@ export const metadata: Metadata = {
 
 type FeesPageProps = {
   readonly params: Promise<{ role: string }>;
+  readonly searchParams?: Promise<{ ward?: string }>;
 };
 
-export default async function FeesPage({ params }: FeesPageProps) {
+const visibleCategories = [
+  "school_fees",
+  "feeding",
+  "transport",
+] satisfies readonly FeeCategory[];
+
+export default async function FeesPage({
+  params,
+  searchParams,
+}: FeesPageProps) {
   const { role } = await params;
 
   if (role === "admin") {
@@ -52,12 +64,21 @@ export default async function FeesPage({ params }: FeesPageProps) {
     notFound();
   }
 
-  const invoices = mockInvoices.filter((invoice) =>
-    context.parent.childIds.includes(invoice.studentId),
+  const query = await searchParams;
+  const requestedWard = query?.ward;
+  const selectedWard =
+    requestedWard && context.parent.childIds.includes(requestedWard)
+      ? requestedWard
+      : "all";
+  const selectedStudentIds =
+    selectedWard === "all" ? context.parent.childIds : [selectedWard];
+  const selectedStudents = context.students.filter((student) =>
+    selectedStudentIds.includes(student.id),
   );
-  const totalDue = invoices.reduce(
-    (total, invoice) => total + invoice.totalAmount,
-    0,
+  const wardQuery = selectedWard === "all" ? "" : `?ward=${selectedWard}`;
+
+  const invoices = mockInvoices.filter((invoice) =>
+    selectedStudentIds.includes(invoice.studentId),
   );
   const totalPaid = invoices.reduce(
     (total, invoice) => total + invoice.amountPaid,
@@ -67,9 +88,11 @@ export default async function FeesPage({ params }: FeesPageProps) {
     (total, invoice) => total + invoice.balance,
     0,
   );
-  const collectionPercentage = totalDue
-    ? Math.round((totalPaid / totalDue) * 100)
-    : 0;
+  const openInvoices = invoices.filter((invoice) => invoice.balance > 0);
+  const nextDueDate = invoices
+    .map((invoice) => invoice.dueDate)
+    .filter((date): date is string => Boolean(date))
+    .toSorted()[0];
 
   const invoiceRows: readonly DataTableRow[] = invoices.map((invoice) => {
     const student = context.students.find(
@@ -88,80 +111,116 @@ export default async function FeesPage({ params }: FeesPageProps) {
         invoice.id.toUpperCase(),
         student?.fullName ?? "Student",
         term,
-        formatPortalCurrency(invoice.totalAmount),
         formatPortalCurrency(invoice.amountPaid),
         formatPortalCurrency(invoice.balance),
+        invoice.dueDate ? formatPortalDate(invoice.dueDate) : "No due date",
         <FinancialStatusBadge key={invoice.id} status={invoice.status} />,
       ],
     };
   });
 
-  const categoryTotals = ["school_fees", "feeding", "transport"].map(
-    (category) => {
-      const feeItemIds = mockFeeItems
-        .filter((item) => item.category === category)
-        .map((item) => item.id);
-      const assignedAmount = invoices.reduce((total, invoice) => {
-        const matchingItems = mockFeeItems.filter(
-          (item) =>
-            feeItemIds.includes(item.id) &&
-            invoice.feeItemIds.includes(item.id),
-        );
-
-        return (
-          total +
-          matchingItems.reduce((sum, item) => sum + item.amount, 0)
-        );
-      }, 0);
+  const paymentRows: readonly DataTableRow[] = mockPayments
+    .filter(
+      (payment) =>
+        payment.parentId === context.parent.id &&
+        selectedStudentIds.includes(payment.studentId),
+    )
+    .toSorted((a, b) => b.paidAt.localeCompare(a.paidAt))
+    .slice(0, 5)
+    .map((payment) => {
+      const student = context.students.find(
+        (item) => item.id === payment.studentId,
+      );
 
       return {
-        category,
-        assignedAmount,
+        id: payment.id,
+        cells: [
+          student?.fullName ?? "Student",
+          formatFeeCategory(payment.category),
+          formatPaymentMethod(payment.method),
+          formatPortalDate(payment.paidAt.slice(0, 10)),
+          formatPortalCurrency(payment.amount),
+          <FinancialStatusBadge key={payment.id} status={payment.status} />,
+        ],
       };
-    },
-  );
+    });
+
+  const categoryTotals = visibleCategories.map((category) => {
+    const feeItemIds = mockFeeItems
+      .filter((item) => item.category === category)
+      .map((item) => item.id);
+    const assignedAmount = invoices.reduce((total, invoice) => {
+      const matchingItems = mockFeeItems.filter(
+        (item) =>
+          feeItemIds.includes(item.id) && invoice.feeItemIds.includes(item.id),
+      );
+
+      return total + matchingItems.reduce((sum, item) => sum + item.amount, 0);
+    }, 0);
+
+    return {
+      category,
+      assignedAmount,
+    };
+  });
 
   return (
     <>
       <DashboardHeader
         eyebrow="Parent finances"
-        title="Fees and invoices"
-        description="Review fictional child-specific charges, balances and due dates before choosing a mock payment preview."
-        badge="No live payments"
+        title="Fees overview"
+        description="Focus all wards or one child, review open balances, and start a secure payment from the grouped Fees area."
+        badge="Backend payment required"
       />
 
-      <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard
-          label="Total invoiced"
-          value={formatPortalCurrency(totalDue)}
-          detail="Across linked children"
-          icon={<ReceiptText aria-hidden="true" className="size-5" />}
-        />
-        <MetricCard
-          label="Amount paid"
-          value={formatPortalCurrency(totalPaid)}
-          detail={`${collectionPercentage}% of invoices`}
-          icon={<CircleDollarSign aria-hidden="true" className="size-5" />}
-        />
-        <MetricCard
-          label="Outstanding"
-          value={formatPortalCurrency(outstanding)}
-          detail="Mock balance remaining"
-          icon={<WalletCards aria-hidden="true" className="size-5" />}
-        />
-        <MetricCard
-          label="Next due date"
-          value={formatPortalDate("2026-09-18")}
-          detail="Term 1 mock deadline"
-          icon={<CalendarClock aria-hidden="true" className="size-5" />}
-        />
+      <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.35fr)]">
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+          <MetricCard
+            label="Outstanding"
+            value={formatPortalCurrency(outstanding)}
+            detail="Mock balance remaining"
+            icon={<WalletCards aria-hidden="true" className="size-5" />}
+          />
+          <MetricCard
+            label="Amount paid"
+            value={formatPortalCurrency(totalPaid)}
+            detail="Verified mock payments"
+            icon={<CircleDollarSign aria-hidden="true" className="size-5" />}
+          />
+          <MetricCard
+            label="Open invoices"
+            value={String(openInvoices.length)}
+            detail="Need attention"
+            icon={<ReceiptText aria-hidden="true" className="size-5" />}
+          />
+          <MetricCard
+            label="Next due date"
+            value={nextDueDate ? formatPortalDate(nextDueDate) : "None"}
+            detail="Filtered ward view"
+            icon={<CalendarClock aria-hidden="true" className="size-5" />}
+          />
+        </div>
+
+        <DashboardCard
+          title="Ward focus"
+          description="Filter this Fees view by one linked child."
+          className="h-fit"
+        >
+          <WardFilterSelect
+            selectedWard={selectedWard}
+            students={context.students.map((student) => ({
+              id: student.id,
+              name: student.fullName,
+            }))}
+          />
+        </DashboardCard>
       </div>
 
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.65fr)]">
         <div className="space-y-8">
           <DashboardCard
             title="Invoice list"
-            description="All records are fictional and read-only."
+            description="Filtered fictional invoice records. Payment status is not changed by the frontend."
           >
             <DataTable
               caption="Parent invoice list"
@@ -169,9 +228,9 @@ export default async function FeesPage({ params }: FeesPageProps) {
                 "Invoice",
                 "Child",
                 "Term",
-                "Total",
                 "Paid",
                 "Balance",
+                "Due",
                 "Status",
               ]}
               rows={invoiceRows}
@@ -179,36 +238,45 @@ export default async function FeesPage({ params }: FeesPageProps) {
           </DashboardCard>
 
           <DashboardCard
-            title="Payment progress"
-            description="Combined progress across all mock invoices."
+            title="Recent payments"
+            description="Filtered payment history preview. Open the full history tab for all matching records."
           >
-            <ProgressMeter
-              label="Family invoice collection"
-              value={collectionPercentage}
-              detail={`${formatPortalCurrency(totalPaid)} paid of ${formatPortalCurrency(totalDue)}`}
-              tone="green"
+            <DataTable
+              caption="Recent parent payments"
+              columns={[
+                "Child",
+                "Category",
+                "Method",
+                "Date",
+                "Amount",
+                "Status",
+              ]}
+              rows={paymentRows}
             />
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link
-                href={portalRoutes.parentPayments}
-                className="inline-flex min-h-11 items-center rounded-full border border-curry-orange px-5 text-sm font-bold text-deep-orange transition-colors hover:bg-soft-cream"
-              >
-                View payment history
-              </Link>
-              <Link
-                href={portalRoutes.parentFeeding}
-                className="inline-flex min-h-11 items-center rounded-full border border-border px-5 text-sm font-bold text-charcoal transition-colors hover:bg-soft-white"
-              >
-                View feeding balances
-              </Link>
-            </div>
           </DashboardCard>
         </div>
 
         <div className="space-y-8">
           <DashboardCard
+            title="Pay fees"
+            description="Start here when you are ready to pay. The actual checkout still waits for the backend payment API."
+          >
+            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
+              The frontend cannot charge mobile money, cards, or bank transfer
+              directly. A future Render backend must initialize the provider
+              transaction and verify the callback before any balance changes.
+            </div>
+            <Link
+              href={`${portalRoutes.parentFeesPay}${wardQuery}`}
+              className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full bg-curry-orange px-6 font-bold text-white transition-colors hover:bg-deep-orange"
+            >
+              Pay now
+            </Link>
+          </DashboardCard>
+
+          <DashboardCard
             title="Fee categories"
-            description="Assigned mock charges for the current term."
+            description={`Assigned mock charges for ${selectedWard === "all" ? "all linked wards" : selectedStudents[0]?.fullName ?? "selected ward"}.`}
           >
             <div className="space-y-4">
               {categoryTotals.map((item) => (
@@ -222,7 +290,7 @@ export default async function FeesPage({ params }: FeesPageProps) {
                         {formatFeeCategory(item.category)}
                       </p>
                       <p className="mt-1 text-sm text-muted-grey">
-                        Family assigned amount
+                        Filtered assigned amount
                       </p>
                     </div>
                     {item.category === "transport" ? (
@@ -243,23 +311,6 @@ export default async function FeesPage({ params }: FeesPageProps) {
                 </div>
               ))}
             </div>
-          </DashboardCard>
-
-          <DashboardCard
-            title="Advance payment preview"
-            description="Preview school, feeding or transport payments without submitting a transaction."
-          >
-            <MockPaymentForm
-              students={context.students.map((student) => ({
-                id: student.id,
-                name: student.fullName,
-              }))}
-              categories={[
-                { value: "school_fees", label: "School Fees" },
-                { value: "feeding", label: "Feeding Advance" },
-                { value: "transport", label: "Transport Advance" },
-              ]}
-            />
           </DashboardCard>
         </div>
       </div>
