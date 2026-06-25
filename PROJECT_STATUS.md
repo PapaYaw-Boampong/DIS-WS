@@ -12,9 +12,9 @@ Completed: June 15, 2026
 
 ## Active Development Cycle
 
-**Portal Phase 11: Payment Provider and Reconciliation Readiness**
+**Portal Phase 12: Secure File Storage Readiness**
 Status: `complete`
-Completed: June 23, 2026
+Completed: June 25, 2026
 
 Portal delivery is tracked in `PORTAL_STATUS.md`. The public website remains
 complete while the private portal system is developed in isolated route groups.
@@ -56,7 +56,7 @@ Phase 8 verification:
 ## Next Phase
 
 The public website and planned mock-data portal/frontend-readiness phases are
-complete through Phase 11. The next cycle should scaffold the separate Render
-backend service, choose an ORM/migration tool, or define secure file
-storage/notification integration details before replacing mock frontend controls
-with live API calls, as noted in `PORTAL_STATUS.md`.
+complete through Phase 12. The next cycle should scaffold the separate Render
+backend service, choose an ORM/migration tool, or define notification
+integration details before replacing mock frontend controls with live API calls,
+as noted in `PORTAL_STATUS.md`.

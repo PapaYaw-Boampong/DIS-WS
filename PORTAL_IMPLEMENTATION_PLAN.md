@@ -1185,6 +1185,28 @@ Do not add payment provider SDKs, checkout scripts, provider keys, webhook
 secrets, live checkout sessions, live receipts, bank settlement imports, backend
 calls, or live payment records in this phase.
 
+### Phase 12: Secure File Storage Readiness
+
+Build:
+
+- `PORTAL_FILE_STORAGE_PLAN.md` as the private file storage, upload/download,
+  scanning, retention, and access-control policy draft
+- Typed storage planning structures for provider candidates, file categories,
+  upload/download flow steps, access rules, security controls, and readiness
+  checks
+- Mock-safe admin Storage Readiness page showing provider options, file
+  categories, signed URL flow, role access rules, security controls, retention
+  decisions, and implementation boundaries
+- Admin navigation link to Storage Readiness
+- Clear rule that storage credentials, bucket policy, signed URL generation,
+  scanning/quarantine, object metadata writes, and download authorization belong
+  to the backend/storage workflow, not direct frontend code
+
+Do not add storage provider SDKs, buckets, object-storage credentials, upload
+endpoints, signed URL generation, malware scanning integrations, backend calls,
+live file uploads, live file downloads, or production file metadata in this
+phase.
+
 ---
 
 ## 13. First Codex Prompt for Portal Cycle
@@ -1268,6 +1290,8 @@ The portal MVP is ready when:
 - Admin Auth Readiness page exists
 - Payment integration plan document exists
 - Admin/accounts Payment Readiness page exists
+- File storage plan document exists
+- Admin Storage Readiness page exists
 - Parent dashboard exists
 - Staff dashboard exists
 - Admin dashboard shell exists
@@ -1306,6 +1330,7 @@ API contract and backend readiness
 Database schema readiness
 Authentication and authorization readiness
 Payment provider and reconciliation readiness
+Secure file storage readiness
 Backend/database
 Payment provider integration
 Live reconciliation/reporting

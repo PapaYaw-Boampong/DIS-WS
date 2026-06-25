@@ -1,6 +1,6 @@
 # Divine International School Portal Backend API Contract
 
-Status: Phase 8 contract draft
+Status: Phase 8 contract draft with Phase 12 storage-readiness references
 Frontend branch: `portal-foundation`
 Backend target: separate Render API service, not this Next.js frontend
 
@@ -198,6 +198,11 @@ The detailed payment-provider and reconciliation policy is tracked in
 | `GET` | `/v1/files/{fileId}/download` | Return signed download URL if authorized | scoped by role |
 | `POST` | `/v1/notifications/events` | Queue approved notification event | admin/backend |
 
+File upload/download behavior should follow the private-storage policy in
+`PORTAL_FILE_STORAGE_PLAN.md`: backend-issued short-lived signed URLs, private
+objects only, role and record-ownership checks before download, metadata writes
+in PostgreSQL, and scanning/quarantine before broad access.
+
 ## 7. Data Stores
 
 Minimum PostgreSQL areas:
@@ -220,6 +225,8 @@ Minimum PostgreSQL areas:
 File binaries should live in private object storage, not in PostgreSQL.
 
 The detailed schema draft is tracked in `PORTAL_DATABASE_SCHEMA_PLAN.md`.
+The detailed secure file-storage policy is tracked in
+`PORTAL_FILE_STORAGE_PLAN.md`.
 
 ## 8. Audit Requirements
 

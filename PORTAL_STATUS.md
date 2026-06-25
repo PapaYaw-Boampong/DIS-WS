@@ -7,9 +7,9 @@ brief.
 
 ## Current Phase
 
-**Portal Phase 11: Payment Provider and Reconciliation Readiness**
+**Portal Phase 12: Secure File Storage Readiness**
 Status: `complete`
-Completed: June 23, 2026
+Completed: June 25, 2026
 
 ## Phase History
 
@@ -26,6 +26,7 @@ Completed: June 23, 2026
 | Portal Phase 9: Database Schema Readiness | `complete` | June 23, 2026 | PostgreSQL schema plan, typed table/relationship/index/migration/retention map, admin database-readiness view, and schema migration order without adding a database client or live data |
 | Portal Phase 10: Authentication and Authorization Readiness | `complete` | June 23, 2026 | Production auth policy plan, typed role/route/session/account-lifecycle/password-reset maps, admin auth-readiness view, and backend-owned authorization boundaries without adding real credentials or auth provider code |
 | Portal Phase 11: Payment Provider and Reconciliation Readiness | `complete` | June 23, 2026 | Payment-provider policy plan, typed provider/flow/ledger/webhook/reconciliation/receipt maps, admin/accounts payment-readiness view, and backend-owned payment boundaries without adding provider SDKs, keys, or live payments |
+| Portal Phase 12: Secure File Storage Readiness | `complete` | June 25, 2026 | Private file storage policy plan, typed provider/category/flow/access/security/readiness maps, admin storage-readiness view, and backend-owned storage boundaries without adding provider SDKs, keys, signed URLs, upload endpoints, or live files |
 
 ## Phase 1 Delivered
 
@@ -263,28 +264,48 @@ Completed: June 23, 2026
   key, webhook secret, live checkout session, live receipt, bank settlement
   import, backend call, or live payment record was added.
 
+## Phase 12 Delivered
+
+- Added `PORTAL_FILE_STORAGE_PLAN.md` as the private file storage, signed
+  upload/download, scanning, retention, and access-control policy draft.
+- Added typed storage planning structures for provider candidates, file
+  categories, upload/download flow steps, role access rules, security controls,
+  and readiness checks.
+- Added a storage contract data module covering S3-compatible private buckets,
+  managed storage, school-owned private buckets, local development storage,
+  course materials, submissions, report cards, receipts, exports, admin
+  documents, and transport documents.
+- Added protected `/portal/admin/storage-readiness` for administrative review of
+  storage provider options, file categories, upload/download flow, access
+  rules, security controls, readiness checks, and implementation boundaries.
+- Added the admin sidebar link for Storage Readiness.
+- Linked the storage policy from the backend API contract, database schema plan,
+  and payment plan where file metadata, receipts, and finance exports are
+  discussed.
+- Kept the work policy-only. No storage provider SDK, bucket, object-storage
+  credential, upload endpoint, signed URL generation, malware scanning
+  integration, backend call, live file upload, live file download, or production
+  file metadata was added.
+
 ## Latest Verification
 
-Portal Phase 11 verification:
+Portal Phase 12 verification:
 
 - ESLint: passed
 - TypeScript (`tsc --noEmit`): passed
 - Production build: passed
 - Image verification: 99 WebP images across 12 albums passed
-- Admin `/payment-readiness`: returned `200`, rendered provider candidates,
-  payment flow, ledger rules, webhook rules, reconciliation controls, receipt
-  rules, readiness checks, and retained
+- Admin `/storage-readiness`: returned `200`, rendered storage provider options,
+  file categories, upload/download flow, access rules, security controls,
+  readiness checks, the Storage Readiness navigation item, and retained
   `noindex, nofollow`
-- Accounts `/payment-readiness`: returned `200` with the same payment readiness
-  content and retained `noindex, nofollow`
-- Admin and accounts sidebars rendered the Payment Readiness navigation item
-- Unauthenticated admin Payment Readiness access returned `307` to admin login
-- Cross-role protection: parent access to accounts Payment Readiness returned
-  to the parent dashboard
+- Unauthenticated admin Storage Readiness access returned `307` to admin login
+- Cross-role protection: parent access to admin Storage Readiness returned to
+  the parent dashboard
 - Source audit found no fetch, external client, server action, backend form
-  action, environment-secret access, provider SDK, checkout script, provider
-  key, webhook secret, backend payment call, or live payment integration in the
-  new Phase 11 payment and readiness files
+  action, environment-secret access, provider SDK/client initialization, live
+  signed URL generation, upload intent call, download URL call, or live storage
+  integration in the new Phase 12 storage and readiness files
 
 ## Security and Integration Boundary
 
@@ -297,7 +318,7 @@ Portal Phase 11 verification:
 ## Next Phase
 
 The mock-data portal frontend cycle is complete through backend, database, auth,
-and payment readiness planning. The next development cycle should scaffold the
-separate Render backend service, choose an ORM/migration tool, or define secure
-file storage/notification integration details before replacing any mock frontend
-controls with live API calls.
+payment, and secure file-storage readiness planning. The next development cycle
+should scaffold the separate Render backend service, choose an ORM/migration
+tool, or define notification integration details before replacing any mock
+frontend controls with live API calls.

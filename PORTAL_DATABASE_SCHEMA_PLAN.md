@@ -505,8 +505,15 @@ Recommended fields:
 - `byte_size`
 - `checksum`
 - `visibility`
+- `retention_rule`
+- `scan_state`
+- `scan_checked_at`
 - `created_by`
 - `created_at`
+
+File binaries should stay in private object storage. Signed upload/download
+flows, category-specific retention rules, scan/quarantine policy, and
+role-based access rules are tracked in `PORTAL_FILE_STORAGE_PLAN.md`.
 
 ### notification_events
 

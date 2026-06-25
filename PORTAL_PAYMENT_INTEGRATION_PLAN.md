@@ -155,6 +155,11 @@ Receipts should include:
 
 Receipts should not expose provider secrets or internal webhook payloads.
 
+Receipt PDFs and finance exports should follow `PORTAL_FILE_STORAGE_PLAN.md`:
+store generated files as private objects, keep metadata in PostgreSQL, issue
+downloads only through backend authorization, and expire short-lived exports
+unless formally archived.
+
 ## 9. Refund and Reversal Rules
 
 The school still needs to approve:
