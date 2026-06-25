@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import {
   CircleCheckBig,
   Clock3,
-  ReceiptText,
   WalletCards,
 } from "lucide-react";
 
@@ -117,13 +116,7 @@ export default async function PaymentsPage({
       />
 
       <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.35fr)]">
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-          <MetricCard
-            label="Transactions"
-            value={String(payments.length)}
-            detail="Filtered mock records"
-            icon={<ReceiptText aria-hidden="true" className="size-5" />}
-          />
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           <MetricCard
             label="Successful total"
             value={formatPortalCurrency(totalPaid)}

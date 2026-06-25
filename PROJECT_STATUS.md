@@ -12,7 +12,7 @@ Completed: June 15, 2026
 
 ## Active Development Cycle
 
-**Portal Phase 13: Parent Portal UX Polish and Tracking Readiness**
+**Portal Phase 14: Parent Finance Refinement and Transport Wallet**
 Status: `complete`
 Completed: June 25, 2026
 
@@ -38,7 +38,7 @@ complete while the private portal system is developed in isolated route groups.
 
 ## Latest Verification
 
-Phase 8 verification:
+Phase 8 public-site verification:
 
 - ESLint: passed
 - TypeScript: passed
@@ -56,7 +56,7 @@ Phase 8 verification:
 ## Next Phase
 
 The public website and planned mock-data portal/frontend-readiness phases are
-complete through Phase 13. The next cycle should scaffold the separate Render
-backend service, choose an ORM/migration tool, connect backend-owned payments,
-or design live transport GPS/location integration before replacing mock
-frontend controls with live API calls, as noted in `PORTAL_STATUS.md`.
+complete through Portal Phase 14. The next cycle should scaffold the separate
+Render backend service, choose an ORM/migration tool, connect backend-owned
+payments, or design live transport GPS/location integration before replacing
+mock frontend controls with live API calls, as noted in `PORTAL_STATUS.md`.

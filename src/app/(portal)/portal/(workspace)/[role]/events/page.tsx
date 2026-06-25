@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { CalendarDays, Clock3, Users } from "lucide-react";
 
 import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
-import { MetricCard } from "@/components/portal/MetricCard";
 import { mockPortalEvents } from "@/data/portal/announcements";
 import {
   formatPortalDate,
@@ -36,8 +34,6 @@ export default async function EventsPage() {
       event.audience === "parent" ? "Parents" : "All families",
     ],
   }));
-  const nextEvent = events[0];
-
   return (
     <>
       <DashboardHeader
@@ -46,27 +42,6 @@ export default async function EventsPage() {
         description="Review parent-facing school events in a dedicated tab instead of a dashboard side card."
         badge="Mock calendar"
       />
-
-      <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-        <MetricCard
-          label="Upcoming events"
-          value={String(events.length)}
-          detail="Parent-visible items"
-          icon={<CalendarDays aria-hidden="true" className="size-5" />}
-        />
-        <MetricCard
-          label="Next event"
-          value={nextEvent ? formatPortalDate(nextEvent.date) : "None"}
-          detail={nextEvent?.title ?? "No event scheduled"}
-          icon={<Clock3 aria-hidden="true" className="size-5" />}
-        />
-        <MetricCard
-          label="Linked wards"
-          value={String(context.students.length)}
-          detail="Family calendar context"
-          icon={<Users aria-hidden="true" className="size-5" />}
-        />
-      </div>
 
       <DashboardCard
         title="Upcoming school events"

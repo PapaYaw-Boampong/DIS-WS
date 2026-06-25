@@ -5,7 +5,6 @@ import {
   Bus,
   CalendarClock,
   CircleDollarSign,
-  ReceiptText,
   WalletCards,
 } from "lucide-react";
 
@@ -88,7 +87,6 @@ export default async function FeesPage({
     (total, invoice) => total + invoice.balance,
     0,
   );
-  const openInvoices = invoices.filter((invoice) => invoice.balance > 0);
   const nextDueDate = invoices
     .map((invoice) => invoice.dueDate)
     .filter((date): date is string => Boolean(date))
@@ -174,7 +172,7 @@ export default async function FeesPage({
       />
 
       <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.35fr)]">
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           <MetricCard
             label="Outstanding"
             value={formatPortalCurrency(outstanding)}
@@ -186,12 +184,6 @@ export default async function FeesPage({
             value={formatPortalCurrency(totalPaid)}
             detail="Verified mock payments"
             icon={<CircleDollarSign aria-hidden="true" className="size-5" />}
-          />
-          <MetricCard
-            label="Open invoices"
-            value={String(openInvoices.length)}
-            detail="Need attention"
-            icon={<ReceiptText aria-hidden="true" className="size-5" />}
           />
           <MetricCard
             label="Next due date"

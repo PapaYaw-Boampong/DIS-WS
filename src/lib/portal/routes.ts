@@ -11,6 +11,7 @@ export const portalRoutes = {
   parentFeesPay: "/portal/parent/fees/pay",
   parentPayments: "/portal/parent/payments",
   parentFeeding: "/portal/parent/feeding",
+  parentTransportWallet: "/portal/parent/transport-wallet",
   parentTransport: "/portal/parent/transport",
   adminTransport: "/portal/admin/transport",
   staffClasses: "/portal/staff/classes",

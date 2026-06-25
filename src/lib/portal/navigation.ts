@@ -66,6 +66,12 @@ export const portalNavigation: Record<
           href: portalRoutes.parentFeeding,
           phase: 3,
         },
+        {
+          label: "Transport Wallet",
+          icon: "bus",
+          href: portalRoutes.parentTransportWallet,
+          phase: 14,
+        },
       ],
     },
     {

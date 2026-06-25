@@ -65,9 +65,10 @@ Recommended flow:
 The frontend must not mark a payment as successful just because a checkout page
 was opened or returned.
 
-The Phase 13 parent Pay Now page is the intended frontend entry point for this
-flow. It must remain backend-gated until provider initialization, webhook
-verification, ledger writes, and receipt generation exist in the Render API.
+The Phase 13 parent Pay Now page and Phase 14 Transport Wallet payment action
+are the intended frontend entry points for this flow. They must remain
+backend-gated until provider initialization, webhook verification, ledger
+writes, and receipt generation exist in the Render API.
 
 ## 4. Ledger Rules
 

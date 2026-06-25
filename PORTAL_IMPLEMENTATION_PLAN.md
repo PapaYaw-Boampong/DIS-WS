@@ -1230,6 +1230,26 @@ Do not add payment provider SDKs, checkout scripts, provider keys, map provider
 keys, GPS feeds, backend calls, live payment writes, invoice mutations,
 transport assignment writes, notifications, or audit-log writes in this phase.
 
+### Phase 14: Parent Finance Refinement and Transport Wallet
+
+Build:
+
+- Slower portal route-enter animation and dashboard title bounce timing while
+  preserving reduced-motion support
+- Parent Events page cleanup by removing the top metric-card row and keeping the
+  event list as the primary page content
+- Parent Fees Overview cleanup by removing the Open Invoices summary card
+- Parent Pay Now cleanup by removing the Open Invoices and latest-payment style
+  summary cards so the backend-gated payment form remains the primary action
+- Parent Payment History cleanup by removing the Transactions summary card
+- Transport Wallet under the parent Fees navigation group, with ward filtering,
+  child wallet balances, mock wallet activity, and a backend-gated transport
+  advance payment action
+
+Do not add payment provider SDKs, checkout scripts, provider keys, backend
+calls, live payment writes, invoice mutations, wallet ledger mutations,
+transport assignment writes, notifications, or audit-log writes in this phase.
+
 ---
 
 ## 13. First Codex Prompt for Portal Cycle
@@ -1324,6 +1344,7 @@ The portal MVP is ready when:
 - Parent payment history page exists
 - Parent Events page exists
 - Feeding balance UI exists
+- Parent Transport Wallet page exists
 - Transport tracking page exists
 - Shared portal layout is reusable
 - Sidebar changes based on role
@@ -1357,6 +1378,7 @@ Authentication and authorization readiness
 Payment provider and reconciliation readiness
 Secure file storage readiness
 Parent portal UX polish and tracking readiness
+Parent finance refinement and transport wallet
 Backend/database
 Payment provider integration
 Live reconciliation/reporting

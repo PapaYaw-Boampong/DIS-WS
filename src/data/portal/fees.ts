@@ -2,6 +2,7 @@ import type {
   FeedingBalance,
   FeeItem,
   Invoice,
+  TransportWalletBalance,
   WalletTransaction,
 } from "@/types/portal";
 
@@ -135,6 +136,22 @@ export const mockFeedingBalances = [
   },
 ] satisfies readonly FeedingBalance[];
 
+export const mockTransportWalletBalances = [
+  {
+    id: "transport-wallet-001",
+    studentId: "student-001",
+    balance: 300,
+    lastTopUpAt: "2026-06-19T11:10:00.000Z",
+    status: "active",
+  },
+  {
+    id: "transport-wallet-002",
+    studentId: "student-002",
+    balance: 0,
+    status: "empty",
+  },
+] satisfies readonly TransportWalletBalance[];
+
 export const mockWalletTransactions = [
   {
     id: "wallet-001",
@@ -185,5 +202,25 @@ export const mockWalletTransactions = [
     description: "Mock weekly meal deduction",
     reference: "DIS-FEED-USE-003",
     occurredAt: "2026-06-23T12:00:00.000Z",
+  },
+  {
+    id: "wallet-006",
+    studentId: "student-001",
+    wallet: "transport",
+    type: "credit",
+    amount: 500,
+    description: "Mock transport wallet top-up",
+    reference: "DIS-TRANS-0001",
+    occurredAt: "2026-06-19T11:10:00.000Z",
+  },
+  {
+    id: "wallet-007",
+    studentId: "student-001",
+    wallet: "transport",
+    type: "debit",
+    amount: 200,
+    description: "Mock transport service deduction",
+    reference: "DIS-TRANS-USE-001",
+    occurredAt: "2026-06-23T16:20:00.000Z",
   },
 ] satisfies readonly WalletTransaction[];

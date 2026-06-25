@@ -7,7 +7,7 @@ brief.
 
 ## Current Phase
 
-**Portal Phase 13: Parent Portal UX Polish and Tracking Readiness**
+**Portal Phase 14: Parent Finance Refinement and Transport Wallet**
 Status: `complete`
 Completed: June 25, 2026
 
@@ -28,6 +28,7 @@ Completed: June 25, 2026
 | Portal Phase 11: Payment Provider and Reconciliation Readiness | `complete` | June 23, 2026 | Payment-provider policy plan, typed provider/flow/ledger/webhook/reconciliation/receipt maps, admin/accounts payment-readiness view, and backend-owned payment boundaries without adding provider SDKs, keys, or live payments |
 | Portal Phase 12: Secure File Storage Readiness | `complete` | June 25, 2026 | Private file storage policy plan, typed provider/category/flow/access/security/readiness maps, admin storage-readiness view, and backend-owned storage boundaries without adding provider SDKs, keys, signed URLs, upload endpoints, or live files |
 | Portal Phase 13: Parent Portal UX Polish and Tracking Readiness | `complete` | June 25, 2026 | Smooth portal page transitions, dashboard title bounce, cleaned parent dashboard, parent Events page, grouped Fees navigation, ward-filtered finance pages, backend-gated Pay Now route, mock map-style transport tracking, and local-only pickup/drop-off preferences |
+| Portal Phase 14: Parent Finance Refinement and Transport Wallet | `complete` | June 25, 2026 | Slower portal transitions, simplified parent Events and finance summary cards, parent Transport Wallet under Fees navigation, ward-filtered transport wallet balances/activity, and backend-gated transport advance payment readiness |
 
 ## Phase 1 Delivered
 
@@ -311,34 +312,52 @@ Completed: June 25, 2026
   invoice mutation, transport assignment write, notification, or audit-log write
   was added.
 
+## Phase 14 Delivered
+
+- Slowed the portal route-enter animation and dashboard title bounce timing
+  while preserving reduced-motion behavior.
+- Removed the top summary-card row from the parent Events page so the event list
+  is the primary content.
+- Removed Open Invoices summary cards from the parent Fees Overview and Pay Now
+  pages.
+- Removed the latest-payment style summary card from the parent Pay Now page.
+- Removed the Transactions summary card from the parent Payment History page.
+- Added a parent Transport Wallet page under the Fees navigation group.
+- Added ward-filtered transport wallet balances and transport-wallet activity
+  using fictional frontend mock data.
+- Added a backend-gated transport advance payment action that does not call a
+  provider, create a payment, mutate an invoice, or write a wallet ledger entry.
+- Kept the work frontend-only. No payment provider SDK, checkout script,
+  provider key, backend call, live payment write, invoice mutation, wallet
+  ledger mutation, transport assignment write, notification, or audit-log write
+  was added.
+
 ## Latest Verification
 
-Portal Phase 13 verification:
+Portal Phase 14 verification:
 
 - ESLint: passed
 - TypeScript (`tsc --noEmit`): passed
 - Production build: passed
 - Image verification: 99 WebP images across 12 albums passed
-- Parent dashboard returned `200`, rendered no Messages metric card, rendered no
-  Upcoming Events side card, and retained the notification badge.
-- Parent Events returned `200` for a parent session and unauthenticated Events
-  access returned `307` to parent login.
-- Parent Fees Overview returned `200` with the expandable Fees navigation group,
-  ward selector, filtered invoice list, Pay Now link, and no Total Invoiced or
-  Payment Progress cards.
-- Parent Pay Now returned `200`, rendered Start secure payment and backend
-  checkout-required copy, and made no provider/backend call.
-- Parent Payment History returned `200` as a history-only page with ward filter
-  and no payment form.
-- Parent Feeding Wallet returned `200` with ward filter and backend-gated
-  feeding payment copy.
-- Parent Transport returned `200` with the map-style tracking panel and
-  pickup/drop-off preference controls.
+- Parent Fees Overview returned `200`, rendered the Fees navigation group and
+  ward selector, and did not render an Open Invoices summary card.
+- Parent Pay Now returned `200`, rendered Start secure payment, did not render
+  Open Invoices or Latest Payment summary cards, and remained backend-gated.
+- Parent Payment History returned `200`, rendered Payment history, and did not
+  render a Transactions summary card.
+- Parent Events returned `200`, rendered the event table content, and did not
+  render the removed top event metric-card row.
+- Parent Transport Wallet returned `200`, rendered ward filtering, transport
+  wallet accounts, transport wallet activity, and the backend-gated transport
+  payment action.
+- Unauthenticated Parent Transport Wallet access returned `307` to parent
+  login.
 - Source audit found no fetch, external client, server action, backend form
   action, environment-secret access, payment provider SDK/client initialization,
-  checkout script, provider key, map provider SDK/key, GPS feed, live payment
-  write, invoice mutation, transport assignment write, notification send, or
-  audit-log write in the new Phase 13 parent portal files
+  checkout script, provider key, live payment write, invoice mutation, wallet
+  ledger mutation, transport assignment write, notification send, or audit-log
+  write in the Phase 14 parent finance/events files
 
 ## Security and Integration Boundary
 
@@ -351,8 +370,9 @@ Portal Phase 13 verification:
 ## Next Phase
 
 The mock-data portal frontend cycle is complete through backend, database, auth,
-payment, secure file-storage readiness planning, parent UX polish, and transport
-tracking readiness. The next development cycle should scaffold the separate
-Render backend service, choose an ORM/migration tool, connect a payment
-provider through backend-owned checkout/webhooks, or design the GPS/location
-feed before replacing any mock frontend controls with live API calls.
+payment, secure file-storage readiness planning, parent UX polish, transport
+tracking readiness, and parent finance refinement. The next development cycle
+should scaffold the separate Render backend service, choose an ORM/migration
+tool, connect a payment provider through backend-owned checkout/webhooks, or
+design the GPS/location feed before replacing any mock frontend controls with
+live API calls.

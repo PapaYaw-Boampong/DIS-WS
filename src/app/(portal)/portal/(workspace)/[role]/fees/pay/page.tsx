@@ -4,8 +4,6 @@ import { notFound } from "next/navigation";
 import {
   CircleDollarSign,
   CreditCard,
-  ReceiptText,
-  ShieldCheck,
 } from "lucide-react";
 
 import { DashboardCard } from "@/components/portal/DashboardCard";
@@ -14,10 +12,8 @@ import { MetricCard } from "@/components/portal/MetricCard";
 import { MockPaymentForm } from "@/components/portal/MockPaymentForm";
 import { WardFilterSelect } from "@/components/portal/WardFilterSelect";
 import { mockInvoices } from "@/data/portal/fees";
-import { mockPayments } from "@/data/portal/payments";
 import {
   formatPortalCurrency,
-  formatPortalDate,
 } from "@/lib/portal/format";
 import { getMockParentPortalContext } from "@/lib/portal/mock-parent";
 import { portalRoutes } from "@/lib/portal/routes";
@@ -55,15 +51,6 @@ export default async function PayNowPage({ searchParams }: PayNowPageProps) {
     (total, invoice) => total + invoice.balance,
     0,
   );
-  const openInvoices = invoices.filter((invoice) => invoice.balance > 0);
-  const recentPayment = mockPayments
-    .filter(
-      (payment) =>
-        payment.parentId === context.parent.id &&
-        selectedStudentIds.includes(payment.studentId),
-    )
-    .toSorted((a, b) => b.paidAt.localeCompare(a.paidAt))[0];
-
   return (
     <>
       <DashboardHeader
@@ -73,7 +60,7 @@ export default async function PayNowPage({ searchParams }: PayNowPageProps) {
         badge="Backend checkout required"
       />
 
-      <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-8 grid gap-5 sm:grid-cols-2">
         <MetricCard
           label="Outstanding"
           value={formatPortalCurrency(outstanding)}
@@ -81,26 +68,10 @@ export default async function PayNowPage({ searchParams }: PayNowPageProps) {
           icon={<CircleDollarSign aria-hidden="true" className="size-5" />}
         />
         <MetricCard
-          label="Open invoices"
-          value={String(openInvoices.length)}
-          detail="Can be paid later"
-          icon={<ReceiptText aria-hidden="true" className="size-5" />}
-        />
-        <MetricCard
           label="Checkout"
           value="Pending"
           detail="Needs Render API"
           icon={<CreditCard aria-hidden="true" className="size-5" />}
-        />
-        <MetricCard
-          label="Latest payment"
-          value={
-            recentPayment
-              ? formatPortalDate(recentPayment.paidAt.slice(0, 10))
-              : "None"
-          }
-          detail="Filtered history"
-          icon={<ShieldCheck aria-hidden="true" className="size-5" />}
         />
       </div>
 
@@ -178,6 +149,12 @@ export default async function PayNowPage({ searchParams }: PayNowPageProps) {
                 className="inline-flex min-h-11 items-center justify-center rounded-full border border-border px-5 text-sm font-bold text-charcoal transition-colors hover:bg-soft-white"
               >
                 Feeding wallet
+              </Link>
+              <Link
+                href={portalRoutes.parentTransportWallet}
+                className="inline-flex min-h-11 items-center justify-center rounded-full border border-border px-5 text-sm font-bold text-charcoal transition-colors hover:bg-soft-white"
+              >
+                Transport wallet
               </Link>
               <Link
                 href={portalRoutes.parentFees}

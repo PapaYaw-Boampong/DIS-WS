@@ -125,6 +125,14 @@ export type FeedingBalance = {
   readonly status: "active" | "low_balance" | "empty";
 };
 
+export type TransportWalletBalance = {
+  readonly id: string;
+  readonly studentId: string;
+  readonly balance: number;
+  readonly lastTopUpAt?: string;
+  readonly status: "active" | "low_balance" | "empty";
+};
+
 export type WalletTransaction = {
   readonly id: string;
   readonly studentId: string;
