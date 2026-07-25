@@ -11,6 +11,7 @@ import {
   ChevronDown,
   ClipboardCheck,
   FileText,
+  Globe,
   LayoutDashboard,
   MessageSquare,
   School,
@@ -53,6 +54,7 @@ const navigationIcons: Record<PortalNavigationIcon, LucideIcon> = {
   settings: Settings,
   file: FileText,
   school: School,
+  globe: Globe,
 };
 
 function isNavigationItemActive(

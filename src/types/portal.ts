@@ -380,7 +380,8 @@ export type PortalNavigationIcon =
   | "bus"
   | "settings"
   | "file"
-  | "school";
+  | "school"
+  | "globe";
 
 export type PortalNavigationItem = {
   readonly label: string;

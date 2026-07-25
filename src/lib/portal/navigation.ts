@@ -163,6 +163,37 @@ export const portalNavigation: Record<
       phase: 17,
     },
     {
+      label: "Website",
+      icon: "globe",
+      phase: 18,
+      children: [
+        {
+          label: "Overview",
+          icon: "globe",
+          href: portalRoutes.adminWebsite,
+          phase: 18,
+        },
+        {
+          label: "News & Updates",
+          icon: "file",
+          href: portalRoutes.adminWebsiteNews,
+          phase: 18,
+        },
+        {
+          label: "Events",
+          icon: "message",
+          href: portalRoutes.adminWebsiteEvents,
+          phase: 18,
+        },
+        {
+          label: "Calendar",
+          icon: "calendar",
+          href: portalRoutes.adminWebsiteCalendar,
+          phase: 18,
+        },
+      ],
+    },
+    {
       label: "Backend Readiness",
       icon: "settings",
       href: portalRoutes.adminBackendReadiness,

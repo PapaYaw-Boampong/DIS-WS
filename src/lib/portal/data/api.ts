@@ -68,3 +68,37 @@ export async function portalApiPost<T = unknown>(
     return { ok: false, status: 0 };
   }
 }
+
+// Server-to-server PATCH/DELETE using the current session token, mirroring
+// portalApiPost's discriminated-result contract.
+export async function portalApiSend<T = unknown>(
+  method: "PATCH" | "DELETE",
+  path: string,
+  body?: unknown,
+): Promise<{ ok: boolean; status: number; data?: T }> {
+  const token = (await cookies()).get(REAL_PORTAL_SESSION_COOKIE)?.value;
+  if (!token) {
+    return { ok: false, status: 401 };
+  }
+  try {
+    const headers: Record<string, string> = { authorization: `Bearer ${token}` };
+    if (body !== undefined) {
+      headers["content-type"] = "application/json";
+    }
+    const response = await fetch(`${portalApiUrl}${path}`, {
+      method,
+      headers,
+      body: body === undefined ? undefined : JSON.stringify(body),
+      cache: "no-store",
+    });
+    let data: T | undefined;
+    try {
+      data = (await response.json()) as T;
+    } catch {
+      data = undefined;
+    }
+    return { ok: response.ok, status: response.status, data };
+  } catch {
+    return { ok: false, status: 0 };
+  }
+}

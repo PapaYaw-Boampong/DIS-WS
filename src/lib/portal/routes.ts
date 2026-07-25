@@ -72,6 +72,13 @@ export const portalRoutes = {
   adminPaymentReadiness: "/portal/admin/payment-readiness",
   adminStorageReadiness: "/portal/admin/storage-readiness",
   adminPayments: "/portal/admin/payments",
+  adminWebsite: "/portal/admin/website",
+  adminWebsiteNews: "/portal/admin/website/news",
+  adminWebsiteNewsNew: "/portal/admin/website/news/new",
+  adminWebsiteNewsEdit: (postId: string) =>
+    `/portal/admin/website/news/${postId}`,
+  adminWebsiteEvents: "/portal/admin/website/events",
+  adminWebsiteCalendar: "/portal/admin/website/calendar",
   paymentsStatements: (role: PortalRole) =>
     `/portal/${role}/payments/statements`,
   paymentStatementDetail: (role: PortalRole, importId: string) =>
