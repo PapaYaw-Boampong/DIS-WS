@@ -12,7 +12,7 @@ Completed: July 15, 2026
 
 ## Active Development Cycle
 
-**Portal Phase 17: Real File Storage for Course Materials & Submissions**
+**Portal Phase 18: Public Website CMS (portal-managed site content)**
 Status: `complete`
 Completed: July 25, 2026
 
@@ -22,6 +22,8 @@ service, Fastify + Prisma + PostgreSQL) covering authentication, identity,
 finance/payments, transport, documents/notifications, academics, wallets,
 communication, messages, an audit trail on every sensitive write, and R2 object
 storage for payment attachments, course materials, and assignment submissions.
+Phase 18 adds a portal-managed CMS: admins edit the public site's news, events
+and school calendar from the portal, and published changes go live immediately.
 
 ## Phase History
 

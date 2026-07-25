@@ -7,6 +7,43 @@ brief.
 
 ## Current Phase
 
+**Portal Phase 18: Public Website CMS (portal-managed site content)**
+Status: `complete`
+Completed: July 25, 2026
+
+Lets school admins manage the **public marketing website's** content — news,
+events, and the school calendar — from the portal, closing the "these static
+updates can later be replaced by an approved CMS" note that was on the public
+News page.
+
+- **Backend** (migration `public_cms`, `server/src/routes/cms.ts`): three
+  admin-managed models — `NewsArticlePost`, `EventPost`, `CalendarTermPost` —
+  each with unauthenticated public read endpoints (`/public/news`,
+  `/public/news/:slug`, `/public/events`, `/public/calendar`) that serve only
+  `published` rows, and admin-only `/cms/*` CRUD with draft/published status.
+  Every mutation is audit-logged (`cms.*` actions); icons are validated against
+  an allowlist mirroring the web app's `ContentIcon` set so the public site can
+  never receive an unknown icon name. Seed mirrors the prior static content.
+- **Public site** (`src/lib/public-content.ts`): the news list/detail, calendar
+  (terms + events), and the home News/Events/Calendar previews read from the
+  public endpoints behind `USE_REAL_PUBLIC_CONTENT`, ISR-cached (60s), with a
+  fall back to the typed static content on any error or when the flag is off —
+  so the site always renders with no backend. CMS content is text + icon based
+  (the site's photography uses a separate pre-optimized local image pipeline).
+- **Portal admin UI** (`/portal/admin/website` + News/Events/Calendar managers):
+  admin-only (non-admins 404). News has a create/edit form with a dynamic
+  multi-section body editor; events and calendar have inline create/edit with
+  publish toggles and ordering. Server actions call the backend then
+  `revalidatePath` the affected public routes, so published edits appear on the
+  live site immediately rather than after the ISR window.
+- **Verified end-to-end through the real UI**: an admin publishing a news
+  article or event in the portal makes it appear on public `/news` and
+  `/calendar` instantly; a non-admin is 404'd from every CMS page; public reads
+  expose only published rows (proven by a draft staying off the site and by the
+  static-only "Admissions Enquiries" article being absent once backend reads are
+  on). All content is rendered as escaped React text (no
+  `dangerouslySetInnerHTML`), so admin-authored content can't inject script.
+
 **Portal Phase 17: Real File Storage for Course Materials & Submissions**
 Status: `complete`
 Completed: July 25, 2026
@@ -261,6 +298,7 @@ unchanged and continues to run on the mock session.
 | Portal Phase 15: Backend Foundation & Core Domains | `complete` | July 25, 2026 | Separate Render backend (Fastify + Prisma + PostgreSQL) with six DB-backed, curl-verified increments: (1) auth — hashed passwords + server sessions, portal login wired behind `USE_REAL_PORTAL_AUTH`; (2) admin account management (create/suspend, 401/403); (3) identity — students/parents/staff/classes + parent's children; (4) finance — fee items (incl. admission + miscellaneous), invoices, payments, cash-desk write with receipt + invoice recompute; (5) transport — routes/trips + parent assignment; (6) documents + notifications. Plus academics, wallets, communication, and messages domains, the unified payment verification workflow (MoMo/bank/cash + statement reconciliation), and R2 object storage for payment attachments. Portal UI wiring **complete**: every page and all six role dashboards read through the real API behind `USE_REAL_PORTAL_AUTH` via a repository/context dispatch layer |
 | Portal Phase 16: Audit Logging | `complete` | July 25, 2026 | Append-only `AuditLog` table + `recordAudit()` helper wired into every sensitive write (auth, admin accounts, payments, statements, academics writes, Phase 17 file operations); admin-only paginated `GET /audit-logs` read |
 | Portal Phase 17: Real File Storage for Course Materials & Submissions | `complete` | July 25, 2026 | R2-backed course-material upload/download (class-scoped) and assignment-submission upload/list/download (student's own class; staff/admin see and download all); staff "Add material" and student assignment pages now do real uploads instead of device-only previews |
+| Portal Phase 18: Public Website CMS | `complete` | July 25, 2026 | Admin-managed news/events/calendar for the public marketing site: backend models + published-only public read endpoints + admin CRUD (audited, icon-allowlisted); public pages read via `USE_REAL_PUBLIC_CONTENT` with ISR + static fallback; portal admin managers with `revalidatePath` so edits go live instantly |
 
 ## Phase 1 Delivered
 
