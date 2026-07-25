@@ -457,8 +457,102 @@ async function main() {
     { from: adminUser, body: "Please note the Route 2 bus is running about 10 minutes late this morning. Update families if needed.", day: 1 },
   ]);
 
+  // --- Public website CMS (mirrors the web app's static seed content) ------
+  await prisma.newsArticlePost.createMany({
+    data: [
+      {
+        slug: "school-reopens",
+        title: "School Reopens",
+        excerpt:
+          "A new term begins with renewed focus, warm welcomes and important information for every family.",
+        category: "Updates",
+        icon: "newspaper",
+        publishedLabel: "School Notice",
+        imageDescription:
+          "Placeholder for an approved photograph of pupils returning to school at the start of a term.",
+        body: [
+          {
+            paragraphs: [
+              "Divine International School welcomes families and learners into a new term with renewed focus on academic excellence, discipline and character development.",
+              "Families should continue to follow official school communication for confirmed reopening details, class expectations and any required preparation.",
+            ],
+          },
+          {
+            heading: "What families can expect",
+            paragraphs: [
+              "The opening period helps pupils settle into routines, reconnect with teachers and understand expectations for learning and participation.",
+              "Admissions and administration updates will be shared through the school's approved communication channels.",
+            ],
+          },
+        ],
+        status: "published",
+        publishedAt: new Date(),
+      },
+      {
+        slug: "family-progress-meetings",
+        title: "Family Progress Meetings",
+        excerpt:
+          "Progress conversations help families and teachers discuss learner strengths, support needs and next steps.",
+        category: "Families",
+        icon: "users",
+        publishedLabel: "Calendar Update",
+        imageDescription:
+          "Placeholder for an approved photograph representing a family progress conversation with a teacher.",
+        body: [
+          {
+            paragraphs: [
+              "Family progress meetings are part of the school's commitment to clear communication between home and school.",
+              "These conversations give families an opportunity to understand learner progress, celebrate effort and discuss areas where support may be helpful.",
+            ],
+          },
+        ],
+        status: "published",
+        publishedAt: new Date(),
+      },
+      {
+        slug: "co-curricular-showcase",
+        title: "Co-curricular Showcase",
+        excerpt:
+          "A school community showcase highlights pupil participation in sport, clubs, creativity and service.",
+        category: "Student Life",
+        icon: "trophy",
+        publishedLabel: "Event Highlight",
+        imageDescription:
+          "Placeholder for an approved photograph of pupils participating in co-curricular activities.",
+        body: [
+          {
+            paragraphs: [
+              "Co-curricular learning gives pupils space to explore interests, practise teamwork and build confidence beyond classroom lessons.",
+              "The showcase celebrates participation across sport, clubs, creative expression and age-appropriate leadership opportunities.",
+            ],
+          },
+        ],
+        status: "published",
+        publishedAt: new Date(),
+      },
+    ],
+  });
+
+  await prisma.eventPost.createMany({
+    data: [
+      { title: "Career Day", dateLabel: "School activity programme", description: "A practical opportunity for pupils to learn about professions and imagine future pathways.", icon: "briefcase", featured: true, status: "published", position: 0 },
+      { title: "Colour Day", dateLabel: "School celebration", description: "A colourful community activity that encourages participation, creativity and shared enjoyment.", icon: "palette", status: "published", position: 1 },
+      { title: "School Competitions", dateLabel: "Activity programme", description: "Team activities give pupils opportunities to participate, cooperate and practise healthy competition.", icon: "trophy", status: "published", position: 2 },
+      { title: "Educational Excursions", dateLabel: "Learning beyond the classroom", description: "Supervised visits connect classroom learning with community spaces and practical experience.", icon: "compass", status: "published", position: 3 },
+      { title: "Graduation Celebration", dateLabel: "School milestone", description: "The school community recognises learner progress and celebrates an important transition.", icon: "graduation-cap", status: "published", position: 4 },
+    ],
+  });
+
+  await prisma.calendarTermPost.createMany({
+    data: [
+      { name: "Term One", period: "Opening term", description: "Learners settle into routines, establish goals and begin the year's core programme.", highlights: ["Orientation and learning routines", "Baseline and continuous assessment", "Family progress communication"], status: "published", position: 0 },
+      { name: "Term Two", period: "Development term", description: "Teaching builds on established foundations through deeper practice, projects and school activities.", highlights: ["Curriculum development and projects", "Co-curricular participation", "Mid-year progress review"], status: "published", position: 1 },
+      { name: "Term Three", period: "Completion term", description: "Learners consolidate key outcomes, demonstrate progress and prepare for transition.", highlights: ["Consolidation and revision", "End-of-year assessment", "Transition and celebration"], status: "published", position: 2 },
+    ],
+  });
+
   console.log(
-    `Seeded ${accounts.length} accounts + full domain data (people, finance, transport, documents, academics, wallets, communication, messages). Dev password: ${devPassword}`,
+    `Seeded ${accounts.length} accounts + full domain data (people, finance, transport, documents, academics, wallets, communication, messages, public CMS). Dev password: ${devPassword}`,
   );
 }
 

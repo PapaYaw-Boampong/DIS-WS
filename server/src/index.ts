@@ -7,6 +7,7 @@ import { academicsRoutes } from "./routes/academics";
 import { adminRoutes } from "./routes/admin";
 import { auditRoutes } from "./routes/audit";
 import { authRoutes } from "./routes/auth";
+import { cmsRoutes } from "./routes/cms";
 import { communicationRoutes } from "./routes/communication";
 import { documentRoutes } from "./routes/documents";
 import { financeRoutes } from "./routes/finance";
@@ -76,6 +77,7 @@ async function main(): Promise<void> {
   await app.register(messageRoutes);
   await app.register(statementRoutes);
   await app.register(auditRoutes);
+  await app.register(cmsRoutes);
 
   async function shutdown(signal: string): Promise<void> {
     app.log.info(`Received ${signal}, shutting down`);

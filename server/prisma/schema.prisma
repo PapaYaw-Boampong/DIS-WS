@@ -608,3 +608,66 @@ model AuditLog {
   @@index([createdAt])
   @@map("audit_logs")
 }
+
+// --- Public website CMS ----------------------------------------------------
+// Portal-managed content that the PUBLIC website renders (news, events, the
+// school calendar). Admin-only writes; unauthenticated public read endpoints
+// serve only `published` rows. `status` follows the string-union convention
+// (lowercase "draft" | "published"). CMS content is text + icon based — the
+// public site's photography uses a separate pre-optimized local image
+// pipeline that this content doesn't plug into. `icon` holds a ContentIcon
+// name the frontend maps to a Lucide icon (validated against an allowlist on
+// write).
+
+model NewsArticlePost {
+  id               String    @id @default(cuid())
+  slug             String    @unique
+  title            String
+  excerpt          String
+  category         String    @default("Updates")
+  icon             String    @default("newspaper")
+  publishedLabel   String    @default("School Notice")
+  imageDescription String    @default("")
+  body             Json // NewsBodySection[]: { heading?: string; paragraphs: string[] }
+  status           String    @default("draft")
+  authorId         String?
+  publishedAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([status])
+  @@map("news_posts")
+}
+
+model EventPost {
+  id          String   @id @default(cuid())
+  title       String
+  dateLabel   String   @default("")
+  description String
+  icon        String   @default("calendar")
+  featured    Boolean  @default(false)
+  status      String   @default("draft")
+  position    Int      @default(0)
+  authorId    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@map("event_posts")
+}
+
+model CalendarTermPost {
+  id          String   @id @default(cuid())
+  name        String
+  period      String   @default("")
+  description String
+  highlights  Json // string[]
+  status      String   @default("draft")
+  position    Int      @default(0)
+  authorId    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@map("calendar_terms")
+}
