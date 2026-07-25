@@ -3,7 +3,6 @@ import {
   CalendarDays,
   ChartNoAxesColumnIncreasing,
   ClipboardCheck,
-  Clock3,
   GraduationCap,
 } from "lucide-react";
 
@@ -14,25 +13,15 @@ import { MetricCard } from "@/components/portal/MetricCard";
 import { NoticeList } from "@/components/portal/NoticeList";
 import { ProgressMeter } from "@/components/portal/ProgressMeter";
 import { StatusBadge } from "@/components/portal/StatusBadge";
-import {
-  mockAssignments,
-  mockAttendance,
-  mockResults,
-  mockTimetable,
-} from "@/data/portal/academics";
-import { mockAnnouncements } from "@/data/portal/announcements";
-import { mockStudents } from "@/data/portal/students";
+import { listAnnouncements } from "@/lib/portal/data/communication";
+import { listAttendanceSummaries } from "@/lib/portal/data/academics";
 import {
   formatPortalDate,
   formatPortalTime,
   percentageScore,
 } from "@/lib/portal/format";
+import { getMockStudentPortalContext } from "@/lib/portal/mock-student";
 import { portalRoutes } from "@/lib/portal/routes";
-
-type StudentDashboardProps = {
-  readonly userId: string;
-  readonly userName: string;
-};
 
 function assignmentBadge(status: string) {
   if (status === "submitted") {
@@ -46,39 +35,41 @@ function assignmentBadge(status: string) {
   return <StatusBadge>Not started</StatusBadge>;
 }
 
-export function StudentDashboard({
-  userId,
-  userName,
-}: StudentDashboardProps) {
-  const student = mockStudents.find((item) => item.userId === userId);
+export async function StudentDashboard() {
+  const context = await getMockStudentPortalContext();
 
-  if (!student) {
+  if (!context) {
     return null;
   }
 
-  const attendance = mockAttendance.find(
+  const { student, session } = context;
+  const userName = session.user.name;
+  const [attendanceSummaries, allAnnouncements] = await Promise.all([
+    listAttendanceSummaries(),
+    listAnnouncements(),
+  ]);
+
+  const attendance = attendanceSummaries.find(
     (item) => item.studentId === student.id,
   );
-  const assignments = mockAssignments.filter(
-    (item) => item.classId === student.classId,
-  );
+  const assignments = context.assignments;
   const openAssignments = assignments.filter(
     (item) => item.status !== "submitted",
   );
-  const results = mockResults.filter((item) => item.studentId === student.id);
-  const timetable = mockTimetable.filter(
-    (item) => item.classId === student.classId,
-  );
-  const announcements = mockAnnouncements.filter(
+  const results = context.results;
+  const timetable = context.timetable;
+  const announcements = allAnnouncements.filter(
     (item) => item.audience === "all" || item.audience === "student",
   );
-  const averageScore = Math.round(
-    results.reduce(
-      (total, result) =>
-        total + percentageScore(result.score, result.total),
-      0,
-    ) / results.length,
-  );
+  const averageScore = results.length
+    ? Math.round(
+        results.reduce(
+          (total, result) =>
+            total + percentageScore(result.score, result.total),
+          0,
+        ) / results.length,
+      )
+    : 0;
 
   const timetableRows: readonly DataTableRow[] = timetable.map((entry) => ({
     id: entry.id,
@@ -99,7 +90,7 @@ export function StudentDashboard({
         badge="Student mock data"
       />
 
-      <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-8 grid gap-5 sm:grid-cols-3">
         <MetricCard
           label="Attendance"
           value={`${attendance?.percentage ?? 0}%`}
@@ -124,12 +115,6 @@ export function StudentDashboard({
               className="size-5"
             />
           }
-        />
-        <MetricCard
-          label="Today's lessons"
-          value={String(timetable.length)}
-          detail="Tuesday schedule"
-          icon={<Clock3 aria-hidden="true" className="size-5" />}
         />
       </div>
 

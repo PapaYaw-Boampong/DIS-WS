@@ -15,7 +15,8 @@ import { MetricCard } from "@/components/portal/MetricCard";
 import { ReceiptPlaceholderButton } from "@/components/portal/ReceiptPlaceholderButton";
 import { WardFilterSelect } from "@/components/portal/WardFilterSelect";
 import { AccountsPaymentsView } from "@/components/portal/dashboards/AccountsPaymentsView";
-import { mockPayments } from "@/data/portal/payments";
+import { useRealPortalAuth } from "@/lib/portal/data/api";
+import { getParentPayments } from "@/lib/portal/data/parent";
 import {
   formatFeeCategory,
   formatPaymentMethod,
@@ -32,7 +33,7 @@ export const metadata: Metadata = {
 
 type PaymentsPageProps = {
   readonly params: Promise<{ role: string }>;
-  readonly searchParams?: Promise<{ ward?: string }>;
+  readonly searchParams?: Promise<{ ward?: string; status?: string }>;
 };
 
 export default async function PaymentsPage({
@@ -41,12 +42,13 @@ export default async function PaymentsPage({
 }: PaymentsPageProps) {
   const { role } = await params;
 
-  if (role === "accounts") {
-    if (!(await getMockRoleSession("accounts"))) {
+  if (role === "accounts" || role === "admin") {
+    if (!(await getMockRoleSession(role))) {
       notFound();
     }
 
-    return <AccountsPaymentsView />;
+    const query = await searchParams;
+    return <AccountsPaymentsView role={role} statusFilter={query?.status} />;
   }
 
   const context = await getMockParentPortalContext();
@@ -65,15 +67,12 @@ export default async function PaymentsPage({
     selectedWard === "all" ? context.parent.childIds : [selectedWard];
   const wardQuery = selectedWard === "all" ? "" : `?ward=${selectedWard}`;
 
-  const payments = mockPayments
-    .filter(
-      (payment) =>
-        payment.parentId === context.parent.id &&
-        selectedStudentIds.includes(payment.studentId),
-    )
+  const allPayments = await getParentPayments();
+  const payments = allPayments
+    .filter((payment) => selectedStudentIds.includes(payment.studentId))
     .toSorted((a, b) => b.paidAt.localeCompare(a.paidAt));
   const successfulPayments = payments.filter(
-    (payment) => payment.status === "successful",
+    (payment) => payment.status === "verified",
   );
   const totalPaid = successfulPayments.reduce(
     (total, payment) => total + payment.amount,
@@ -101,6 +100,11 @@ export default async function PaymentsPage({
         <ReceiptPlaceholderButton
           key={`${payment.id}-receipt`}
           reference={payment.reference}
+          receiptHref={
+            useRealPortalAuth && payment.status === "verified"
+              ? portalRoutes.parentDocuments
+              : undefined
+          }
         />,
       ],
     };
@@ -118,7 +122,7 @@ export default async function PaymentsPage({
       <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.35fr)]">
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           <MetricCard
-            label="Successful total"
+            label="Verified total"
             value={formatPortalCurrency(totalPaid)}
             detail="Filtered linked wards"
             icon={<CircleCheckBig aria-hidden="true" className="size-5" />}

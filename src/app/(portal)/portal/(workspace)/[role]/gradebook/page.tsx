@@ -3,17 +3,14 @@ import { notFound } from "next/navigation";
 import {
   ChartNoAxesColumnIncreasing,
   FileCheck2,
-  PencilLine,
   Users,
 } from "lucide-react";
 
 import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
-import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
+import { GradebookWorkspace } from "@/components/portal/gradebook/GradebookWorkspace";
 import { MetricCard } from "@/components/portal/MetricCard";
-import { MockGradeEntryForm } from "@/components/portal/MockGradeEntryForm";
-import { StatusBadge } from "@/components/portal/StatusBadge";
-import { mockGradebookEntries } from "@/data/portal/academics";
+import { listGradebook } from "@/lib/portal/data/academics";
 import { percentageScore } from "@/lib/portal/format";
 import { getMockStaffPortalContext } from "@/lib/portal/mock-staff";
 
@@ -28,59 +25,46 @@ export default async function StaffGradebookPage() {
     notFound();
   }
 
-  const entries = mockGradebookEntries.filter((entry) =>
-    context.staff.classIds.includes(entry.classId),
+  const targetClass = context.classes[0];
+  const classId = targetClass?.id ?? "";
+  const entries = (await listGradebook()).filter(
+    (entry) => entry.classId === classId,
   );
-  const average = Math.round(
-    entries.reduce(
-      (total, entry) => total + percentageScore(entry.score, entry.total),
-      0,
-    ) / entries.length,
-  );
-  const gradeRows: readonly DataTableRow[] = entries.map((entry) => {
-    const student = context.students.find(
-      (item) => item.id === entry.studentId,
-    );
-
-    return {
-      id: entry.id,
-      cells: [
-        student?.fullName ?? "Student",
-        entry.subject,
-        entry.assessment,
-        `${entry.score}/${entry.total}`,
-        `${percentageScore(entry.score, entry.total)}%`,
-        <StatusBadge
-          key={entry.id}
-          variant={entry.status === "published" ? "success" : "warning"}
-        >
-          {entry.status === "published" ? "Published" : "Draft"}
-        </StatusBadge>,
-      ],
-    };
-  });
+  const students = context.students
+    .filter((student) => student.classId === classId)
+    .map((student) => ({ id: student.id, fullName: student.fullName }));
+  const average = entries.length
+    ? Math.round(
+        entries.reduce(
+          (total, entry) => total + percentageScore(entry.score, entry.total),
+          0,
+        ) / entries.length,
+      )
+    : 0;
 
   return (
     <>
       <DashboardHeader
         eyebrow="Assessment records"
         title="Gradebook"
-        description="Review fictional marks and preview grade entry without changing student results or report cards. No gradebook record is saved."
+        description="Edit marks in the Canvas-style grid or open SpeedGrader to grade one student at a time. Changes are a local preview and are not saved to student records."
         badge="Mock grade records"
       />
 
-      <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-8 grid gap-5 sm:grid-cols-3">
         <MetricCard
-          label="Grade entries"
-          value={String(entries.length)}
-          detail="Sample Mathematics records"
-          icon={<ChartNoAxesColumnIncreasing aria-hidden="true" className="size-5" />}
+          label="Students"
+          value={String(students.length)}
+          detail="On this gradebook"
+          icon={<Users aria-hidden="true" className="size-5" />}
         />
         <MetricCard
           label="Class average"
           value={`${average}%`}
-          detail="Class Test 3 sample"
-          icon={<Users aria-hidden="true" className="size-5" />}
+          detail="Across recorded marks"
+          icon={
+            <ChartNoAxesColumnIncreasing aria-hidden="true" className="size-5" />
+          }
         />
         <MetricCard
           label="Published"
@@ -90,46 +74,19 @@ export default async function StaffGradebookPage() {
           detail="Visible mock results"
           icon={<FileCheck2 aria-hidden="true" className="size-5" />}
         />
-        <MetricCard
-          label="Draft"
-          value={String(
-            entries.filter((entry) => entry.status === "draft").length,
-          )}
-          detail="Awaiting review"
-          icon={<PencilLine aria-hidden="true" className="size-5" />}
+      </div>
+
+      <DashboardCard
+        title="Class gradebook"
+        description="Rows are students, columns are assessments. Add an assignment to create an empty column to fill in."
+        className="mt-8"
+      >
+        <GradebookWorkspace
+          students={students}
+          entries={entries}
+          classId={classId}
         />
-      </div>
-
-      <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.2fr)_minmax(22rem,0.8fr)]">
-        <DashboardCard
-          title="Gradebook records"
-          description="Published and draft states are illustrative."
-        >
-          <DataTable
-            caption="Staff gradebook"
-            columns={[
-              "Student",
-              "Subject",
-              "Assessment",
-              "Score",
-              "Percentage",
-              "Status",
-            ]}
-            rows={gradeRows}
-          />
-        </DashboardCard>
-
-        <DashboardCard
-          title="Enter grade"
-          description="Preview a new result without saving it."
-          className="h-fit"
-        >
-          <MockGradeEntryForm
-            classes={context.classes}
-            students={context.students}
-          />
-        </DashboardCard>
-      </div>
+      </DashboardCard>
     </>
   );
 }

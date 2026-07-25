@@ -8,8 +8,8 @@ import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { MockPersonForm } from "@/components/portal/MockPersonForm";
-import { mockParents } from "@/data/portal/parents";
-import { mockStudents } from "@/data/portal/students";
+import { listParents } from "@/lib/portal/data/people";
+import { listStudents } from "@/lib/portal/data/students";
 import { getMockRoleSession } from "@/lib/portal/mock-role";
 
 export const metadata: Metadata = { title: "Parent Management" };
@@ -18,6 +18,11 @@ export default async function AdminParentsPage() {
   if (!(await getMockRoleSession("admin"))) {
     notFound();
   }
+
+  const [mockParents, mockStudents] = await Promise.all([
+    listParents(),
+    listStudents(),
+  ]);
 
   const rows: readonly DataTableRow[] = mockParents.map((parent) => ({
     id: parent.id,

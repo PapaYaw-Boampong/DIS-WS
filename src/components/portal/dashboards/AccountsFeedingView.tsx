@@ -5,17 +5,23 @@ import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { FinancialStatusBadge } from "@/components/portal/FinancialStatusBadge";
 import { MetricCard } from "@/components/portal/MetricCard";
+import { listStudents } from "@/lib/portal/data/students";
 import {
-  mockFeedingBalances,
-  mockWalletTransactions,
-} from "@/data/portal/fees";
-import { mockStudents } from "@/data/portal/students";
+  listFeedingBalances,
+  listWalletTransactions,
+} from "@/lib/portal/data/wallets";
 import {
   formatPortalCurrency,
   formatPortalDate,
 } from "@/lib/portal/format";
 
-export function AccountsFeedingView() {
+export async function AccountsFeedingView() {
+  const [mockFeedingBalances, mockWalletTransactions, mockStudents] =
+    await Promise.all([
+      listFeedingBalances(),
+      listWalletTransactions(),
+      listStudents(),
+    ]);
   const rows: readonly DataTableRow[] = mockFeedingBalances.map((balance) => {
     const student = mockStudents.find(
       (item) => item.id === balance.studentId,

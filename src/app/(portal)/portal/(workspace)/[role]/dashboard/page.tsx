@@ -7,7 +7,6 @@ import { ParentDashboard } from "@/components/portal/dashboards/ParentDashboard"
 import { StaffDashboard } from "@/components/portal/dashboards/StaffDashboard";
 import { StudentDashboard } from "@/components/portal/dashboards/StudentDashboard";
 import { TransportOperationsDashboard } from "@/components/portal/dashboards/TransportOperationsDashboard";
-import { mockPortalUsers } from "@/data/portal/users";
 import { isPortalRole } from "@/lib/portal/roles";
 
 export const metadata: Metadata = {
@@ -29,29 +28,18 @@ export default async function PortalDashboardPage({
     notFound();
   }
 
-  const user = mockPortalUsers.find((item) => item.role === role);
-
-  if (!user) {
-    notFound();
-  }
-
   switch (role) {
     case "student":
-      return <StudentDashboard userId={user.id} userName={user.name} />;
+      return <StudentDashboard />;
     case "parent":
-      return <ParentDashboard userId={user.id} userName={user.name} />;
+      return <ParentDashboard />;
     case "staff":
-      return <StaffDashboard userId={user.id} userName={user.name} />;
+      return <StaffDashboard />;
     case "admin":
-      return <AdminDashboard userName={user.name} />;
+      return <AdminDashboard />;
     case "accounts":
-      return <AccountsDashboard userName={user.name} />;
+      return <AccountsDashboard />;
     case "transport":
-      return (
-        <TransportOperationsDashboard
-          userName={user.name}
-          mode="transport"
-        />
-      );
+      return <TransportOperationsDashboard mode="transport" />;
   }
 }

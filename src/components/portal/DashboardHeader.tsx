@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import { StatusBadge } from "@/components/portal/StatusBadge";
 
 type DashboardHeaderProps = {
@@ -5,6 +7,7 @@ type DashboardHeaderProps = {
   readonly title: string;
   readonly description: string;
   readonly badge?: string;
+  readonly action?: ReactNode;
 };
 
 export function DashboardHeader({
@@ -12,6 +15,7 @@ export function DashboardHeader({
   title,
   description,
   badge = "Mock data",
+  action,
 }: DashboardHeaderProps) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -26,7 +30,10 @@ export function DashboardHeader({
           {description}
         </p>
       </div>
-      <StatusBadge variant="info">{badge}</StatusBadge>
+      <div className="flex flex-wrap items-center gap-3">
+        {action}
+        <StatusBadge variant="info">{badge}</StatusBadge>
+      </div>
     </div>
   );
 }

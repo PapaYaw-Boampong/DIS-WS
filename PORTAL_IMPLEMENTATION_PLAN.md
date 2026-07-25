@@ -1385,3 +1385,72 @@ Live reconciliation/reporting
 ```
 
 This prevents the project from becoming too complex too early.
+
+---
+
+## Intake Addendum — Confirmed School Requirements (2026-07-15)
+
+Folded from `CONTENT_AND_FEATURE_INTAKE.md` (Part B) after review with the
+school. These extend the existing plans; detailed design lives in the referenced
+contract docs.
+
+### Backend decisions (Phase 15+)
+
+- **Architecture:** a separate Render backend service (not in-app).
+- **Data layer:** Prisma ORM + PostgreSQL.
+- **Framework:** Fastify (Node + TypeScript).
+- **First increment:** authentication (real accounts, hashed passwords with
+  argon2, server-owned sessions), wired to the Next.js portal behind a
+  `USE_REAL_PORTAL_AUTH` flag with mock fallback.
+
+### Payment categories (extends `FeeCategory`)
+
+Every payment is tagged to a category. In addition to school fees, transport, and
+feeding, the model must add:
+
+- **Admission** — one-time fee for first-time admits (paid with school fees in
+  full at enrollment).
+- **Miscellaneous** — *must be supported*; covers uniforms, badges, textbooks,
+  and ad-hoc charges. (Reconcile with the existing `uniform`/`books`/`exam`/
+  `other` values — expose a "Miscellaneous" grouping in the pay flow.)
+
+→ Update the `FeeCategory` enum in `PORTAL_DATABASE_SCHEMA_PLAN.md` and the
+payable categories in `PORTAL_PAYMENT_INTEGRATION_PLAN.md`.
+
+### Three payment-method workflows (detail in `PORTAL_PAYMENT_INTEGRATION_PLAN.md`)
+
+- **Mobile Money (MTN):** portal shows the school merchant number → parent pays →
+  backend pulls MTN API transaction history → matches → receipt to parent + admin.
+  *Open:* MTN merchant API access, matching key, unmatched/partial handling.
+- **Bank deposit (continuous ingestion):** parent uploads a deposit receipt → OCR
+  extracts details → bank-alert emails are ingested continuously → matching engine
+  runs → parent notified + receipt. *Open:* bank alert formats, dedicated inbox,
+  OCR provider, manual override; **privacy/compliance** review required for
+  ingesting bank emails.
+- **Cash (office desk):** accounts pulls up the student → enters payment details
+  (method = cash) → generates a receipt with a print option.
+- **Cross-cutting:** every verified payment posts to the student **ledger**,
+  updates per-category balances, produces a **receipt visible to parent + admin**,
+  and triggers a notification.
+
+### Parent documents & upload-and-render
+
+- A **parent Documents** area (portal): bill breakdown, package description,
+  payment-plan doc, receipts, feeding menu, calendar, announcements.
+- **Upload-and-render:** an admin uploads a PDF/image the portal renders (calendar,
+  menu, newsletters, bill templates) instead of data-entering every field — decide
+  per artefact. Design in `PORTAL_FILE_STORAGE_PLAN.md`.
+
+### Admin CMS requirement (⚠️ scope still open — intake §C, blocking)
+
+Administrators must be able to **update website content without developer
+assistance.** The exact editable-content list was truncated in the source and
+must be confirmed (likely: announcements/reminders, calendar & events, feeding
+menu, news, facilities/leadership text, admissions info, downloadable docs).
+Decide structured-fields vs. upload-and-render per area before building.
+
+### Open questions carried from intake §C
+
+MTN merchant API access + matching key; bank list/alert formats, ingestion inbox,
+OCR provider, data-privacy owner; enumerate Miscellaneous sub-types; confirm
+staff/leadership names + consent; real public phone/hiring/admissions emails.

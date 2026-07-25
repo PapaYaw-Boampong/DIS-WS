@@ -7,8 +7,7 @@ import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { ProgressMeter } from "@/components/portal/ProgressMeter";
 import { ReportExportPlaceholder } from "@/components/portal/ReportExportPlaceholder";
-import { mockInvoices } from "@/data/portal/fees";
-import { mockPayments } from "@/data/portal/payments";
+import { listInvoices, listPayments } from "@/lib/portal/data/finance";
 import {
   formatPortalCurrency,
 } from "@/lib/portal/format";
@@ -21,12 +20,16 @@ export default async function AccountsReportsPage() {
     notFound();
   }
 
+  const [mockInvoices, mockPayments] = await Promise.all([
+    listInvoices(),
+    listPayments(),
+  ]);
   const invoiced = mockInvoices.reduce(
     (total, invoice) => total + invoice.totalAmount,
     0,
   );
   const received = mockPayments
-    .filter((payment) => payment.status === "successful")
+    .filter((payment) => payment.status === "verified")
     .reduce((total, payment) => total + payment.amount, 0);
   const rate = invoiced ? Math.round((received / invoiced) * 100) : 0;
 

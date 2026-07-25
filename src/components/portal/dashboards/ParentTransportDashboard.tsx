@@ -16,14 +16,13 @@ import { MockTransportPreferenceForm } from "@/components/portal/MockTransportPr
 import { TransportMapPreview } from "@/components/portal/TransportMapPreview";
 import { TransportStatusBadge } from "@/components/portal/TransportStatusBadge";
 import { TripTimeline } from "@/components/portal/TripTimeline";
-import { mockFeeItems, mockInvoices } from "@/data/portal/fees";
-import { mockPayments } from "@/data/portal/payments";
+import { listTransportNotices } from "@/lib/portal/data/communication";
+import { listFeeItems } from "@/lib/portal/data/finance";
 import {
-  mockTransportAssignments,
-  mockTransportNotices,
-  mockTransportRoutes,
-  mockTransportTrips,
-} from "@/data/portal/transport";
+  getParentInvoices,
+  getParentPayments,
+  getParentTransport,
+} from "@/lib/portal/data/parent";
 import {
   formatPortalCurrency,
   formatPortalDate,
@@ -35,39 +34,46 @@ type ParentTransportDashboardProps = {
   readonly students: readonly StudentProfile[];
 };
 
-export function ParentTransportDashboard({
+export async function ParentTransportDashboard({
   students,
 }: ParentTransportDashboardProps) {
-  const assignment = mockTransportAssignments.find((item) =>
-    students.some((student) => student.id === item.studentId),
-  );
+  const [transportEntries, invoices, payments, feeItems, transportNotices] =
+    await Promise.all([
+      getParentTransport(),
+      getParentInvoices(),
+      getParentPayments(),
+      listFeeItems(),
+      listTransportNotices(),
+    ]);
+
+  const entry =
+    transportEntries.find((item) =>
+      students.some((student) => student.id === item.assignment.studentId),
+    ) ?? transportEntries[0];
+  const assignment = entry?.assignment;
   const student = students.find((item) => item.id === assignment?.studentId);
-  const route = mockTransportRoutes.find(
-    (item) => item.id === assignment?.routeId,
-  );
-  const trip = mockTransportTrips.find(
-    (item) => item.routeId === assignment?.routeId,
-  );
-  const invoice = mockInvoices.find(
+  const route = entry?.route ?? undefined;
+  const trip = entry?.latestTrip ?? undefined;
+  const invoice = invoices.find(
     (item) => item.studentId === assignment?.studentId,
   );
-  const transportFeeItem = mockFeeItems.find(
+  const transportFeeItem = feeItems.find(
     (item) =>
       item.category === "transport" && invoice?.feeItemIds.includes(item.id),
   );
-  const transportPaid = mockPayments
+  const transportPaid = payments
     .filter(
       (payment) =>
         payment.studentId === assignment?.studentId &&
         payment.category === "transport" &&
-        payment.status === "successful",
+        payment.status === "verified",
     )
     .reduce((total, payment) => total + payment.amount, 0);
   const transportBalance = Math.max(
     0,
     (transportFeeItem?.amount ?? 0) - transportPaid,
   );
-  const notices = mockTransportNotices.filter(
+  const notices = transportNotices.filter(
     (notice) => !notice.routeId || notice.routeId === route?.id,
   );
 

@@ -12,26 +12,38 @@ import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { MockTripStatusForm } from "@/components/portal/MockTripStatusForm";
 import { TransportStatusBadge } from "@/components/portal/TransportStatusBadge";
+import { listTransportNotices } from "@/lib/portal/data/communication";
 import {
-  mockTransportAssignments,
-  mockTransportNotices,
-  mockTransportRoutes,
-  mockTransportTrips,
-} from "@/data/portal/transport";
+  listTransportAssignments,
+  listTransportRoutes,
+  listTransportTrips,
+} from "@/lib/portal/data/transport";
 import {
   formatPortalDate,
   formatPortalTime,
 } from "@/lib/portal/format";
+import { getMockPortalSession } from "@/lib/portal/mock-session";
 
 type TransportOperationsDashboardProps = {
-  readonly userName: string;
   readonly mode: "admin" | "transport";
 };
 
-export function TransportOperationsDashboard({
-  userName,
+export async function TransportOperationsDashboard({
   mode,
 }: TransportOperationsDashboardProps) {
+  const session = await getMockPortalSession();
+  const userName = session?.user.name ?? "Transport";
+  const [
+    mockTransportRoutes,
+    mockTransportTrips,
+    mockTransportAssignments,
+    mockTransportNotices,
+  ] = await Promise.all([
+    listTransportRoutes(),
+    listTransportTrips(),
+    listTransportAssignments(),
+    listTransportNotices(),
+  ]);
   const activeTrips = mockTransportTrips.filter(
     (trip) => trip.status === "on_route" || trip.status === "delayed",
   ).length;

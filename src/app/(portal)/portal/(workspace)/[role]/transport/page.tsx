@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 
 import { ParentTransportDashboard } from "@/components/portal/dashboards/ParentTransportDashboard";
 import { TransportOperationsDashboard } from "@/components/portal/dashboards/TransportOperationsDashboard";
-import { mockPortalUsers } from "@/data/portal/users";
 import { getMockParentPortalContext } from "@/lib/portal/mock-parent";
 
 export const metadata: Metadata = {
@@ -32,18 +31,7 @@ export default async function PortalTransportPage({
   }
 
   if (role === "admin") {
-    const admin = mockPortalUsers.find((user) => user.role === "admin");
-
-    if (!admin) {
-      notFound();
-    }
-
-    return (
-      <TransportOperationsDashboard
-        userName={admin.name}
-        mode="admin"
-      />
-    );
+    return <TransportOperationsDashboard mode="admin" />;
   }
 
   notFound();

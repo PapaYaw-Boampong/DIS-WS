@@ -8,8 +8,8 @@ import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { FinancialStatusBadge } from "@/components/portal/FinancialStatusBadge";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { MockInvoiceForm } from "@/components/portal/MockInvoiceForm";
-import { mockFeeItems, mockInvoices } from "@/data/portal/fees";
-import { mockStudents } from "@/data/portal/students";
+import { listFeeItems, listInvoices } from "@/lib/portal/data/finance";
+import { listStudents } from "@/lib/portal/data/students";
 import {
   formatPortalCurrency,
   formatPortalDate,
@@ -22,6 +22,12 @@ export default async function AccountsInvoicesPage() {
   if (!(await getMockRoleSession("accounts"))) {
     notFound();
   }
+
+  const [mockInvoices, mockStudents, mockFeeItems] = await Promise.all([
+    listInvoices(),
+    listStudents(),
+    listFeeItems(),
+  ]);
 
   const rows: readonly DataTableRow[] = mockInvoices.map((invoice) => ({
     id: invoice.id,

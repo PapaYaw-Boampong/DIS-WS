@@ -1,17 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import {
-  CalendarCheck,
-  ClipboardCheck,
-  Clock3,
-  Users,
-} from "lucide-react";
+import { CalendarCheck, Clock3, Users } from "lucide-react";
 
 import { AttendanceMarker } from "@/components/portal/AttendanceMarker";
 import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { MetricCard } from "@/components/portal/MetricCard";
-import { mockDailyAttendance } from "@/data/portal/academics";
+import { listDailyAttendance } from "@/lib/portal/data/academics";
 import { formatPortalDate } from "@/lib/portal/format";
 import { getMockStaffPortalContext } from "@/lib/portal/mock-staff";
 
@@ -26,11 +21,13 @@ export default async function StaffAttendancePage() {
     notFound();
   }
 
-  const classId = "primary-6";
+  const targetClass = context.classes[0];
+  const classId = targetClass?.id ?? "";
+  const registerDate = "2026-06-23";
   const students = context.students.filter(
     (student) => student.classId === classId,
   );
-  const records = mockDailyAttendance.filter(
+  const records = (await listDailyAttendance()).filter(
     (record) => record.classId === classId,
   );
   const presentCount = records.filter(
@@ -41,17 +38,17 @@ export default async function StaffAttendancePage() {
   return (
     <>
       <DashboardHeader
-        eyebrow={`Primary 6 · ${formatPortalDate("2026-06-23")}`}
+        eyebrow={`${targetClass?.name ?? "Class"} · ${formatPortalDate(registerDate)}`}
         title="Attendance register"
         description="Mark a fictional daily class register and preview submission without saving attendance or notifying families."
         badge="Unsaved preview"
       />
 
-      <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-8 grid gap-5 sm:grid-cols-3">
         <MetricCard
           label="Register students"
           value={String(students.length)}
-          detail="Sample Primary 6 roster"
+          detail="Class roster"
           icon={<Users aria-hidden="true" className="size-5" />}
         />
         <MetricCard
@@ -66,12 +63,6 @@ export default async function StaffAttendancePage() {
           detail="Initial mock marks"
           icon={<Clock3 aria-hidden="true" className="size-5" />}
         />
-        <MetricCard
-          label="Register state"
-          value="Draft"
-          detail="No backend persistence"
-          icon={<ClipboardCheck aria-hidden="true" className="size-5" />}
-        />
       </div>
 
       <DashboardCard
@@ -79,7 +70,12 @@ export default async function StaffAttendancePage() {
         description="Changes stay in the browser and reset when the page reloads."
         className="mt-8"
       >
-        <AttendanceMarker students={students} records={records} />
+        <AttendanceMarker
+          students={students}
+          records={records}
+          classId={classId}
+          date={registerDate}
+        />
       </DashboardCard>
     </>
   );

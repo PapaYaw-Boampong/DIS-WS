@@ -10,6 +10,7 @@ import { portalRoleLabels } from "@/lib/portal/roles";
 import type {
   MockPortalSession,
   PortalNavigationItem,
+  PortalNotification,
   PortalRole,
 } from "@/types/portal";
 
@@ -17,6 +18,7 @@ type PortalLayoutProps = {
   readonly children: ReactNode;
   readonly role: PortalRole;
   readonly session: MockPortalSession;
+  readonly notifications: readonly PortalNotification[];
 };
 
 function findActiveNavigationItem(
@@ -44,13 +46,13 @@ export function PortalLayout({
   children,
   role,
   session,
+  notifications,
 }: PortalLayoutProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigation = portalNavigation[role];
   const activeItem = findActiveNavigationItem(navigation, pathname);
   const pageTitle = activeItem?.label ?? "Portal";
-  const notificationCount = role === "parent" ? 3 : undefined;
 
   return (
     <div className="min-h-screen bg-soft-white lg:flex">
@@ -72,7 +74,8 @@ export function PortalLayout({
           pageTitle={pageTitle}
           roleLabel={portalRoleLabels[role]}
           user={session.user}
-          notificationCount={notificationCount}
+          role={role}
+          notifications={notifications}
           onMenuOpen={() => setMobileOpen(true)}
         />
         <main

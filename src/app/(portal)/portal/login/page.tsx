@@ -4,9 +4,13 @@ import Link from "next/link";
 import { ArrowLeft, CheckCircle2, ShieldCheck } from "lucide-react";
 import { redirect } from "next/navigation";
 
-import { loginWithMockAccount } from "@/app/(portal)/portal/actions";
+import {
+  loginWithCredentials,
+  loginWithMockAccount,
+} from "@/app/(portal)/portal/actions";
 import { mockPortalUsers } from "@/data/portal/users";
 import { school } from "@/data/school";
+import { useRealPortalAuth } from "@/lib/portal/auth-config";
 import { getMockPortalSession } from "@/lib/portal/mock-session";
 import {
   isPortalRole,
@@ -29,6 +33,7 @@ type PortalLoginPageProps = {
 const loginErrors: Record<string, string> = {
   "invalid-role": "Choose a valid portal role to continue.",
   "account-unavailable": "The selected mock account is not available.",
+  "invalid-credentials": "Incorrect email or password. Please try again.",
 };
 
 export default async function PortalLoginPage({
@@ -117,14 +122,15 @@ export default async function PortalLoginPage({
               <ShieldCheck aria-hidden="true" className="size-6" />
             </div>
             <p className="mt-6 text-sm font-bold tracking-[0.14em] text-curry-orange uppercase">
-              Mock authentication
+              {useRealPortalAuth ? "Portal sign in" : "Mock authentication"}
             </p>
             <h2 className="mt-3 text-3xl font-extrabold tracking-[-0.03em] text-charcoal">
-              Choose a portal role
+              {useRealPortalAuth ? "Sign in to the portal" : "Choose a portal role"}
             </h2>
             <p className="mt-3 leading-7 text-muted-grey">
-              Select a demo account to enter the protected portal shell. No
-              password, live account or backend request is used.
+              {useRealPortalAuth
+                ? "Enter the email and password for your school-issued account."
+                : "Select a demo account to enter the protected portal shell. No password, live account or backend request is used."}
             </p>
             <p className="mt-4 rounded-2xl border border-curry-orange/25 bg-soft-cream p-4 text-sm font-semibold leading-6 text-charcoal">
               Public sign-up is not part of the portal. In production, school
@@ -141,38 +147,79 @@ export default async function PortalLoginPage({
               </p>
             ) : null}
 
-            <form action={loginWithMockAccount} className="mt-7">
-              <label
-                htmlFor="portal-role"
-                className="text-sm font-bold text-charcoal"
-              >
-                Portal role
-              </label>
-              <select
-                id="portal-role"
-                name="role"
-                defaultValue={selectedRole}
-                className="mt-2 min-h-13 w-full rounded-2xl border border-border bg-white px-4 text-charcoal outline-none transition focus:border-curry-orange focus:ring-4 focus:ring-curry-orange/10"
-              >
-                {portalRoles.map((role) => (
-                  <option key={role} value={role}>
-                    {portalRoleLabels[role]}
-                  </option>
-                ))}
-              </select>
+            {useRealPortalAuth ? (
+              <form action={loginWithCredentials} className="mt-7">
+                <label
+                  htmlFor="portal-email"
+                  className="text-sm font-bold text-charcoal"
+                >
+                  Email
+                </label>
+                <input
+                  id="portal-email"
+                  name="email"
+                  type="email"
+                  autoComplete="username"
+                  required
+                  className="mt-2 min-h-13 w-full rounded-2xl border border-border bg-white px-4 text-charcoal outline-none transition focus:border-curry-orange focus:ring-4 focus:ring-curry-orange/10"
+                />
 
-              <p className="mt-3 text-sm leading-6 text-muted-grey">
-                Each option maps to one fictional active account. Changing the
-                role changes the protected dashboard opened after submission.
-              </p>
+                <label
+                  htmlFor="portal-password"
+                  className="mt-4 block text-sm font-bold text-charcoal"
+                >
+                  Password
+                </label>
+                <input
+                  id="portal-password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  className="mt-2 min-h-13 w-full rounded-2xl border border-border bg-white px-4 text-charcoal outline-none transition focus:border-curry-orange focus:ring-4 focus:ring-curry-orange/10"
+                />
 
-              <button
-                type="submit"
-                className="mt-6 inline-flex min-h-13 w-full items-center justify-center rounded-full bg-curry-orange px-6 font-bold text-white transition-colors hover:bg-deep-orange"
-              >
-                Continue with mock access
-              </button>
-            </form>
+                <button
+                  type="submit"
+                  className="mt-6 inline-flex min-h-13 w-full items-center justify-center rounded-full bg-curry-orange px-6 font-bold text-white transition-colors hover:bg-deep-orange"
+                >
+                  Sign in
+                </button>
+              </form>
+            ) : (
+              <form action={loginWithMockAccount} className="mt-7">
+                <label
+                  htmlFor="portal-role"
+                  className="text-sm font-bold text-charcoal"
+                >
+                  Portal role
+                </label>
+                <select
+                  id="portal-role"
+                  name="role"
+                  defaultValue={selectedRole}
+                  className="mt-2 min-h-13 w-full rounded-2xl border border-border bg-white px-4 text-charcoal outline-none transition focus:border-curry-orange focus:ring-4 focus:ring-curry-orange/10"
+                >
+                  {portalRoles.map((role) => (
+                    <option key={role} value={role}>
+                      {portalRoleLabels[role]}
+                    </option>
+                  ))}
+                </select>
+
+                <p className="mt-3 text-sm leading-6 text-muted-grey">
+                  Each option maps to one fictional active account. Changing the
+                  role changes the protected dashboard opened after submission.
+                </p>
+
+                <button
+                  type="submit"
+                  className="mt-6 inline-flex min-h-13 w-full items-center justify-center rounded-full bg-curry-orange px-6 font-bold text-white transition-colors hover:bg-deep-orange"
+                >
+                  Continue with mock access
+                </button>
+              </form>
+            )}
           </div>
 
           <div className="mt-6 rounded-3xl border border-border bg-white p-5">

@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import { FilePenLine } from "lucide-react";
 
+import { createAssignment } from "@/app/(portal)/portal/actions/academics";
 import type { ClassSummary } from "@/types/portal";
 
 type MockAssignmentFormProps = {
@@ -13,12 +15,16 @@ export function MockAssignmentForm({
   classes,
 }: MockAssignmentFormProps) {
   const [message, setMessage] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
+  const router = useRouter();
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const title = String(formData.get("title")).trim();
     const classId = String(formData.get("class"));
+    const subject = String(formData.get("subject"));
+    const instructions = String(formData.get("instructions") ?? "").trim();
     const dueDate = String(formData.get("dueDate"));
     const classItem = classes.find((item) => item.id === classId);
 
@@ -27,16 +33,36 @@ export function MockAssignmentForm({
       return;
     }
 
-    setMessage(
-      `"${title}" would be assigned to ${classItem.name} for ${dueDate}. Nothing was published.`,
-    );
+    startTransition(async () => {
+      const result = await createAssignment({
+        classId,
+        subject,
+        title,
+        instructions: instructions || undefined,
+        dueDate,
+      });
+
+      if (!result.ok) {
+        setMessage("Could not create the assignment. Please try again.");
+        return;
+      }
+
+      if (result.mode === "real") {
+        setMessage(`"${title}" was created for ${classItem.name}.`);
+        router.refresh();
+      } else {
+        setMessage(
+          `"${title}" would be assigned to ${classItem.name} for ${dueDate}. Nothing was published (preview).`,
+        );
+      }
+    });
   }
 
   return (
     <div>
       <p className="rounded-2xl border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-900">
-        Assignment creation is a local preview. It does not notify students,
-        create a record, or upload an attachment.
+        New assignments are saved when the backend is enabled; otherwise this is
+        a local preview. Attachments are not uploaded in this phase.
       </p>
       <form onSubmit={handleSubmit} className="mt-6 space-y-5">
         <label className="block text-sm font-bold text-charcoal">
@@ -92,10 +118,11 @@ export function MockAssignmentForm({
         </label>
         <button
           type="submit"
-          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-curry-orange px-6 font-bold text-white transition-colors hover:bg-deep-orange"
+          disabled={pending}
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-curry-orange px-6 font-bold text-white transition-colors hover:bg-deep-orange disabled:opacity-60"
         >
           <FilePenLine aria-hidden="true" className="size-5" />
-          Preview assignment
+          {pending ? "Saving…" : "Create assignment"}
         </button>
       </form>
       {message ? (

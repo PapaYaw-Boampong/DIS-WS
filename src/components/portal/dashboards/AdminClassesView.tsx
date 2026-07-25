@@ -5,10 +5,15 @@ import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { MockClassForm } from "@/components/portal/MockClassForm";
-import { mockClasses } from "@/data/portal/academics";
-import { mockStudents } from "@/data/portal/students";
+import { listClasses } from "@/lib/portal/data/people";
+import { listStudents } from "@/lib/portal/data/students";
 
-export function AdminClassesView() {
+export async function AdminClassesView() {
+  const [mockClasses, mockStudents] = await Promise.all([
+    listClasses(),
+    listStudents(),
+  ]);
+
   const rows: readonly DataTableRow[] = mockClasses.map((classItem) => ({
     id: classItem.id,
     cells: [

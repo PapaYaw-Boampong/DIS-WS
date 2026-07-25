@@ -152,6 +152,13 @@ export const mockCourseModules = [
         type: "material",
         status: "available",
       },
+      {
+        id: "module-item-p6-math-004",
+        title: "Fractions check quiz",
+        type: "quiz",
+        status: "available",
+        dueDate: "2026-06-26",
+      },
     ],
   },
   {
@@ -205,6 +212,12 @@ export const mockCourseModules = [
         type: "assignment",
         status: "completed",
         dueDate: "2026-06-30",
+      },
+      {
+        id: "module-item-p6-english-003",
+        title: "Share your narrative topic",
+        type: "discussion",
+        status: "available",
       },
     ],
   },

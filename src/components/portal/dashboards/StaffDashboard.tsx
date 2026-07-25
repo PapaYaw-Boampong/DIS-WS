@@ -1,9 +1,4 @@
-import {
-  CalendarCheck,
-  FilePenLine,
-  GraduationCap,
-  Users,
-} from "lucide-react";
+import { FilePenLine, GraduationCap, Users } from "lucide-react";
 
 import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
@@ -12,41 +7,38 @@ import { MetricCard } from "@/components/portal/MetricCard";
 import { NoticeList } from "@/components/portal/NoticeList";
 import { ProgressMeter } from "@/components/portal/ProgressMeter";
 import { StatusBadge } from "@/components/portal/StatusBadge";
-import {
-  mockAssignments,
-  mockClasses,
-  mockTimetable,
-} from "@/data/portal/academics";
-import { mockAnnouncements } from "@/data/portal/announcements";
-import { mockStaff } from "@/data/portal/staff";
+import { listAssignments, listTimetable } from "@/lib/portal/data/academics";
+import { listAnnouncements } from "@/lib/portal/data/communication";
 import { formatPortalDate, formatPortalTime } from "@/lib/portal/format";
+import { getMockStaffPortalContext } from "@/lib/portal/mock-staff";
 
-type StaffDashboardProps = {
-  readonly userId: string;
-  readonly userName: string;
-};
+export async function StaffDashboard() {
+  const context = await getMockStaffPortalContext();
 
-export function StaffDashboard({ userId, userName }: StaffDashboardProps) {
-  const staff = mockStaff.find((item) => item.userId === userId);
-
-  if (!staff) {
+  if (!context) {
     return null;
   }
 
-  const assignedClasses = mockClasses.filter((item) =>
-    staff.classIds.includes(item.id),
-  );
+  const { staff, session } = context;
+  const userName = session.user.name;
+  const assignedClasses = context.classes;
+  const [allTimetable, allAssignments, allAnnouncements] = await Promise.all([
+    listTimetable(),
+    listAssignments(),
+    listAnnouncements(),
+  ]);
   const studentCount = assignedClasses.reduce(
     (total, item) => total + item.studentCount,
     0,
   );
-  const todaysClasses = mockTimetable.filter(
+  const todaysClasses = allTimetable.filter(
     (item) => item.teacher === staff.fullName,
   );
-  const reviewAssignments = mockAssignments.filter(
-    (item) => item.status === "review",
+  const reviewAssignments = allAssignments.filter(
+    (item) =>
+      item.status === "review" && staff.classIds.includes(item.classId),
   );
-  const announcements = mockAnnouncements.filter(
+  const announcements = allAnnouncements.filter(
     (item) => item.audience === "all" || item.audience === "staff",
   );
 
@@ -87,7 +79,7 @@ export function StaffDashboard({ userId, userName }: StaffDashboardProps) {
         badge="Staff mock data"
       />
 
-      <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-8 grid gap-5 sm:grid-cols-3">
         <MetricCard
           label="Assigned classes"
           value={String(assignedClasses.length)}
@@ -105,12 +97,6 @@ export function StaffDashboard({ userId, userName }: StaffDashboardProps) {
           value={String(reviewAssignments.length)}
           detail="Mock assignment queue"
           icon={<FilePenLine aria-hidden="true" className="size-5" />}
-        />
-        <MetricCard
-          label="Today's classes"
-          value={String(todaysClasses.length)}
-          detail="Tuesday schedule"
-          icon={<CalendarCheck aria-hidden="true" className="size-5" />}
         />
       </div>
 

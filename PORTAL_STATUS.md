@@ -7,9 +7,238 @@ brief.
 
 ## Current Phase
 
-**Portal Phase 14: Parent Finance Refinement and Transport Wallet**
+**Portal Phase 17: Real File Storage for Course Materials & Submissions**
 Status: `complete`
-Completed: June 25, 2026
+Completed: July 25, 2026
+
+Extends the R2 storage wired up for payment attachments to the two remaining
+documented file categories: staff-uploaded course materials and student
+assignment submissions.
+
+- **Schema** (migrations `academics_file_storage`, `learning_resource_mimetype`,
+  `learning_resource_created_at`): `LearningResource` gains `objectKey`,
+  `mimeType`, `fileSize`, and `createdAt` (real timestamp for deterministic
+  ordering — `sharedAt` is a day-granularity display date and ties within the
+  same day). A new `AssignmentSubmission` table (one row per
+  assignment+student, a re-submission overwrites it) holds the student's
+  uploaded file.
+- **Backend**: `POST /learning-resources` (staff/admin, own class only) uploads
+  a file to R2 and creates the resource; `GET /learning-resources/:id/download`
+  is gated by class access (admin any, staff their classes, student their own
+  class). `POST /assignments/:id/submissions` (student, own class) uploads/
+  re-uploads a file — `submittedCount` increments once per student, not per
+  submission; `GET /assignments/:id/submissions` (staff/admin) lists them,
+  `GET /assignments/:id/submissions/me` (student) returns their own, and
+  `GET /submissions/:id/download` is gated to staff of that class, admin, or
+  the submitting student. Uploads over 8MB are rejected (`413`).
+- **Frontend**: the staff "Add course material" page now uploads for real
+  (replacing the old device-only preview); the course home page lists shared
+  materials with a working download link. The student assignment page's old
+  "requires a later assignment submission and file-storage phase" placeholder
+  is replaced with a real upload form showing submission status and a
+  download link; staff see a submissions list with per-student download links
+  on the same page. Both new download routes are same-origin Next.js proxies
+  (mirroring the existing payment-attachment proxy), since the browser can't
+  attach the backend's bearer token to a cross-origin request.
+- **One real bug found and fixed during verification**: the submission
+  status/list views initially 500'd — `formatPortalDate` expects a
+  day-granularity string and appends its own time suffix, but
+  `AssignmentSubmission.submittedAt` is a full ISO timestamp; fixed by slicing
+  to the date portion first (the same pattern already used for
+  `Payment.paidAt` elsewhere).
+
+A follow-up security review (multi-pass: an independent identification pass,
+then a separate false-positive-filtering pass per finding) covering the full
+uncommitted backend surface (auth, admin accounts, payments, statement
+reconciliation, academics, file storage) found and fixed four real issues,
+all confirmed at 9/10 confidence:
+
+- **Stored XSS via attacker-controlled upload `Content-Type`**: the payment
+  bank-receipt upload and the new Phase 17 material/submission uploads all
+  accepted an arbitrary client-supplied `mimeType`, stored it, and served it
+  back verbatim as the literal `Content-Type` response header with
+  `Content-Disposition: inline` on download — and the real accounts-console
+  attachment link opens as a top-level `target="_blank"` navigation (not an
+  `<img>`/fetch), so a `text/html`/`image/svg+xml` "receipt" or "material"
+  would execute script in the viewing staff/student's authenticated session.
+  Fixed with a shared upload MIME allowlist (`server/src/lib/
+  file-validation.ts` — images, PDF, Office docs, plain text only) enforced
+  on all three upload routes, plus a global `X-Content-Type-Options: nosniff`
+  response header as defense-in-depth.
+- **Statement reconciliation could be defrauded**: the exact-reference-match
+  path in `POST /statements/import` auto-verified a payment without ever
+  comparing the statement row's real amount to the payment's self-reported
+  amount — a parent could pair a real (small) transaction's genuine reference
+  with a fabricated (large) `amount` at submission time, and the next routine
+  statement import would silently credit the invoice for the fabricated
+  amount before any human reviewed it. Fixed by requiring the amounts to
+  match even on an exact reference hit; a mismatch now stays unmatched for
+  manual review instead of auto-verifying.
+- **Staff reads were unscoped**: `GET /results`, `/attendance-summaries`,
+  `/daily-attendance`, and `/gradebook` returned every class's records to any
+  staff account, while the equivalent write endpoints already correctly
+  scoped writes to the staff member's assigned classes via `canWriteClass`.
+  Fixed with a new `resolveReadableClassIds` helper (mirrors
+  `canWriteClass`) applied to all four read endpoints; admin is unaffected
+  (unrestricted by design).
+- A fifth candidate (no rate limiting on `/auth/login`) was raised but
+  excluded per the review's own policy — rate-limiting/DOS concerns are out
+  of scope for this pass.
+
+All four fixes were re-verified end-to-end (disallowed MIME rejected `400`,
+allowed MIME still succeeds, `nosniff` present, fabricated reference+amount
+mismatch stays `pending`/unmatched, staff sees strictly fewer records than
+admin for the same endpoints) with no regressions (`tsc`/`eslint` clean on
+both apps).
+
+**Portal Phase 16: Audit Logging**
+Status: `complete`
+Completed: July 25, 2026
+
+Closes a gap called out repeatedly in `PORTAL_BACKEND_API_CONTRACT.md` section
+8 and `PORTAL_AUTHORIZATION_PLAN.md` but never implemented: no audit trail
+existed despite the backend now handling real auth, real payments, and real
+files.
+
+- **Schema** (migration `audit_log`): an append-only `AuditLog` table (actor,
+  action, target type/id, a free-text summary, request id, IP, user agent,
+  timestamp). No update/delete path is exposed.
+- **`recordAudit()` helper** (`server/src/lib/audit.ts`): fire-and-log, not
+  fire-and-throw — a broken audit insert is caught and logged, never blocks
+  the business action it's recording.
+- **Wired into every sensitive write**: login success/failure (with reason:
+  not-found / inactive / bad-password) and logout; admin account create/
+  update (update logs the actual before→after field diff); every payment path
+  (MoMo/bank submit, cash record, verify, reject, attachment view) and
+  statement reconciliation (import, manual match); assignment create,
+  gradebook save, attendance save — plus the Phase 17 material/submission
+  upload and download actions.
+- **Admin-only read**: `GET /audit-logs`, paginated and filterable by
+  `actorId`/`targetType`/`action`.
+
+**Portal Phase 15: Backend Foundation & Core Domains**
+Status: `complete`
+Completed: July 25, 2026
+
+The mock→real transition. A **separate Render backend service** (Fastify + Prisma
++ PostgreSQL) now implements six increments, each verified end-to-end against a
+real Postgres database (`DIS`):
+
+1. **Authentication** — admin-issued accounts, argon2-hashed passwords,
+   server-owned sessions; Next.js login/session wired behind `USE_REAL_PORTAL_AUTH`
+   (mock session remains the fallback).
+2. **Admin account management** — list/create/suspend accounts; role + status
+   lifecycle (admin-only, 401/403 enforced).
+3. **Identity / people** — students, parents, staff, classes (+ the parent's own
+   children).
+4. **Finance** — fee items (incl. **admission** + **miscellaneous** categories),
+   invoices, payments; parent finance reads; and a **cash-desk write** that records
+   a payment, recomputes the invoice, and generates a receipt document.
+5. **Transport** — routes, trips, and the parent's assigned transport (route +
+   latest trip).
+6. **Documents & notifications** — parent documents (bills, receipts, menu,
+   calendar) and role/user-targeted notifications.
+
+Backends for all six increments are built, migrated (`prisma migrate`), seeded,
+and curl-verified. Three further backend domains were then added and verified
+against the same database: **academics** (courses, course modules, assignments,
+timetable, learning resources, results, attendance summaries, daily attendance,
+gradebook — with student `/me/*` reads), **wallets** (feeding + transport wallet
+balances, transactions, and a parent `/me/wallets` aggregate), and
+**communication** (announcements, events, transport notices); an admin/accounts
+`GET /transport/assignments` endpoint was also added.
+
+A **messages** domain followed (migration `messages_domain`): `Conversation`,
+`ConversationParticipant` (with a per-participant `lastReadAt`), and `Message`
+models with `User` relations. `GET /me/conversations` returns viewer-relative
+conversations (counterpart, preview, unread, and per-message `fromMe` are derived
+for the requester); `POST /me/conversations/:id/messages` sends a reply and
+`POST /me/conversations/:id/read` clears unread — both participant-guarded. This
+makes the portal Messages UI (previously mock-only) backend-ready behind the
+flag; the frontend `/me/conversations` data layer already matches the returned
+shape.
+
+**First real write paths** were then added (the portal was read-only + mock
+previews before this):
+
+- **Notification read state** (migration `notification_reads`): a
+  `NotificationRead` table gives per-user read state; `GET /me/notifications`
+  derives each `read` flag for the requester, and `POST /me/notifications/:id/read`
+  (+`/read-all`) persist it.
+- **Academics writes** (migration `academics_write_constraints` adds the upsert
+  unique keys): `POST /assignments` (create), `POST /gradebook` (bulk score
+  upsert), `POST /daily-attendance` (bulk register upsert) — all guarded so staff
+  may only write to their own classes (admins any); validation → `400`,
+  cross-class → `403`.
+- **Frontend write plumbing**: a server-side `portalApiPost` helper plus BFF
+  server actions under `src/app/(portal)/portal/actions/*` (messages,
+  notifications, academics). Each action **no-ops as a preview when the flag is
+  off** (mock UX unchanged) and POSTs with the session bearer token when on. The
+  message composer, notifications read toggles, assignment form, gradebook
+  Save/SpeedGrader and attendance register are wired to these actions and refresh
+  on real success.
+
+**Payment system — unified model + verification workflow (replaces the old
+mock-only checkout).** The school's process is: parents pay by **Mobile Money**
+or **Bank Deposit** externally, submit the transaction details, and the school
+verifies each submission against a MoMo/bank statement before it counts;
+**Cash** is verified immediately at the office desk. Every payment, regardless
+of method, is one `Payment` record with a **generated receipt** on verification.
+
+- **Unified model** (migration `payments_unified`): `Payment.status` is now
+  `pending | verified | rejected` (`method` is `momo | bank | cash`), with
+  verification metadata (`verifiedById`, `verifiedAt`, `rejectionReason`) and
+  bank fields (`bankName`, `depositorName`, `depositDate`). A new
+  `PaymentAttachment` table holds an uploaded deposit-slip photo (bytes in
+  Postgres — a dev stopgap for real object storage).
+- **Parent submission**: `POST /me/payments/momo` and `POST /me/payments/bank`
+  (with an optional receipt image, sent as base64) create a `pending` payment
+  scoped to the parent's own child; both notify the accounts/admin roles.
+- **Verification core**: `POST /payments/:id/verify` / `/reject`, and the
+  existing cash endpoint, all funnel through one `verifyPaymentRecord` helper
+  (`server/src/lib/payments.ts`) — recomputes the invoice, creates the receipt
+  `DocumentAsset`, and notifies the parent (`audience: "user"`, not broadcast).
+- **Statement reconciliation** (migration `statement_reconciliation`, new
+  `server/src/routes/statements.ts`): `POST /statements/import` accepts a CSV
+  export (MoMo or bank), parses it with a small built-in parser, and
+  auto-matches each row against pending payments of the same method — exact
+  reference match, or amount + date (±3 days) + fuzzy depositor-name match
+  (≥70% confidence) — auto-verifying matches through the same helper.
+  Unmatched rows stay visible; `POST /statements/transactions/:id/match` lets
+  an admin/accounts user link one by hand. `GET /statements` and
+  `GET /statements/:id` list imports and their rows.
+- **Frontend**: `MomoPaymentForm`/`BankDepositForm` (parent Pay Now, tabbed via
+  `PaymentMethodTabs`) show the school's merchant number / bank account
+  (`src/lib/portal/payment-config.ts`) and submit for verification;
+  `CashPaymentForm` (accounts) records + verifies instantly; the accounts/admin
+  **Payments console** (`/portal/{accounts,admin}/payments`) filters by status
+  and has per-row Verify/Reject actions and a bank-attachment viewer (proxied
+  through a same-origin Next.js route handler, since the browser can't attach
+  the backend's bearer token to a cross-origin image request); a **Statement
+  reconciliation** area (`/payments/statements`, `/payments/statements/:id`)
+  handles CSV upload and manual matching.
+- **Two real bugs found and fixed during verification**: (1) Fastify v5
+  rejects a POST with `content-type: application/json` and an empty body
+  before the route handler runs, which broke every bodyless action
+  (`verifyPayment`, `markAllNotificationsRead`) — fixed by only setting that
+  header when a body is sent (`portalApiPost`) and by adding a lenient
+  content-type parser server-side. (2) `notifyPaymentParent` was defaulting to
+  `audience: "all"`, broadcasting every "payment verified/rejected" notice
+  (meant for one parent) to *every* signed-in user — fixed with a `"user"`
+  audience sentinel matched only by `userId`.
+- **Deferred (documented, needs external services)**: MTN MoMo Collections API
+  auto-verify, OCR of the uploaded receipt, and automatic bank
+  email/statement-import polling — manual statement upload is the live path
+  today.
+
+**Portal UI wiring — complete.** Via a repository layer (`src/lib/portal/data/*`)
+that returns mock data when `USE_REAL_PORTAL_AUTH` is off and backend data when
+on, **every portal page and all six role dashboards** now read through the real
+API when the flag is on. Identity is resolved from the session for student,
+parent, and staff dashboards (context helpers dispatch mock↔real), while admin
+and accounts dashboards keep their illustrative aggregate summary/alert cards as
+labelled mock data (not modelled in the backend). With the flag off the portal is
+unchanged and continues to run on the mock session.
 
 ## Phase History
 
@@ -29,6 +258,9 @@ Completed: June 25, 2026
 | Portal Phase 12: Secure File Storage Readiness | `complete` | June 25, 2026 | Private file storage policy plan, typed provider/category/flow/access/security/readiness maps, admin storage-readiness view, and backend-owned storage boundaries without adding provider SDKs, keys, signed URLs, upload endpoints, or live files |
 | Portal Phase 13: Parent Portal UX Polish and Tracking Readiness | `complete` | June 25, 2026 | Smooth portal page transitions, dashboard title bounce, cleaned parent dashboard, parent Events page, grouped Fees navigation, ward-filtered finance pages, backend-gated Pay Now route, mock map-style transport tracking, and local-only pickup/drop-off preferences |
 | Portal Phase 14: Parent Finance Refinement and Transport Wallet | `complete` | June 25, 2026 | Slower portal transitions, simplified parent Events and finance summary cards, parent Transport Wallet under Fees navigation, ward-filtered transport wallet balances/activity, and backend-gated transport advance payment readiness |
+| Portal Phase 15: Backend Foundation & Core Domains | `complete` | July 25, 2026 | Separate Render backend (Fastify + Prisma + PostgreSQL) with six DB-backed, curl-verified increments: (1) auth — hashed passwords + server sessions, portal login wired behind `USE_REAL_PORTAL_AUTH`; (2) admin account management (create/suspend, 401/403); (3) identity — students/parents/staff/classes + parent's children; (4) finance — fee items (incl. admission + miscellaneous), invoices, payments, cash-desk write with receipt + invoice recompute; (5) transport — routes/trips + parent assignment; (6) documents + notifications. Plus academics, wallets, communication, and messages domains, the unified payment verification workflow (MoMo/bank/cash + statement reconciliation), and R2 object storage for payment attachments. Portal UI wiring **complete**: every page and all six role dashboards read through the real API behind `USE_REAL_PORTAL_AUTH` via a repository/context dispatch layer |
+| Portal Phase 16: Audit Logging | `complete` | July 25, 2026 | Append-only `AuditLog` table + `recordAudit()` helper wired into every sensitive write (auth, admin accounts, payments, statements, academics writes, Phase 17 file operations); admin-only paginated `GET /audit-logs` read |
+| Portal Phase 17: Real File Storage for Course Materials & Submissions | `complete` | July 25, 2026 | R2-backed course-material upload/download (class-scoped) and assignment-submission upload/list/download (student's own class; staff/admin see and download all); staff "Add material" and student assignment pages now do real uploads instead of device-only previews |
 
 ## Phase 1 Delivered
 
@@ -334,6 +566,120 @@ Completed: June 25, 2026
 
 ## Latest Verification
 
+Phases 16–17 (audit logging + real file storage; backend run against the real
+local PostgreSQL database; **full-stack pass** — a `USE_REAL_PORTAL_AUTH=true`
+Next.js instance driven with Playwright against the live backend):
+
+- Audit log: a failed login (bad password, unknown email) and a successful
+  login each produce the correct `auth.login_failed` / `auth.login_succeeded`
+  row with the right reason in `summary`; `GET /audit-logs` returns them to an
+  admin and `403`s a parent.
+- Course materials: staff upload → `201`, appears on the course home page
+  with a working download link; downloaded bytes match the upload
+  byte-for-byte; a student in a different role gets `403` on upload, a user
+  with no access to the class gets `403` on download; a >8MB upload gets
+  `413`.
+- Assignment submissions: student submit → `201`, `submittedCount` increments
+  by exactly 1; re-submitting the same student doesn't double-count and
+  overwrites the same row; staff/admin list submissions and download them
+  (bytes match); a non-owning user gets `403` on download.
+- Browser pass caught one real bug (see Phase 17 above: `formatPortalDate`
+  crashing on a full ISO timestamp) — fixed and re-verified with a fresh
+  Playwright run showing the previously-500ing student assignment page
+  rendering correctly with no console errors.
+- `tsc --noEmit` and `eslint` clean on both the web app and the server after
+  all Phase 16–17 changes.
+
+Payment system (backend run against the real PostgreSQL `DIS` database; **plus
+a full-stack pass** — a temporary `USE_REAL_PORTAL_AUTH=true` Next.js instance
+run against the live backend, since this is a money-handling feature):
+
+- Backend, direct: MoMo/bank submission → `pending`; duplicate reference →
+  `409`; missing fields → `400`; wrong child / wrong role → `403`. Statement
+  import: an exact-reference row auto-verifies (confidence 100); an
+  amount+date+fuzzy-name row auto-verifies (confidence ≥70); an unrelated row
+  stays unmatched. Manual match on an unmatched row → verified; re-matching the
+  same row → `409`. Reject → `rejected` + reason; parent cannot verify/reject
+  → `403`; re-verifying an already-verified payment is idempotent. Bank
+  attachment bytes round-trip byte-for-byte through `GET /payments/:id/attachment`.
+- Full-stack, real mode: the accounts **and** admin Payments consoles render
+  the seeded pending MoMo/bank rows with working Verify/Reject buttons and a
+  "Statement reconciliation" link; the status-filter tabs route to the correct
+  role path (`/portal/{accounts,admin}/payments?status=...`); the parent Pay
+  Now page renders the real merchant number and MoMo/Bank tabs; the parent
+  Payment History page shows `pending`/`verified` correctly with a real "View
+  receipt" link; the Next.js attachment proxy route streams the correct
+  `image/png` bytes end-to-end and correctly returns `403` for a parent /
+  `401` with no session.
+- Mock mode (flag off): `tsc`/`eslint` clean; render sweep of the parent
+  Pay Now/Payment History, accounts/admin Payments consoles, and the new
+  Statement Reconciliation pages (empty-state) all `200` with no regressions
+  to previously-wired pages.
+
+First write paths (backend run against the real PostgreSQL `DIS` database; web
+`tsc`/`eslint` clean; mock-mode render sweep of the wired pages all `200`):
+
+- Notifications: per-user read verified — mark read → `read:true`, toggle →
+  `false`, `read-all` → 0 unread, and a second user's unread count is unaffected
+  (per-user isolation); unknown id → `404`, no token → `401`.
+- Assignments: `POST /assignments` → `201` (computes `totalStudents`); non-owned
+  class → `403`, non-staff → `403`, missing fields → `400`; admin may write any
+  class → `201`.
+- Gradebook: `POST /gradebook` upserts — an existing assessment updates in place
+  and a brand-new column is inserted (no duplicates).
+- Attendance: `POST /daily-attendance` upserts a class/date register; a
+  re-submit updates the same row rather than duplicating.
+
+Messages backend domain (backend run against the real PostgreSQL `DIS` database):
+
+- Schema migrated (`messages_domain`), Prisma client regenerated, seed extended
+  with 8 fictional conversations spanning all six roles; server `tsc --noEmit`
+  clean.
+- `GET /me/conversations`: staff sees 4 (viewer-relative counterpart/preview/
+  unread/`fromMe` all correct); parent 3 (1 unread); student 2 (1 unread).
+- `POST /me/conversations/:id/messages` → `201`, `fromMe:true`; on re-fetch the
+  message appears and the sender's `unread` flips to `false`.
+- Authz: no token → `401`; a student posting to a conversation it is not part of
+  → `403`; `POST /me/conversations/:id/read` → `200`.
+
+Portal Phase 15 UI-wiring completion (web checks against the live dev server,
+flag off / mock mode):
+
+- Web: `tsc --noEmit` clean, `eslint .` clean, server `tsc --noEmit` clean
+  (new `/transport/assignments` endpoint + academics/wallets/communication
+  routes).
+- Authenticated render sweep of **33 portal pages** across all six roles (mock
+  session cookie per role): every page returned `200` with no runtime/error
+  markers — student dashboard/courses/todo; parent dashboard/fees/pay/payments/
+  feeding/transport-wallet/transport/documents/events; staff dashboard/classes/
+  courses/attendance/assignments/gradebook; admin dashboard/students/parents/
+  staff/classes/fees/transport; accounts dashboard/invoices/payments/balances/
+  feeding/transport-fees/reports; transport dashboard.
+- All previously mock-only surfaces (academics, feeding/transport wallets,
+  events, and the six role dashboards) now route through the repository/context
+  dispatch layer.
+
+Portal Phase 15 backend verification (backend run against a real PostgreSQL `DIS`
+database; web checks against the live dev server):
+
+- Server: `npm install`, `prisma generate`, `tsc --noEmit` passed; `prisma
+  migrate dev` created `init` + `portal_domain_models` migrations; seed populated
+  6 accounts + 2 classes/2 students/1 parent/2 staff/5 fee items/2 invoices/3
+  payments/transport/4 documents/2 notifications.
+- Auth: login → `/auth/me` → logout verified; wrong password `401`; post-logout
+  `/auth/me` `401`.
+- Admin account management: list, create account, PATCH → `suspended`; parent →
+  `/admin/users` `403`; no token → `/students` `401`.
+- People: admin reads students(2)/parents(1)/staff(2)/classes(2); parent
+  `/me/children`(2).
+- Finance: fee categories include `admission` + `miscellaneous`; parent
+  `/me/invoices`(2)/`/me/payments`(3); `POST /payments/cash` → `201`, receipt
+  auto-created (documents 4→5), invoice balance/status recomputed.
+- Transport: `/me/transport` assignment(1) with route + latest trip.
+- Documents/notifications: `/me/documents`(4), `/me/notifications`(2).
+- Web: `tsc --noEmit` + `eslint` passed; with the flag off the live portal is
+  unchanged (admin students `307` to login when unauthenticated).
+
 Portal Phase 14 verification:
 
 - ESLint: passed
@@ -361,18 +707,39 @@ Portal Phase 14 verification:
 
 ## Security and Integration Boundary
 
-- No real authentication provider is connected.
-- No database, payment provider, transport feed, or Render API is connected.
-- No live school records, secrets, payment credentials, or sensitive user data
-  are stored in the frontend.
-- All current portal people and records are fictional mock data.
+- A real backend (Fastify + Prisma + PostgreSQL) now exists with real
+  authentication (hashed passwords, server-owned sessions). It is **off by
+  default** in the web app: the portal uses the mock session unless
+  `USE_REAL_PORTAL_AUTH=true`.
+- The database holds **only fictional seed data** (demo accounts, sample
+  students/fees/etc.); no real school records or credentials.
+- No payment provider, transport GPS feed, or object-storage provider is
+  connected yet; the cash-desk write is the only real payment path and it records
+  a fictional payment.
+- The frontend holds no secrets; the backend owns the database URL, session
+  secret material, and password hashing.
+- Local dev connects to a developer-supplied PostgreSQL via `DATABASE_URL`
+  (kept in an env var / gitignored `.env`, never committed).
 
 ## Next Phase
 
-The mock-data portal frontend cycle is complete through backend, database, auth,
-payment, secure file-storage readiness planning, parent UX polish, transport
-tracking readiness, and parent finance refinement. The next development cycle
-should scaffold the separate Render backend service, choose an ORM/migration
-tool, connect a payment provider through backend-owned checkout/webhooks, or
-design the GPS/location feed before replacing any mock frontend controls with
-live API calls.
+Phases 15–17 are complete: real backend (auth through messages/payments/
+statements), an audit trail on every sensitive write, and R2-backed file
+storage for both payment attachments and course materials/submissions.
+
+Remaining gaps, per the "Deferred" note under Phase 15 and the backend
+README TODOs — none block current functionality, all need an external
+service/decision before they can be built:
+
+- MTN MoMo Collections API auto-verify, OCR of uploaded receipts, and
+  automatic bank email/statement-import polling (manual statement upload is
+  the live path today).
+- Admin/accounts dashboard summary/alert cards remain illustrative mock data
+  (not modelled in the backend) — a real aggregate-metrics endpoint would be
+  the next increment here.
+- Login rate limiting and optional MFA for admin/accounts (noted in
+  `server/README.md`, tracked against `PORTAL_AUTHORIZATION_PLAN.md`).
+
+Prerequisites the school must supply for the deferred items above: a payment-
+provider account (MTN MoMo Collections API access) and, if automatic bank
+statement polling is wanted, a mailbox/API the backend can poll.

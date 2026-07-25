@@ -7,6 +7,7 @@ type DashboardCardProps = {
   readonly description?: string;
   readonly children: ReactNode;
   readonly className?: string;
+  readonly action?: ReactNode;
 };
 
 export function DashboardCard({
@@ -14,6 +15,7 @@ export function DashboardCard({
   description,
   children,
   className,
+  action,
 }: DashboardCardProps) {
   return (
     <section
@@ -22,13 +24,16 @@ export function DashboardCard({
         className,
       )}
     >
-      <div>
-        <h2 className="text-xl font-bold text-charcoal">{title}</h2>
-        {description ? (
-          <p className="mt-2 text-sm leading-6 text-muted-grey">
-            {description}
-          </p>
-        ) : null}
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-bold text-charcoal">{title}</h2>
+          {description ? (
+            <p className="mt-2 text-sm leading-6 text-muted-grey">
+              {description}
+            </p>
+          ) : null}
+        </div>
+        {action ? <div className="shrink-0">{action}</div> : null}
       </div>
       <div className="mt-6">{children}</div>
     </section>

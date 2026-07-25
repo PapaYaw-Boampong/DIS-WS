@@ -15,17 +15,13 @@ import { FinancialStatusBadge } from "@/components/portal/FinancialStatusBadge";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { MockPaymentForm } from "@/components/portal/MockPaymentForm";
 import { WardFilterSelect } from "@/components/portal/WardFilterSelect";
+import { listFeeItems } from "@/lib/portal/data/finance";
 import {
-  mockFeeItems,
-  mockInvoices,
-  mockTransportWalletBalances,
-  mockWalletTransactions,
-} from "@/data/portal/fees";
-import { mockPayments } from "@/data/portal/payments";
-import {
-  mockTransportAssignments,
-  mockTransportRoutes,
-} from "@/data/portal/transport";
+  getParentInvoices,
+  getParentPayments,
+  getParentTransport,
+} from "@/lib/portal/data/parent";
+import { getParentWallets } from "@/lib/portal/data/wallets";
 import {
   formatPortalCurrency,
   formatPortalDate,
@@ -60,8 +56,16 @@ export default async function TransportWalletPage({
   const selectedStudents = context.students.filter((student) =>
     selectedStudentIds.includes(student.id),
   );
-  const transportFee = mockFeeItems.find((item) => item.category === "transport");
-  const balances = mockTransportWalletBalances.filter((balance) =>
+  const [wallets, invoices, payments, feeItems, transportEntries] =
+    await Promise.all([
+      getParentWallets(),
+      getParentInvoices(),
+      getParentPayments(),
+      listFeeItems(),
+      getParentTransport(),
+    ]);
+  const transportFee = feeItems.find((item) => item.category === "transport");
+  const balances = wallets.transport.filter((balance) =>
     selectedStudentIds.includes(balance.studentId),
   );
   const totalBalance = balances.reduce(
@@ -71,21 +75,20 @@ export default async function TransportWalletPage({
   const lowBalanceCount = balances.filter(
     (balance) => balance.status !== "active",
   ).length;
-  const assignments = mockTransportAssignments.filter((assignment) =>
-    selectedStudentIds.includes(assignment.studentId),
-  );
-  const transportInvoices = mockInvoices.filter(
+  const assignments = transportEntries
+    .map((entry) => entry.assignment)
+    .filter((assignment) => selectedStudentIds.includes(assignment.studentId));
+  const transportInvoices = invoices.filter(
     (invoice) =>
       selectedStudentIds.includes(invoice.studentId) &&
       invoice.feeItemIds.some((feeItemId) => feeItemId === transportFee?.id),
   );
-  const transportPaid = mockPayments
+  const transportPaid = payments
     .filter(
       (payment) =>
-        payment.parentId === context.parent.id &&
         selectedStudentIds.includes(payment.studentId) &&
         payment.category === "transport" &&
-        payment.status === "successful",
+        payment.status === "verified",
     )
     .reduce((total, payment) => total + payment.amount, 0);
   const transportBalance = transportInvoices.reduce(
@@ -97,12 +100,10 @@ export default async function TransportWalletPage({
     const student = context.students.find(
       (item) => item.id === balance.studentId,
     );
-    const assignment = mockTransportAssignments.find(
-      (item) => item.studentId === balance.studentId,
-    );
-    const route = mockTransportRoutes.find(
-      (item) => item.id === assignment?.routeId,
-    );
+    const route =
+      transportEntries.find(
+        (item) => item.assignment.studentId === balance.studentId,
+      )?.route ?? null;
 
     return {
       id: balance.id,
@@ -118,7 +119,7 @@ export default async function TransportWalletPage({
     };
   });
 
-  const ledgerRows: readonly DataTableRow[] = mockWalletTransactions
+  const ledgerRows: readonly DataTableRow[] = wallets.transactions
     .filter(
       (entry) =>
         entry.wallet === "transport" &&

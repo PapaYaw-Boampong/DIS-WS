@@ -8,7 +8,7 @@ import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { MockPersonForm } from "@/components/portal/MockPersonForm";
-import { mockStaff } from "@/data/portal/staff";
+import { listStaff } from "@/lib/portal/data/people";
 import { getMockRoleSession } from "@/lib/portal/mock-role";
 
 export const metadata: Metadata = { title: "Staff Management" };
@@ -17,6 +17,8 @@ export default async function AdminStaffPage() {
   if (!(await getMockRoleSession("admin"))) {
     notFound();
   }
+
+  const mockStaff = await listStaff();
 
   const rows: readonly DataTableRow[] = mockStaff.map((staff) => ({
     id: staff.id,

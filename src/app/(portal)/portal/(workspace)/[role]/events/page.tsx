@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
-import { mockPortalEvents } from "@/data/portal/announcements";
+import { listEvents } from "@/lib/portal/data/communication";
 import {
   formatPortalDate,
   formatPortalTime,
@@ -22,7 +22,7 @@ export default async function EventsPage() {
     notFound();
   }
 
-  const events = mockPortalEvents
+  const events = (await listEvents())
     .filter((event) => event.audience === "all" || event.audience === "parent")
     .toSorted((a, b) => a.date.localeCompare(b.date));
   const upcomingRows: readonly DataTableRow[] = events.map((event) => ({

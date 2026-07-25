@@ -11,12 +11,28 @@ const dashboardItem = (role: PortalRole): PortalNavigationItem => ({
   phase: 1,
 });
 
+const messagesItem = (role: PortalRole): PortalNavigationItem => ({
+  label: "Messages",
+  icon: "message",
+  href: portalRoutes.messages(role),
+  phase: 16,
+});
+
+const notificationsItem = (role: PortalRole): PortalNavigationItem => ({
+  label: "Notifications",
+  icon: "bell",
+  href: portalRoutes.notifications(role),
+  phase: 16,
+});
+
 export const portalNavigation: Record<
   PortalRole,
   readonly PortalNavigationItem[]
 > = {
   student: [
     dashboardItem("student"),
+    messagesItem("student"),
+    notificationsItem("student"),
     {
       label: "Courses",
       icon: "book",
@@ -36,6 +52,8 @@ export const portalNavigation: Record<
   ],
   parent: [
     dashboardItem("parent"),
+    messagesItem("parent"),
+    notificationsItem("parent"),
     { label: "My Children", icon: "users", phase: 2 },
     {
       label: "Fees",
@@ -81,6 +99,12 @@ export const portalNavigation: Record<
       phase: 4,
     },
     {
+      label: "Documents",
+      icon: "file",
+      href: portalRoutes.parentDocuments,
+      phase: 15,
+    },
+    {
       label: "Events",
       icon: "calendar",
       href: portalRoutes.parentEvents,
@@ -90,6 +114,8 @@ export const portalNavigation: Record<
   ],
   staff: [
     dashboardItem("staff"),
+    messagesItem("staff"),
+    notificationsItem("staff"),
     {
       label: "My Classes",
       icon: "school",
@@ -120,15 +146,22 @@ export const portalNavigation: Record<
       href: portalRoutes.staffGradebook,
       phase: 5,
     },
-    { label: "Messages", icon: "message", phase: 5 },
   ],
   admin: [
     dashboardItem("admin"),
+    messagesItem("admin"),
+    notificationsItem("admin"),
     { label: "Students", icon: "users", href: portalRoutes.adminStudents, phase: 6 },
     { label: "Parents", icon: "users", href: portalRoutes.adminParents, phase: 6 },
     { label: "Staff", icon: "users", href: portalRoutes.adminStaff, phase: 6 },
     { label: "Classes", icon: "school", href: portalRoutes.adminClasses, phase: 6 },
     { label: "Fees", icon: "wallet", href: portalRoutes.adminFees, phase: 6 },
+    {
+      label: "Payments",
+      icon: "wallet",
+      href: portalRoutes.adminPayments,
+      phase: 17,
+    },
     {
       label: "Backend Readiness",
       icon: "settings",
@@ -169,6 +202,8 @@ export const portalNavigation: Record<
   ],
   accounts: [
     dashboardItem("accounts"),
+    messagesItem("accounts"),
+    notificationsItem("accounts"),
     { label: "Invoices", icon: "file", href: portalRoutes.accountsInvoices, phase: 6 },
     { label: "Payments", icon: "wallet", href: portalRoutes.accountsPayments, phase: 6 },
     { label: "Balances", icon: "chart", href: portalRoutes.accountsBalances, phase: 6 },
@@ -179,6 +214,8 @@ export const portalNavigation: Record<
   ],
   transport: [
     dashboardItem("transport"),
+    messagesItem("transport"),
+    notificationsItem("transport"),
     { label: "Routes", icon: "bus", phase: 4 },
     { label: "Trips", icon: "calendar", phase: 4 },
     { label: "Students", icon: "users", phase: 4 },

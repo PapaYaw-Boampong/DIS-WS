@@ -8,7 +8,7 @@ import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { MockPersonForm } from "@/components/portal/MockPersonForm";
-import { mockStudents } from "@/data/portal/students";
+import { listStudents } from "@/lib/portal/data/students";
 import { getMockRoleSession } from "@/lib/portal/mock-role";
 
 export const metadata: Metadata = { title: "Student Management" };
@@ -17,6 +17,8 @@ export default async function AdminStudentsPage() {
   if (!(await getMockRoleSession("admin"))) {
     notFound();
   }
+
+  const mockStudents = await listStudents();
 
   const rows: readonly DataTableRow[] = mockStudents.map((student) => ({
     id: student.id,

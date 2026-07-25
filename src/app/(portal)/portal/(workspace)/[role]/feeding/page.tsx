@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import {
-  CircleAlert,
-  CircleDollarSign,
-  Soup,
-  WalletCards,
-} from "lucide-react";
+import { CircleAlert, Soup, WalletCards } from "lucide-react";
 
 import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
@@ -15,10 +10,7 @@ import { MetricCard } from "@/components/portal/MetricCard";
 import { MockPaymentForm } from "@/components/portal/MockPaymentForm";
 import { WardFilterSelect } from "@/components/portal/WardFilterSelect";
 import { AccountsFeedingView } from "@/components/portal/dashboards/AccountsFeedingView";
-import {
-  mockFeedingBalances,
-  mockWalletTransactions,
-} from "@/data/portal/fees";
+import { getParentWallets } from "@/lib/portal/data/wallets";
 import {
   formatPortalCurrency,
   formatPortalDate,
@@ -67,7 +59,8 @@ export default async function FeedingPage({
     selectedStudentIds.includes(student.id),
   );
 
-  const balances = mockFeedingBalances.filter((balance) =>
+  const wallets = await getParentWallets();
+  const balances = wallets.feeding.filter((balance) =>
     selectedStudentIds.includes(balance.studentId),
   );
   const totalBalance = balances.reduce(
@@ -78,7 +71,7 @@ export default async function FeedingPage({
     (balance) => balance.status !== "active",
   ).length;
 
-  const ledgerRows: readonly DataTableRow[] = mockWalletTransactions
+  const ledgerRows: readonly DataTableRow[] = wallets.transactions
     .filter(
       (entry) =>
         entry.wallet === "feeding" && selectedStudentIds.includes(entry.studentId),
@@ -121,7 +114,7 @@ export default async function FeedingPage({
       />
 
       <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.35fr)]">
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-5 sm:grid-cols-3">
           <MetricCard
             label="Wallet balance"
             value={formatPortalCurrency(totalBalance)}
@@ -139,12 +132,6 @@ export default async function FeedingPage({
             value={String(lowBalanceCount)}
             detail="Needs parent review"
             icon={<CircleAlert aria-hidden="true" className="size-5" />}
-          />
-          <MetricCard
-            label="Advance payments"
-            value="Ready"
-            detail="Backend required"
-            icon={<CircleDollarSign aria-hidden="true" className="size-5" />}
           />
         </div>
 

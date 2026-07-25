@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   CalendarClock,
@@ -11,11 +12,12 @@ import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { MetricCard } from "@/components/portal/MetricCard";
-import { MockAssignmentForm } from "@/components/portal/MockAssignmentForm";
 import { StatusBadge } from "@/components/portal/StatusBadge";
-import { mockAssignments, mockClasses } from "@/data/portal/academics";
+import { listAssignments } from "@/lib/portal/data/academics";
+import { listClasses } from "@/lib/portal/data/people";
 import { formatPortalDate } from "@/lib/portal/format";
 import { getMockStaffPortalContext } from "@/lib/portal/mock-staff";
+import { portalRoutes } from "@/lib/portal/routes";
 
 export const metadata: Metadata = {
   title: "Assignments",
@@ -44,6 +46,10 @@ export default async function StaffAssignmentsPage() {
     notFound();
   }
 
+  const [mockAssignments, mockClasses] = await Promise.all([
+    listAssignments(),
+    listClasses(),
+  ]);
   const assignments = mockAssignments.filter((assignment) =>
     context.staff.classIds.includes(assignment.classId),
   );
@@ -76,7 +82,7 @@ export default async function StaffAssignmentsPage() {
         badge="Mock assignment data"
       />
 
-      <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-8 grid gap-5 sm:grid-cols-3">
         <MetricCard
           label="Assignments"
           value={String(assignments.length)}
@@ -99,41 +105,35 @@ export default async function StaffAssignmentsPage() {
           detail="Needs teacher review"
           icon={<FileCheck2 aria-hidden="true" className="size-5" />}
         />
-        <MetricCard
-          label="Creation mode"
-          value="Preview"
-          detail="Nothing is published"
-          icon={<FilePenLine aria-hidden="true" className="size-5" />}
+      </div>
+
+      <DashboardCard
+        title="Assignment overview"
+        description="Submission counts and status are fictional."
+        className="mt-8"
+        action={
+          <Link
+            href={portalRoutes.staffAssignmentNew}
+            className="inline-flex min-h-10 items-center gap-2 rounded-full bg-curry-orange px-4 text-sm font-bold text-white transition-colors hover:bg-deep-orange"
+          >
+            <FilePenLine aria-hidden="true" className="size-4" />
+            Create assignment
+          </Link>
+        }
+      >
+        <DataTable
+          caption="Staff assignment overview"
+          columns={[
+            "Assignment",
+            "Class",
+            "Subject",
+            "Due",
+            "Submitted",
+            "Status",
+          ]}
+          rows={assignmentRows}
         />
-      </div>
-
-      <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.2fr)_minmax(22rem,0.8fr)]">
-        <DashboardCard
-          title="Assignment overview"
-          description="Submission counts and status are fictional."
-        >
-          <DataTable
-            caption="Staff assignment overview"
-            columns={[
-              "Assignment",
-              "Class",
-              "Subject",
-              "Due",
-              "Submitted",
-              "Status",
-            ]}
-            rows={assignmentRows}
-          />
-        </DashboardCard>
-
-        <DashboardCard
-          title="Create assignment"
-          description="Preview the intended creation workflow."
-          className="h-fit"
-        >
-          <MockAssignmentForm classes={context.classes} />
-        </DashboardCard>
-      </div>
+      </DashboardCard>
     </>
   );
 }

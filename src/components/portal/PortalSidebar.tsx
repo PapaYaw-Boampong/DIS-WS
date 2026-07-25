@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   BarChart3,
+  Bell,
   BookOpen,
   Bus,
   CalendarDays,
@@ -47,6 +48,7 @@ const navigationIcons: Record<PortalNavigationIcon, LucideIcon> = {
   users: Users,
   wallet: WalletCards,
   message: MessageSquare,
+  bell: Bell,
   bus: Bus,
   settings: Settings,
   file: FileText,
@@ -109,7 +111,10 @@ export function PortalSidebar({
         <p className="mt-2 text-sm text-white/55">Mock foundation preview</p>
       </div>
 
-      <nav className="mt-6 flex-1 overflow-y-auto px-3 pb-6" aria-label="Portal">
+      <nav
+        className="scrollbar-none mt-6 flex-1 overflow-y-auto px-3 pb-6"
+        aria-label="Portal"
+      >
         <ul className="space-y-1.5">
           {items.map((item) => {
             const Icon = navigationIcons[item.icon];

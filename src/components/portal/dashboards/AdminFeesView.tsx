@@ -5,14 +5,16 @@ import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { MockFeeItemForm } from "@/components/portal/MockFeeItemForm";
-import { mockFeeItems } from "@/data/portal/fees";
+import { listFeeItems } from "@/lib/portal/data/finance";
 import {
   formatFeeCategory,
   formatPortalCurrency,
   formatPortalDate,
 } from "@/lib/portal/format";
 
-export function AdminFeesView() {
+export async function AdminFeesView() {
+  const mockFeeItems = await listFeeItems();
+
   const rows: readonly DataTableRow[] = mockFeeItems.map((fee) => ({
     id: fee.id,
     cells: [

@@ -8,45 +8,50 @@ import { MetricCard } from "@/components/portal/MetricCard";
 import { NoticeList } from "@/components/portal/NoticeList";
 import { StatusBadge } from "@/components/portal/StatusBadge";
 import {
-  mockAttendance,
-  mockResults,
-} from "@/data/portal/academics";
-import { mockAnnouncements } from "@/data/portal/announcements";
-import { mockInvoices } from "@/data/portal/fees";
-import { mockParents } from "@/data/portal/parents";
-import { mockPayments } from "@/data/portal/payments";
-import { mockStudents } from "@/data/portal/students";
+  listAttendanceSummaries,
+  listResults,
+} from "@/lib/portal/data/academics";
+import { listAnnouncements } from "@/lib/portal/data/communication";
 import {
-  mockTransportRoutes,
-  mockTransportTrips,
-} from "@/data/portal/transport";
+  getParentInvoices,
+  getParentPayments,
+  getParentTransport,
+} from "@/lib/portal/data/parent";
 import {
   formatPortalCurrency,
   formatPortalDate,
   formatPortalTime,
   percentageScore,
 } from "@/lib/portal/format";
+import { getMockParentPortalContext } from "@/lib/portal/mock-parent";
 import { portalRoutes } from "@/lib/portal/routes";
 
-type ParentDashboardProps = {
-  readonly userId: string;
-  readonly userName: string;
-};
+export async function ParentDashboard() {
+  const context = await getMockParentPortalContext();
 
-export function ParentDashboard({
-  userId,
-  userName,
-}: ParentDashboardProps) {
-  const parent = mockParents.find((item) => item.userId === userId);
-
-  if (!parent) {
+  if (!context) {
     return null;
   }
 
-  const children = mockStudents.filter((student) =>
-    parent.childIds.includes(student.id),
-  );
-  const childAttendance = mockAttendance.filter((item) =>
+  const { parent, session } = context;
+  const userName = session.user.name;
+  const children = context.students;
+  const [
+    attendanceSummaries,
+    allResults,
+    allAnnouncements,
+    invoices,
+    payments,
+    transportEntries,
+  ] = await Promise.all([
+    listAttendanceSummaries(),
+    listResults(),
+    listAnnouncements(),
+    getParentInvoices(),
+    getParentPayments(),
+    getParentTransport(),
+  ]);
+  const childAttendance = attendanceSummaries.filter((item) =>
     parent.childIds.includes(item.studentId),
   );
   const combinedAttendance = childAttendance.length
@@ -55,27 +60,22 @@ export function ParentDashboard({
           childAttendance.length,
       )
     : 0;
-  const invoices = mockInvoices.filter((invoice) =>
-    parent.childIds.includes(invoice.studentId),
-  );
   const outstanding = invoices.reduce(
     (total, invoice) => total + invoice.balance,
     0,
   );
-  const announcements = mockAnnouncements.filter(
+  const announcements = allAnnouncements.filter(
     (item) => item.audience === "all" || item.audience === "parent",
   );
-  const transportStudent = children.find((student) => student.transportRouteId);
-  const route = mockTransportRoutes.find(
-    (item) => item.id === transportStudent?.transportRouteId,
-  );
-  const trip = mockTransportTrips.find((item) => item.routeId === route?.id);
+  const transportEntry = transportEntries.find((item) => item.route);
+  const route = transportEntry?.route ?? undefined;
+  const trip = transportEntry?.latestTrip ?? undefined;
 
   const childRows: readonly DataTableRow[] = children.map((student) => {
-    const attendance = mockAttendance.find(
+    const attendance = attendanceSummaries.find(
       (item) => item.studentId === student.id,
     );
-    const results = mockResults.filter(
+    const results = allResults.filter(
       (item) => item.studentId === student.id,
     );
     const average = results.length
@@ -99,8 +99,7 @@ export function ParentDashboard({
     };
   });
 
-  const paymentRows: readonly DataTableRow[] = mockPayments
-    .filter((payment) => parent.childIds.includes(payment.studentId))
+  const paymentRows: readonly DataTableRow[] = payments
     .map((payment) => {
       const student = children.find((item) => item.id === payment.studentId);
 

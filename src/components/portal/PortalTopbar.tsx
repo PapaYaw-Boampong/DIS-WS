@@ -1,15 +1,21 @@
 "use client";
 
-import { Bell, LogOut, Menu } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
 
 import { logoutMockPortalSession } from "@/app/(portal)/portal/actions";
-import type { PortalUser } from "@/types/portal";
+import { NotificationBell } from "@/components/portal/NotificationBell";
+import type {
+  PortalNotification,
+  PortalRole,
+  PortalUser,
+} from "@/types/portal";
 
 type PortalTopbarProps = {
   readonly pageTitle: string;
   readonly roleLabel: string;
   readonly user: PortalUser;
-  readonly notificationCount?: number;
+  readonly role: PortalRole;
+  readonly notifications: readonly PortalNotification[];
   readonly onMenuOpen: () => void;
 };
 
@@ -17,11 +23,10 @@ export function PortalTopbar({
   pageTitle,
   roleLabel,
   user,
-  notificationCount,
+  role,
+  notifications,
   onMenuOpen,
 }: PortalTopbarProps) {
-  const hasNotifications = typeof notificationCount === "number" && notificationCount > 0;
-
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-white/95 backdrop-blur">
       <div className="flex min-h-20 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
@@ -45,25 +50,7 @@ export function PortalTopbar({
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <button
-            type="button"
-            disabled
-            className="relative inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-soft-cream px-3 text-sm font-semibold text-deep-orange opacity-80 sm:px-4"
-            title="Notifications are planned for a later phase"
-            aria-label={
-              hasNotifications
-                ? `${notificationCount} mock notifications`
-                : "Notifications"
-            }
-          >
-            <Bell aria-hidden="true" className="size-4" />
-            <span className="hidden sm:inline">Notifications</span>
-            {hasNotifications ? (
-              <span className="absolute -top-1 -right-1 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-curry-orange px-1.5 text-[0.65rem] font-extrabold text-white ring-2 ring-white">
-                {notificationCount}
-              </span>
-            ) : null}
-          </button>
+          <NotificationBell role={role} notifications={notifications} />
 
           <div
             className="flex size-11 items-center justify-center rounded-full bg-curry-orange font-extrabold text-white"

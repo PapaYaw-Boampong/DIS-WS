@@ -7,8 +7,8 @@ import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { FinancialStatusBadge } from "@/components/portal/FinancialStatusBadge";
 import { MetricCard } from "@/components/portal/MetricCard";
-import { mockInvoices } from "@/data/portal/fees";
-import { mockStudents } from "@/data/portal/students";
+import { listInvoices } from "@/lib/portal/data/finance";
+import { listStudents } from "@/lib/portal/data/students";
 import { formatPortalCurrency } from "@/lib/portal/format";
 import { getMockRoleSession } from "@/lib/portal/mock-role";
 
@@ -18,6 +18,11 @@ export default async function AccountsBalancesPage() {
   if (!(await getMockRoleSession("accounts"))) {
     notFound();
   }
+
+  const [mockInvoices, mockStudents] = await Promise.all([
+    listInvoices(),
+    listStudents(),
+  ]);
 
   const rows: readonly DataTableRow[] = mockInvoices.map((invoice) => {
     const student = mockStudents.find((item) => item.id === invoice.studentId);

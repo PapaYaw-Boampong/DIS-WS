@@ -15,19 +15,25 @@ import {
   mockAccountsAlerts,
   mockAccountsSummary,
 } from "@/data/portal/dashboard";
-import { mockInvoices } from "@/data/portal/fees";
-import { mockPayments } from "@/data/portal/payments";
-import { mockStudents } from "@/data/portal/students";
+import {
+  listInvoices,
+  listPayments,
+} from "@/lib/portal/data/finance";
+import { listStudents } from "@/lib/portal/data/students";
 import {
   formatPortalCurrency,
   formatPortalDate,
 } from "@/lib/portal/format";
+import { getMockPortalSession } from "@/lib/portal/mock-session";
 
-type AccountsDashboardProps = {
-  readonly userName: string;
-};
-
-export function AccountsDashboard({ userName }: AccountsDashboardProps) {
+export async function AccountsDashboard() {
+  const session = await getMockPortalSession();
+  const userName = session?.user.name ?? "Accounts";
+  const [mockPayments, mockInvoices, mockStudents] = await Promise.all([
+    listPayments(),
+    listInvoices(),
+    listStudents(),
+  ]);
   const paymentRows: readonly DataTableRow[] = mockPayments.map((payment) => {
     const student = mockStudents.find((item) => item.id === payment.studentId);
 

@@ -21,7 +21,7 @@ export type PortalUser = {
 
 export type MockPortalSession = {
   readonly user: PortalUser;
-  readonly mode: "mock";
+  readonly mode: "mock" | "real";
 };
 
 export type StudentProfile = {
@@ -63,6 +63,8 @@ export type FeeCategory =
   | "school_fees"
   | "feeding"
   | "transport"
+  | "admission"
+  | "miscellaneous"
   | "uniform"
   | "books"
   | "exam"
@@ -95,14 +97,9 @@ export type Invoice = {
   readonly dueDate?: string;
 };
 
-export type PaymentMethod =
-  | "momo"
-  | "card"
-  | "bank_transfer"
-  | "cash"
-  | "manual";
+export type PaymentMethod = "momo" | "bank" | "cash";
 
-export type PaymentStatus = "pending" | "successful" | "failed" | "refunded";
+export type PaymentStatus = "pending" | "verified" | "rejected";
 
 export type Payment = {
   readonly id: string;
@@ -115,6 +112,13 @@ export type Payment = {
   readonly status: PaymentStatus;
   readonly reference: string;
   readonly paidAt: string;
+  readonly note?: string;
+  readonly bankName?: string;
+  readonly depositorName?: string;
+  readonly depositDate?: string;
+  readonly rejectionReason?: string;
+  readonly verifiedAt?: string;
+  readonly hasAttachment?: boolean;
 };
 
 export type FeedingBalance = {
@@ -342,6 +346,17 @@ export type LearningResource = {
   readonly fileType: "pdf" | "document" | "presentation" | "link";
   readonly sharedAt: string;
   readonly status: "published" | "draft";
+  readonly objectKey?: string | null;
+};
+
+export type AssignmentSubmission = {
+  readonly id: string;
+  readonly assignmentId: string;
+  readonly studentId: string;
+  readonly fileName: string;
+  readonly mimeType: string;
+  readonly submittedAt: string;
+  readonly status: string;
 };
 
 export type DashboardAlert = {
@@ -361,6 +376,7 @@ export type PortalNavigationIcon =
   | "users"
   | "wallet"
   | "message"
+  | "bell"
   | "bus"
   | "settings"
   | "file"
@@ -372,4 +388,79 @@ export type PortalNavigationItem = {
   readonly href?: string;
   readonly phase: number;
   readonly children?: readonly PortalNavigationItem[];
+};
+
+export type PortalDocument = {
+  readonly id: string;
+  readonly title: string;
+  readonly description: string;
+  readonly category: string;
+  readonly audience: string;
+  readonly studentId?: string | null;
+  readonly fileName?: string | null;
+  readonly url?: string | null;
+  readonly downloadable: boolean;
+  readonly publishedAt: string;
+};
+
+export type PortalNotification = {
+  readonly id: string;
+  readonly title: string;
+  readonly body: string;
+  readonly audience: string;
+  readonly priority: string;
+  readonly read: boolean;
+  readonly createdAt: string;
+};
+
+export type PortalMessageAuthor = {
+  readonly id: string;
+  readonly name: string;
+  readonly role: string;
+};
+
+export type StatementMethod = "momo" | "bank";
+
+export type StatementTransaction = {
+  readonly id: string;
+  readonly importId: string;
+  readonly amount: number;
+  readonly date: string;
+  readonly reference?: string | null;
+  readonly counterpartyName?: string | null;
+  readonly raw: Record<string, string>;
+  readonly matchedPaymentId?: string | null;
+  readonly matchType?: "reference" | "amount_date_name" | "manual" | null;
+  readonly matchConfidence?: number | null;
+  readonly createdAt: string;
+};
+
+export type StatementImport = {
+  readonly id: string;
+  readonly method: StatementMethod;
+  readonly fileName: string;
+  readonly importedById: string;
+  readonly importedAt: string;
+  readonly rowCount: number;
+  readonly matchedCount: number;
+  readonly transactions?: readonly StatementTransaction[];
+};
+
+export type PortalMessage = {
+  readonly id: string;
+  readonly author: PortalMessageAuthor;
+  readonly body: string;
+  readonly sentAt: string;
+  readonly fromMe?: boolean;
+};
+
+export type PortalConversation = {
+  readonly id: string;
+  readonly subject: string;
+  readonly counterpart: string;
+  readonly audience: string;
+  readonly preview: string;
+  readonly unread: boolean;
+  readonly updatedAt: string;
+  readonly messages: readonly PortalMessage[];
 };

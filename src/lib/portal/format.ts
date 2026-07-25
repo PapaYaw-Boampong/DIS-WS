@@ -35,6 +35,8 @@ export function formatFeeCategory(value: string) {
     school_fees: "School Fees",
     feeding: "Feeding Fees",
     transport: "Transport Fees",
+    admission: "Admission",
+    miscellaneous: "Miscellaneous",
     uniform: "Uniform Fees",
     books: "Books & Materials",
     exam: "Examination Fees",
@@ -47,9 +49,11 @@ export function formatFeeCategory(value: string) {
 export function formatPaymentMethod(value: string) {
   const labels: Record<string, string> = {
     momo: "Mobile Money",
-    card: "Card",
-    bank_transfer: "Bank Transfer",
+    bank: "Bank Deposit",
     cash: "Cash",
+    // Legacy values kept for backward-compatible display.
+    card: "Card",
+    bank_transfer: "Bank Deposit",
     manual: "Manual Entry",
   };
 

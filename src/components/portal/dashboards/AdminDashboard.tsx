@@ -13,23 +13,23 @@ import { MetricCard } from "@/components/portal/MetricCard";
 import { NoticeList } from "@/components/portal/NoticeList";
 import { ProgressMeter } from "@/components/portal/ProgressMeter";
 import { StatusBadge } from "@/components/portal/StatusBadge";
-import { mockClasses } from "@/data/portal/academics";
-import { mockAnnouncements, mockPortalEvents } from "@/data/portal/announcements";
 import {
   mockAccountsSummary,
   mockAdminAlerts,
   mockAdminSummary,
 } from "@/data/portal/dashboard";
-import { mockStudents } from "@/data/portal/students";
+import {
+  listAnnouncements,
+  listEvents,
+} from "@/lib/portal/data/communication";
+import { listClasses } from "@/lib/portal/data/people";
+import { listStudents } from "@/lib/portal/data/students";
 import {
   formatPortalCurrency,
   formatPortalDate,
   formatPortalTime,
 } from "@/lib/portal/format";
-
-type AdminDashboardProps = {
-  readonly userName: string;
-};
+import { getMockPortalSession } from "@/lib/portal/mock-session";
 
 function alertBadge(severity: string) {
   if (severity === "critical") {
@@ -43,7 +43,16 @@ function alertBadge(severity: string) {
   return <StatusBadge variant="info">Information</StatusBadge>;
 }
 
-export function AdminDashboard({ userName }: AdminDashboardProps) {
+export async function AdminDashboard() {
+  const session = await getMockPortalSession();
+  const userName = session?.user.name ?? "Administrator";
+  const [mockClasses, mockStudents, mockAnnouncements, mockPortalEvents] =
+    await Promise.all([
+      listClasses(),
+      listStudents(),
+      listAnnouncements(),
+      listEvents(),
+    ]);
   const classRows: readonly DataTableRow[] = mockClasses.map((classItem) => ({
     id: classItem.id,
     cells: [

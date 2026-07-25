@@ -7,13 +7,14 @@ import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { FinancialStatusBadge } from "@/components/portal/FinancialStatusBadge";
 import { MetricCard } from "@/components/portal/MetricCard";
-import { mockFeeItems } from "@/data/portal/fees";
-import { mockPayments } from "@/data/portal/payments";
-import { mockStudents } from "@/data/portal/students";
-import { mockTransportAssignments, mockTransportRoutes } from "@/data/portal/transport";
+import { listFeeItems, listPayments } from "@/lib/portal/data/finance";
+import { listStudents } from "@/lib/portal/data/students";
+import {
+  listTransportAssignments,
+  listTransportRoutes,
+} from "@/lib/portal/data/transport";
 import { formatPortalCurrency } from "@/lib/portal/format";
 import { getMockRoleSession } from "@/lib/portal/mock-role";
-import type { TransportAssignment } from "@/types/portal";
 
 export const metadata: Metadata = { title: "Transport Fees" };
 
@@ -22,14 +23,20 @@ export default async function AccountsTransportFeesPage() {
     notFound();
   }
 
-  const transportFee = mockFeeItems.find((item) => item.category === "transport");
-  const assignments: readonly TransportAssignment[] =
-    mockTransportAssignments;
+  const [feeItems, payments, students, assignments, routes] =
+    await Promise.all([
+      listFeeItems(),
+      listPayments(),
+      listStudents(),
+      listTransportAssignments(),
+      listTransportRoutes(),
+    ]);
+  const transportFee = feeItems.find((item) => item.category === "transport");
   const rows: readonly DataTableRow[] = assignments.map((assignment) => {
-    const student = mockStudents.find((item) => item.id === assignment.studentId);
-    const route = mockTransportRoutes.find((item) => item.id === assignment.routeId);
-    const paid = mockPayments
-      .filter((item) => item.studentId === assignment.studentId && item.category === "transport" && item.status === "successful")
+    const student = students.find((item) => item.id === assignment.studentId);
+    const route = routes.find((item) => item.id === assignment.routeId);
+    const paid = payments
+      .filter((item) => item.studentId === assignment.studentId && item.category === "transport" && item.status === "verified")
       .reduce((total, item) => total + item.amount, 0);
     const charge = transportFee?.amount ?? 0;
 

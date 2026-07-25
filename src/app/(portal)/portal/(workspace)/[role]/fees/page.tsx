@@ -15,8 +15,11 @@ import { FinancialStatusBadge } from "@/components/portal/FinancialStatusBadge";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { WardFilterSelect } from "@/components/portal/WardFilterSelect";
 import { AdminFeesView } from "@/components/portal/dashboards/AdminFeesView";
-import { mockFeeItems, mockInvoices } from "@/data/portal/fees";
-import { mockPayments } from "@/data/portal/payments";
+import { listFeeItems } from "@/lib/portal/data/finance";
+import {
+  getParentInvoices,
+  getParentPayments,
+} from "@/lib/portal/data/parent";
 import {
   formatFeeCategory,
   formatPaymentMethod,
@@ -76,7 +79,12 @@ export default async function FeesPage({
   );
   const wardQuery = selectedWard === "all" ? "" : `?ward=${selectedWard}`;
 
-  const invoices = mockInvoices.filter((invoice) =>
+  const [allInvoices, allPayments, mockFeeItems] = await Promise.all([
+    getParentInvoices(),
+    getParentPayments(),
+    listFeeItems(),
+  ]);
+  const invoices = allInvoices.filter((invoice) =>
     selectedStudentIds.includes(invoice.studentId),
   );
   const totalPaid = invoices.reduce(
@@ -117,12 +125,8 @@ export default async function FeesPage({
     };
   });
 
-  const paymentRows: readonly DataTableRow[] = mockPayments
-    .filter(
-      (payment) =>
-        payment.parentId === context.parent.id &&
-        selectedStudentIds.includes(payment.studentId),
-    )
+  const paymentRows: readonly DataTableRow[] = allPayments
+    .filter((payment) => selectedStudentIds.includes(payment.studentId))
     .toSorted((a, b) => b.paidAt.localeCompare(a.paidAt))
     .slice(0, 5)
     .map((payment) => {

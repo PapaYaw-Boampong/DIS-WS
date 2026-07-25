@@ -1,8 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useMemo, useState, useTransition } from "react";
 import { ClipboardCheck } from "lucide-react";
 
+import { saveAttendance } from "@/app/(portal)/portal/actions/academics";
 import type {
   AttendanceMark,
   DailyAttendanceRecord,
@@ -12,6 +14,8 @@ import type {
 type AttendanceMarkerProps = {
   readonly students: readonly StudentProfile[];
   readonly records: readonly DailyAttendanceRecord[];
+  readonly classId: string;
+  readonly date: string;
 };
 
 const attendanceOptions: readonly {
@@ -27,6 +31,8 @@ const attendanceOptions: readonly {
 export function AttendanceMarker({
   students,
   records,
+  classId,
+  date,
 }: AttendanceMarkerProps) {
   const initialMarks = useMemo(
     () =>
@@ -41,6 +47,8 @@ export function AttendanceMarker({
   );
   const [marks, setMarks] = useState(initialMarks);
   const [message, setMessage] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
+  const router = useRouter();
 
   const totals = attendanceOptions.map((option) => ({
     ...option,
@@ -49,9 +57,30 @@ export function AttendanceMarker({
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setMessage(
-      `Attendance preview prepared for ${students.length} students. No register was saved.`,
-    );
+    const payload = students.map((student) => ({
+      studentId: student.id,
+      mark: marks[student.id] ?? "present",
+    }));
+
+    startTransition(async () => {
+      const result = await saveAttendance(classId, date, payload);
+
+      if (!result.ok) {
+        setMessage("Could not submit the register. Please try again.");
+        return;
+      }
+
+      if (result.mode === "real") {
+        setMessage(
+          `Register saved for ${students.length} students on ${date}.`,
+        );
+        router.refresh();
+      } else {
+        setMessage(
+          `Attendance preview prepared for ${students.length} students. No register was saved (preview).`,
+        );
+      }
+    });
   }
 
   return (
@@ -125,10 +154,11 @@ export function AttendanceMarker({
 
         <button
           type="submit"
-          className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-curry-orange px-6 font-bold text-white transition-colors hover:bg-deep-orange"
+          disabled={pending}
+          className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-curry-orange px-6 font-bold text-white transition-colors hover:bg-deep-orange disabled:opacity-60"
         >
           <ClipboardCheck aria-hidden="true" className="size-5" />
-          Preview attendance submission
+          {pending ? "Submitting…" : "Submit attendance"}
         </button>
       </form>
 
