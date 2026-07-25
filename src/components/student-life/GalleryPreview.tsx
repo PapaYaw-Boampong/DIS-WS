@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { createPortal } from "react-dom";
 import {
   ChevronLeft,
   ChevronRight,
@@ -284,7 +285,7 @@ export function GalleryPreview() {
         ) : null}
       </Container>
 
-      {activeLightboxImage && lightboxIndex !== null ? (
+      {activeLightboxImage && lightboxIndex !== null ? createPortal(
         <div
           ref={dialogRef}
           className="fixed inset-0 z-[200] flex items-center justify-center bg-charcoal/95 p-4 sm:p-8"
@@ -386,7 +387,8 @@ export function GalleryPreview() {
               </p>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body,
       ) : null}
     </section>
   );

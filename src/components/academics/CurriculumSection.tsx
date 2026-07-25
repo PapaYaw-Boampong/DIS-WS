@@ -15,7 +15,7 @@ export function CurriculumSection() {
           title="Strong foundations, connected learning"
           description="Core learning areas are taught with clarity and reinforced through discussion, practical activity and meaningful application."
         />
-        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2">
           {curriculumAreas.map((area) => (
             <Card
               key={area.title}
@@ -33,7 +33,7 @@ export function CurriculumSection() {
         />
         <CardCarousel
           label="Beyond the Classroom"
-          desktopVisible={4}
+          desktopVisible={3}
           className="mt-10"
         >
           {beyondClassroom.map((area) => (

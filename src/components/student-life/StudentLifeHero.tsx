@@ -5,7 +5,7 @@ import { studentLifeHero } from "@/data/studentLife";
 
 export function StudentLifeHero() {
   return (
-    <section className="relative isolate overflow-hidden bg-curry-orange py-24 text-white sm:py-32 lg:py-44">
+    <section className="relative isolate overflow-hidden bg-curry-orange pt-[calc(var(--header-h)+4rem)] pb-24 text-white sm:pt-[calc(var(--header-h)+5rem)] sm:pb-32 lg:pt-[calc(var(--header-h)+7rem)] lg:pb-44">
       <ResponsiveImage
         image={studentLifeHero.image}
         sizes="100vw"
@@ -22,7 +22,7 @@ export function StudentLifeHero() {
       />
       <Container>
         <div className="max-w-3xl">
-          <h1 className="text-balance text-5xl font-extrabold tracking-[-0.04em] uppercase sm:text-6xl lg:text-7xl">
+          <h1 className="font-display text-balance text-5xl font-semibold tracking-[-0.01em] uppercase sm:text-6xl lg:text-7xl">
             {studentLifeHero.title}
           </h1>
           <p className="mt-10 max-w-2xl text-lg leading-8 text-soft-white sm:text-xl">

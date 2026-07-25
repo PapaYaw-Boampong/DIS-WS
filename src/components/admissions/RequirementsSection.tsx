@@ -4,6 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { ContentIcon } from "@/components/ui/ContentIcon";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { admissionRequirements } from "@/data/admissions";
+import { cn } from "@/lib/utils";
 
 export function RequirementsSection() {
   return (
@@ -11,8 +12,8 @@ export function RequirementsSection() {
       <Container>
         <SectionHeader
           eyebrow="Prepare Your Application"
-          title="Required documents"
-          description="This checklist is a general guide. Admissions will confirm the final documents required for the learner's academic stage and circumstances."
+          title="Documents & information"
+          description="Only the learner's identification documents are required. The rest are recommended — they help us place and support your child, but are not mandatory. Admissions will confirm what applies to each application."
         />
         <div className="mt-12 grid gap-6 lg:grid-cols-3">
           {admissionRequirements.map((group) => (
@@ -20,8 +21,20 @@ export function RequirementsSection() {
               key={group.title}
               className="rounded-card border border-border bg-white p-6 shadow-card sm:p-7"
             >
-              <div className="flex size-12 items-center justify-center rounded-[0.875rem] bg-soft-cream text-curry-orange">
-                <ContentIcon name={group.icon} className="size-6" />
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex size-12 items-center justify-center rounded-[0.875rem] bg-soft-cream text-curry-orange">
+                  <ContentIcon name={group.icon} className="size-6" />
+                </div>
+                <span
+                  className={cn(
+                    "rounded-full px-3 py-1 text-xs font-bold tracking-wide uppercase",
+                    group.requirement === "required"
+                      ? "bg-curry-orange text-white"
+                      : "bg-soft-cream text-deep-orange",
+                  )}
+                >
+                  {group.requirement}
+                </span>
               </div>
               <h3 className="mt-5 text-xl font-bold text-charcoal">
                 {group.title}

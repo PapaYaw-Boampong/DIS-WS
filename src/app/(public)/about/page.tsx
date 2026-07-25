@@ -2,10 +2,7 @@ import type { Metadata } from "next";
 
 import { AboutOverview } from "@/components/about/AboutOverview";
 import { CultureSection } from "@/components/about/CultureSection";
-import { HistoryPreview } from "@/components/about/HistoryPreview";
-import { LeadershipPreview } from "@/components/about/LeadershipPreview";
 import { MissionVisionValues } from "@/components/about/MissionVisionValues";
-import { PrincipalPreview } from "@/components/about/PrincipalPreview";
 import { CTASection } from "@/components/ui/CTASection";
 import { PageHero } from "@/components/ui/PageHero";
 import { aboutHero, aboutMetadata } from "@/data/about";
@@ -25,10 +22,7 @@ export default function AboutPage() {
         variant="orange"
       />
       <AboutOverview />
-      <PrincipalPreview />
       <MissionVisionValues />
-      <HistoryPreview />
-      <LeadershipPreview />
       <CultureSection />
       <CTASection
         title="Discover a school community built around your child"

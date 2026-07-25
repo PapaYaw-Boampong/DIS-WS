@@ -14,7 +14,7 @@ export function WhyChooseDivine() {
           description="Our learning environment brings academic purpose, learner wellbeing, character and family partnership together."
           align="center"
         />
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2">
           {admissionBenefits.map((benefit) => (
             <Card
               key={benefit.title}

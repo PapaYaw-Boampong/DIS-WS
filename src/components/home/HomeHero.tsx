@@ -28,14 +28,14 @@ export function HomeHero() {
         className="absolute -right-24 -bottom-48 -z-10 size-[520px] rounded-full border-[90px] border-white/5"
         aria-hidden="true"
       />
-      <Container className="flex min-h-[560px] items-center py-20 sm:min-h-[600px] lg:min-h-[620px] lg:py-24">
+      <Container className="flex min-h-[100svh] items-center pt-[calc(var(--header-h)+2rem)] pb-20 lg:pb-24">
         <div className="max-w-[1180px]">
           {slide.eyebrow ? (
             <p className="mb-5 text-sm font-extrabold tracking-[0.18em] text-soft-white uppercase">
               {slide.eyebrow}
             </p>
           ) : null}
-          <h1 className="text-balance max-w-4xl text-5xl leading-[1.05] font-extrabold tracking-[-0.045em] sm:text-6xl lg:text-[4rem] lg:leading-[1.08]">
+          <h1 className="font-display text-balance max-w-4xl text-5xl leading-[1.05] font-semibold tracking-[-0.02em] sm:text-6xl lg:text-[4rem] lg:leading-[1.08]">
             {slide.title}
           </h1>
           <p className="mt-8 max-w-2xl text-lg leading-8 text-soft-white sm:text-[1.375rem]">

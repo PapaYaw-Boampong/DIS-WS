@@ -4,7 +4,6 @@ import { AdmissionsEnquiryForm } from "@/components/admissions/AdmissionsEnquiry
 import { AdmissionsFAQ } from "@/components/admissions/AdmissionsFAQ";
 import { AdmissionsIntroduction } from "@/components/admissions/AdmissionsIntroduction";
 import { AdmissionsSteps } from "@/components/admissions/AdmissionsSteps";
-import { FeesPreview } from "@/components/admissions/FeesPreview";
 import { RequirementsSection } from "@/components/admissions/RequirementsSection";
 import { WhyChooseDivine } from "@/components/admissions/WhyChooseDivine";
 import { CTASection } from "@/components/ui/CTASection";
@@ -27,9 +26,8 @@ export default function AdmissionsPage() {
         size="spacious"
       />
       <AdmissionsIntroduction />
-      <RequirementsSection />
       <AdmissionsSteps />
-      <FeesPreview />
+      <RequirementsSection />
       <AdmissionsEnquiryForm />
       <WhyChooseDivine />
       

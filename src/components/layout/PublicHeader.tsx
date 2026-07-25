@@ -15,6 +15,9 @@ import { cn } from "@/lib/utils";
 
 export function PublicHeader() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  // `atTop` drives the transparent-over-hero state; `hidden` drives auto-hide.
+  const [atTop, setAtTop] = useState(true);
+  const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
     function handleEscape(event: KeyboardEvent) {
@@ -27,10 +30,69 @@ export function PublicHeader() {
     return () => document.removeEventListener("keydown", handleEscape);
   }, []);
 
+  useEffect(() => {
+    let frame = 0;
+    let lastY = window.scrollY;
+
+    function update() {
+      frame = 0;
+      const y = window.scrollY;
+      setAtTop(y <= 8);
+
+      if (y < 96) {
+        setHidden(false);
+      } else if (y - lastY > 4) {
+        // Scrolling down past the header: slide it away.
+        setHidden(true);
+        setOpenDropdown(null);
+      } else if (lastY - y > 4) {
+        setHidden(false);
+      }
+
+      lastY = y;
+    }
+
+    function onScroll() {
+      if (!frame) {
+        frame = window.requestAnimationFrame(update);
+      }
+    }
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) {
+        window.cancelAnimationFrame(frame);
+      }
+    };
+  }, []);
+
+  const overlay = atTop;
+
+  const navTriggerClass = cn(
+    "inline-flex min-h-11 items-center gap-1 rounded-full px-3 text-sm font-semibold transition-colors xl:px-4",
+    overlay
+      ? "text-white hover:bg-white/15 hover:text-white"
+      : "text-charcoal hover:bg-soft-cream hover:text-deep-orange",
+  );
+
   return (
-    <header className="sticky top-0 z-50 w-full bg-white">
+    <header
+      className={cn(
+        "fixed top-0 z-50 w-full transition-transform duration-300 motion-reduce:transition-none",
+        hidden ? "-translate-y-full" : "translate-y-0",
+      )}
+    >
       <TopUtilityBar />
-      <div className="border-b border-border bg-white shadow-header">
+      <div
+        className={cn(
+          "transition-colors duration-300",
+          overlay
+            ? "bg-transparent"
+            : "border-b border-border bg-white shadow-header",
+        )}
+      >
         <div className="flex h-[78px] w-full items-center justify-between gap-6 px-4 sm:px-6 lg:h-[98px] lg:px-8 2xl:px-12">
           <Link
             href={routes.home}
@@ -43,9 +105,17 @@ export function PublicHeader() {
               width={67}
               height={57}
               quality={90}
-              className="h-12 w-auto lg:h-[57px]"
+              className={cn(
+                "h-12 w-auto transition-[filter] duration-300 lg:h-[57px]",
+                overlay && "brightness-0 invert",
+              )}
             />
-            <span className="max-w-[190px] text-lg leading-tight font-semibold text-charcoal lg:text-xl">
+            <span
+              className={cn(
+                "max-w-[190px] text-lg leading-tight font-semibold transition-colors lg:text-xl",
+                overlay ? "text-white" : "text-charcoal",
+              )}
+            >
               {school.name}
             </span>
           </Link>
@@ -82,7 +152,7 @@ export function PublicHeader() {
                     {hasChildren ? (
                       <button
                         type="button"
-                        className="inline-flex min-h-11 items-center gap-1 rounded-full px-3 text-sm font-semibold text-charcoal transition-colors hover:bg-soft-cream hover:text-deep-orange xl:px-4"
+                        className={navTriggerClass}
                         aria-haspopup="true"
                         aria-expanded={isOpen}
                         onClick={() =>
@@ -101,7 +171,7 @@ export function PublicHeader() {
                     ) : (
                       <Link
                         href={item.href}
-                        className="inline-flex min-h-11 items-center rounded-full px-3 text-sm font-semibold text-charcoal transition-colors hover:bg-soft-cream hover:text-deep-orange xl:px-4"
+                        className={navTriggerClass}
                         onClick={() => setOpenDropdown(null)}
                       >
                         {item.label}
@@ -134,7 +204,7 @@ export function PublicHeader() {
           <div className="hidden shrink-0 xl:block">
             <Button href={routes.admissions}>Apply Now</Button>
           </div>
-          <MobileNav items={mainNavigation} />
+          <MobileNav items={mainNavigation} overlay={overlay} />
         </div>
       </div>
     </header>

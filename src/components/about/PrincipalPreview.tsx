@@ -19,9 +19,12 @@ export function PrincipalPreview() {
           <p className="text-sm font-extrabold tracking-[0.18em] text-curry-orange uppercase">
             A Welcome from Leadership
           </p>
-          <h2 className="mt-3 text-balance text-3xl font-extrabold tracking-[-0.03em] text-charcoal sm:text-4xl lg:text-[2.625rem]">
-            {principalProfile.title}
+          <h2 className="mt-3 font-display text-balance text-3xl font-semibold tracking-[-0.01em] text-charcoal sm:text-4xl lg:text-[2.625rem]">
+            {principalProfile.name ?? principalProfile.title}
           </h2>
+          <p className="mt-2 text-sm font-extrabold tracking-[0.12em] text-curry-orange uppercase">
+            {principalProfile.title} · {principalProfile.role}
+          </p>
           <p className="mt-5 text-lg leading-8 text-muted-grey">
             {principalProfile.description}
           </p>

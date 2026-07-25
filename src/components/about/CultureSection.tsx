@@ -13,20 +13,28 @@ export function CultureSection() {
           description="A warm, structured environment helps children feel secure enough to participate, persevere and grow."
           className="[&_h2]:text-white [&_p:last-child]:text-soft-white/80"
         />
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {schoolCulturePoints.map((point) => (
-            <article
+        <div className="mt-14 grid gap-x-12 gap-y-2 sm:grid-cols-2">
+          {schoolCulturePoints.map((point, index) => (
+            <div
               key={point.title}
-              className="rounded-card border border-white/10 bg-white/5 p-7"
+              className="flex gap-5 border-t border-white/10 py-7"
             >
-              <div className="flex size-12 items-center justify-center rounded-2xl bg-curry-orange text-white">
-                <ContentIcon name={point.icon} className="size-6" />
+              <span className="font-display text-3xl font-semibold text-curry-orange">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <div>
+                <div className="flex items-center gap-2.5">
+                  <ContentIcon
+                    name={point.icon}
+                    className="size-5 shrink-0 text-curry-orange"
+                  />
+                  <h3 className="text-lg font-bold">{point.title}</h3>
+                </div>
+                <p className="mt-2 leading-7 text-soft-white/75">
+                  {point.description}
+                </p>
               </div>
-              <h3 className="mt-6 text-xl font-bold">{point.title}</h3>
-              <p className="mt-3 leading-7 text-soft-white/75">
-                {point.description}
-              </p>
-            </article>
+            </div>
           ))}
         </div>
       </Container>

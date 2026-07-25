@@ -22,7 +22,7 @@ export function LeadershipPreview() {
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {leadershipProfiles.slice(0, 3).map((profile) => (
             <article
-              key={profile.title}
+              key={profile.name ?? profile.title}
               className="rounded-card border border-border bg-white p-7 shadow-card"
             >
               <div className="flex size-14 items-center justify-center rounded-2xl bg-soft-cream text-curry-orange">
@@ -32,8 +32,13 @@ export function LeadershipPreview() {
                 {profile.role}
               </p>
               <h3 className="mt-2 text-xl font-bold text-charcoal">
-                {profile.title}
+                {profile.name ?? profile.title}
               </h3>
+              {profile.name ? (
+                <p className="mt-1 text-sm font-semibold text-charcoal/70">
+                  {profile.title}
+                </p>
+              ) : null}
               <p className="mt-3 leading-7 text-muted-grey">
                 {profile.description}
               </p>

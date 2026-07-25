@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# crash artifacts (e.g. grep.exe on Windows Git Bash)
+*.stackdump

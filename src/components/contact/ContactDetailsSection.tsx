@@ -52,7 +52,7 @@ export function ContactDetailsSection() {
             description="Use the details below for admissions, school information, visit planning and future portal support."
             align="center"
           />
-          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-12 grid gap-6 sm:grid-cols-2">
             {contactDetails.map((detail) => (
               <article
                 key={detail.title}
@@ -110,7 +110,7 @@ export function ContactDetailsSection() {
             description="These common reasons help families and visitors decide where to begin."
             align="center"
           />
-          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-12 grid gap-6 sm:grid-cols-2">
             {contactReasons.map((reason) => (
               <Card
                 key={reason.title}

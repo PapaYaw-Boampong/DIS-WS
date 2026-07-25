@@ -10,6 +10,10 @@ import {
 } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
+import {
+  CAROUSEL_DOTS_OVERLAY,
+  CAROUSEL_SIDE_BUTTON,
+} from "@/components/ui/carouselControls";
 import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
 import { cn } from "@/lib/utils";
 import type { SiteImage } from "@/types/content";
@@ -184,7 +188,7 @@ export function HistoryPhotoCarousel({
         role="region"
         aria-label="Historical school photographs"
         tabIndex={0}
-        className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] border border-curry-orange/10 bg-soft-cream shadow-card"
+        className="group relative aspect-[4/3] overflow-hidden rounded-[1.75rem] border border-curry-orange/10 bg-soft-cream shadow-card"
       >
         {photos.map((photo, index) =>
           mountedIndices.includes(index) ? (
@@ -210,57 +214,60 @@ export function HistoryPhotoCarousel({
             </div>
           ) : null,
         )}
+
+        {hasMultiplePhotos ? (
+          <>
+            <button
+              type="button"
+              className={cn(CAROUSEL_SIDE_BUTTON, "left-3 sm:left-4")}
+              aria-label="Show previous historical photograph"
+              aria-controls={carouselId}
+              disabled={isWaitingForPhoto}
+              onClick={() => showPhoto(activeIndex - 1)}
+            >
+              <ArrowLeft aria-hidden="true" className="size-5" />
+            </button>
+            <button
+              type="button"
+              className={cn(CAROUSEL_SIDE_BUTTON, "right-3 sm:right-4")}
+              aria-label="Show next historical photograph"
+              aria-controls={carouselId}
+              disabled={isWaitingForPhoto}
+              onClick={() => showPhoto(activeIndex + 1)}
+            >
+              <ArrowRight aria-hidden="true" className="size-5" />
+            </button>
+            <div className={CAROUSEL_DOTS_OVERLAY}>
+              <div className="flex items-center gap-2 rounded-full bg-charcoal/35 px-2.5 py-1.5 backdrop-blur">
+                {photos.map((photo, index) => (
+                  <button
+                    key={photo.id}
+                    type="button"
+                    className={cn(
+                      "size-2.5 rounded-full border border-white/70 transition-colors",
+                      index === activeIndex
+                        ? "bg-white"
+                        : "bg-white/25 hover:bg-white/60",
+                    )}
+                    aria-label={`Show ${photo.label}`}
+                    aria-current={index === activeIndex ? "true" : undefined}
+                    aria-controls={carouselId}
+                    disabled={isWaitingForPhoto}
+                    onClick={() => showPhoto(index)}
+                  />
+                ))}
+              </div>
+            </div>
+          </>
+        ) : null}
       </div>
 
-      <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p
-          className="min-h-6 text-sm font-semibold text-muted-grey"
-          aria-live="polite"
-        >
-          {activePhoto.label}
-        </p>
-        <div className="flex shrink-0 items-center gap-3">
-          <button
-            type="button"
-            className="flex size-11 items-center justify-center rounded-full border border-border bg-white text-charcoal transition-colors hover:border-curry-orange hover:text-curry-orange disabled:cursor-not-allowed disabled:opacity-35"
-            aria-label="Show previous historical photograph"
-            aria-controls={carouselId}
-            disabled={!hasMultiplePhotos || isWaitingForPhoto}
-            onClick={() => showPhoto(activeIndex - 1)}
-          >
-            <ArrowLeft aria-hidden="true" className="size-5" />
-          </button>
-          <div className="flex items-center gap-2">
-            {photos.map((photo, index) => (
-              <button
-                key={photo.id}
-                type="button"
-                className={cn(
-                  "size-3 rounded-full border border-curry-orange transition-colors",
-                  index === activeIndex
-                    ? "bg-curry-orange"
-                    : "bg-white hover:bg-soft-cream",
-                )}
-                aria-label={`Show ${photo.label}`}
-                aria-current={index === activeIndex ? "true" : undefined}
-                aria-controls={carouselId}
-                disabled={isWaitingForPhoto}
-                onClick={() => showPhoto(index)}
-              />
-            ))}
-          </div>
-          <button
-            type="button"
-            className="flex size-11 items-center justify-center rounded-full border border-border bg-white text-charcoal transition-colors hover:border-curry-orange hover:text-curry-orange disabled:cursor-not-allowed disabled:opacity-35"
-            aria-label="Show next historical photograph"
-            aria-controls={carouselId}
-            disabled={!hasMultiplePhotos || isWaitingForPhoto}
-            onClick={() => showPhoto(activeIndex + 1)}
-          >
-            <ArrowRight aria-hidden="true" className="size-5" />
-          </button>
-        </div>
-      </div>
+      <p
+        className="mt-4 min-h-6 text-center text-sm font-semibold text-muted-grey"
+        aria-live="polite"
+      >
+        {activePhoto.label}
+      </p>
     </div>
   );
 }

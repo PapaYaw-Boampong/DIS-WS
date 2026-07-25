@@ -10,6 +10,10 @@ import {
 } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
+import {
+  CAROUSEL_DOTS_OVERLAY,
+  CAROUSEL_SIDE_BUTTON,
+} from "@/components/ui/carouselControls";
 import { ContentIcon } from "@/components/ui/ContentIcon";
 import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
 import { cn } from "@/lib/utils";
@@ -557,7 +561,7 @@ export function FeatureCarousel({
       data-feature-carousel={label}
       data-carousel-cooldown={isInCooldown ? "active" : "idle"}
       data-carousel-transition={transition?.phase ?? "idle"}
-      className={cn("relative min-w-0", className)}
+      className={cn("group relative min-w-0", className)}
       onKeyDown={handleKeyDown}
       onFocusCapture={postponeAutomaticAdvance}
       onPointerDownCapture={postponeAutomaticAdvance}
@@ -644,54 +648,52 @@ export function FeatureCarousel({
         )}
       </div>
 
-      <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm font-semibold text-muted-grey" aria-live="polite">
-          Showing {visibleIndex + 1} of {slides.length}
-        </p>
-        <div className="flex items-center gap-3">
+      <p className="sr-only" aria-live="polite">
+        Showing {visibleIndex + 1} of {slides.length}
+      </p>
+      {hasMultipleSlides ? (
+        <>
           <button
             type="button"
-            className="flex size-11 items-center justify-center rounded-full border border-border bg-white text-charcoal transition-colors hover:border-curry-orange hover:text-curry-orange disabled:cursor-not-allowed disabled:opacity-35"
+            className={cn(CAROUSEL_SIDE_BUTTON, "left-3 sm:left-4")}
             aria-label={`Show previous slide in ${label}`}
             aria-controls={carouselId}
-            disabled={!hasMultipleSlides || isTransitioning}
+            disabled={isTransitioning}
             onClick={showPrevious}
           >
             <ArrowLeft aria-hidden="true" className="size-5" />
           </button>
-          <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className={cn(CAROUSEL_SIDE_BUTTON, "right-3 sm:right-4")}
+            aria-label={`Show next slide in ${label}`}
+            aria-controls={carouselId}
+            disabled={isTransitioning}
+            onClick={() => showNext()}
+          >
+            <ArrowRight aria-hidden="true" className="size-5" />
+          </button>
+          <div className={CAROUSEL_DOTS_OVERLAY}>
             {slides.map((slide, index) => (
               <button
                 key={slide.id}
                 type="button"
                 className={cn(
-                  "size-3 rounded-full border border-curry-orange transition-colors",
+                  "size-2.5 rounded-full border border-white/70 shadow-sm transition-colors",
                   index === visibleIndex
-                    ? "bg-curry-orange"
-                    : "bg-white hover:bg-soft-cream",
+                    ? "bg-white"
+                    : "bg-white/25 hover:bg-white/60",
                 )}
                 aria-label={`Show ${slide.title}`}
                 aria-current={index === visibleIndex ? "true" : undefined}
                 aria-controls={carouselId}
                 disabled={isTransitioning}
-                onClick={() =>
-                  goToSlide(index, directionToIndex(index))
-                }
+                onClick={() => goToSlide(index, directionToIndex(index))}
               />
             ))}
           </div>
-          <button
-            type="button"
-            className="flex size-11 items-center justify-center rounded-full border border-border bg-white text-charcoal transition-colors hover:border-curry-orange hover:text-curry-orange disabled:cursor-not-allowed disabled:opacity-35"
-            aria-label={`Show next slide in ${label}`}
-            aria-controls={carouselId}
-            disabled={!hasMultipleSlides || isTransitioning}
-            onClick={() => showNext()}
-          >
-            <ArrowRight aria-hidden="true" className="size-5" />
-          </button>
-        </div>
-      </div>
+        </>
+      ) : null}
     </div>
   );
 }

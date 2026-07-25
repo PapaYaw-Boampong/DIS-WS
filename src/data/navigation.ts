@@ -15,6 +15,8 @@ export const mainNavigation = [
       { label: "History", href: routes.history },
       { label: "Principal's Message", href: routes.principalMessage },
       { label: "Leadership & Management", href: routes.leadership },
+      { label: "Campus & Facilities", href: routes.facilities },
+      { label: "Careers", href: routes.careers },
     ],
   },
   {
@@ -87,9 +89,10 @@ export const footerLinkGroups = [
   {
     title: "Resources",
     links: [
+      { label: "Documents", href: routes.documents },
       { label: "Calendar", href: routes.calendar },
-      { label: "Fees & Requirements", href: routes.admissions },
-      { label: "Policies", href: routes.about },
+      { label: "Campus & Facilities", href: routes.facilities },
+      { label: "Careers", href: routes.careers },
       { label: "Gallery", href: routes.studentLife },
       { label: "Location", href: routes.location },
     ],

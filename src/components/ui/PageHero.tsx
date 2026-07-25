@@ -30,8 +30,10 @@ export function PageHero({
     <section
       className={cn(
         "relative isolate overflow-hidden",
-        size === "default" && "py-20 sm:py-24 lg:py-32",
-        size === "spacious" && "py-28 sm:py-36 lg:py-48",
+        size === "default" &&
+          "pt-[calc(var(--header-h)+5rem)] pb-20 sm:pt-[calc(var(--header-h)+6rem)] sm:pb-24 lg:pt-[calc(var(--header-h)+8rem)] lg:pb-32",
+        size === "spacious" &&
+          "pt-[calc(var(--header-h)+7rem)] pb-28 sm:pt-[calc(var(--header-h)+9rem)] sm:pb-36 lg:pt-[calc(var(--header-h)+12rem)] lg:pb-48",
         variant === "light" && "bg-soft-white",
         // variant === "dark" && "bg-charcoal",
         variant === "orange" && "bg-curry-orange",
@@ -78,7 +80,7 @@ export function PageHero({
           ) : null}
           <h1
             className={cn(
-              "text-balance text-4xl font-extrabold tracking-[-0.04em] sm:text-5xl lg:text-6xl",
+              "font-display text-balance text-4xl font-semibold tracking-[-0.02em] sm:text-5xl lg:text-6xl",
               isDark || variant === "orange" ? "text-white" : "text-charcoal",
             )}
           >
