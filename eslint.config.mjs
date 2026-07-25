@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // The standalone Render backend service has its own tooling.
+    "server/**",
   ]),
 ]);
 

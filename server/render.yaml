@@ -1,0 +1,24 @@
+# Render blueprint for the DIS portal backend + database.
+# Deploy from the repo with the "server" root directory.
+services:
+  - type: web
+    name: dis-portal-api
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm install && npx prisma generate && npm run build && npx prisma migrate deploy
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: dis-portal-db
+          property: connectionString
+      - key: ALLOWED_ORIGIN
+        sync: false
+      - key: NODE_ENV
+        value: production
+
+databases:
+  - name: dis-portal-db
+    plan: free
