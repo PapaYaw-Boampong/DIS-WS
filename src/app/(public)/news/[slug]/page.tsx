@@ -7,14 +7,20 @@ import { NewsImagePlaceholder } from "@/components/news/NewsImagePlaceholder";
 import { CTASection } from "@/components/ui/CTASection";
 import { Container } from "@/components/ui/Container";
 import { PageHero } from "@/components/ui/PageHero";
-import { getNewsArticle, newsArticles } from "@/data/news";
+import { newsArticles } from "@/data/news";
 import { createPageMetadata } from "@/lib/metadata";
+import {
+  getPublishedNews,
+  getPublishedNewsArticle,
+} from "@/lib/public-content";
 import { routes } from "@/lib/routes";
 
 type NewsArticlePageProps = {
   params: Promise<{ slug: string }>;
 };
 
+// Pre-render the statically-known slugs; CMS-added slugs render on demand
+// (dynamicParams defaults to true) and are ISR-cached thereafter.
 export function generateStaticParams() {
   return newsArticles.map(({ slug }) => ({ slug }));
 }
@@ -23,7 +29,7 @@ export async function generateMetadata({
   params,
 }: NewsArticlePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const article = getNewsArticle(slug);
+  const article = await getPublishedNewsArticle(slug);
 
   if (!article) {
     return createPageMetadata({
@@ -44,13 +50,14 @@ export default async function NewsArticlePage({
   params,
 }: NewsArticlePageProps) {
   const { slug } = await params;
-  const article = getNewsArticle(slug);
+  const allNews = await getPublishedNews();
+  const article = allNews.find((item) => item.slug === slug);
 
   if (!article) {
     notFound();
   }
 
-  const relatedArticles = newsArticles
+  const relatedArticles = allNews
     .filter((item) => item.slug !== article.slug)
     .slice(0, 3);
 

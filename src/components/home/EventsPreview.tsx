@@ -6,9 +6,11 @@ import { Container } from "@/components/ui/Container";
 import { ContentIcon } from "@/components/ui/ContentIcon";
 import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { featuredEvents } from "@/data/events";
+import { getFeaturedEvents } from "@/lib/public-content";
 
-export function EventsPreview() {
+export async function EventsPreview() {
+  const featuredEvents = await getFeaturedEvents();
+
   return (
     <section className="bg-white py-20 sm:py-24 lg:py-28">
       <Container>

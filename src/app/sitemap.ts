@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 import { academicLevels } from "@/data/academics";
-import { newsArticles } from "@/data/news";
+import { getPublishedNews } from "@/lib/public-content";
 import { routes } from "@/lib/routes";
 import { siteUrl } from "@/lib/site";
 
@@ -41,12 +41,13 @@ function priorityForRoute(path: string) {
   return 0.7;
 }
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date();
+  const publishedNews = await getPublishedNews();
   const generatedRoutes = [
     ...staticRoutes,
     ...academicLevels.map((level) => routes.academicLevel(level.slug)),
-    ...newsArticles.map((article) => routes.newsArticle(article.slug)),
+    ...publishedNews.map((article) => routes.newsArticle(article.slug)),
   ];
 
   return generatedRoutes.map((path) => ({

@@ -4,10 +4,17 @@ import { Container } from "@/components/ui/Container";
 import { ContentIcon } from "@/components/ui/ContentIcon";
 import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { academicTerms } from "@/data/academics";
-import { calendarEvents } from "@/data/events";
+import {
+  getPublishedCalendarTerms,
+  getPublishedEvents,
+} from "@/lib/public-content";
 
-export function CalendarSchedule() {
+export async function CalendarSchedule() {
+  const [academicTerms, calendarEvents] = await Promise.all([
+    getPublishedCalendarTerms(),
+    getPublishedEvents(),
+  ]);
+
   return (
     <>
       <section className="bg-white py-20 sm:py-24 lg:py-28">

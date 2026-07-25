@@ -4,10 +4,12 @@ import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { NewsImagePlaceholder } from "@/components/news/NewsImagePlaceholder";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { featuredNews } from "@/data/news";
+import { getFeaturedNews } from "@/lib/public-content";
 import { routes } from "@/lib/routes";
 
-export function NewsPreview() {
+export async function NewsPreview() {
+  const featuredNews = await getFeaturedNews();
+
   return (
     <section className="bg-soft-white py-20 sm:py-24 lg:py-28">
       <Container>

@@ -4,10 +4,12 @@ import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { ContentIcon } from "@/components/ui/ContentIcon";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { academicTerms } from "@/data/academics";
+import { getPublishedCalendarTerms } from "@/lib/public-content";
 import { routes } from "@/lib/routes";
 
-export function CalendarPreview() {
+export async function CalendarPreview() {
+  const academicTerms = await getPublishedCalendarTerms();
+
   return (
     <section className="pattern-checker py-20 sm:py-24 lg:py-28">
       <Container className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-20">
