@@ -179,12 +179,12 @@ export function GradebookGrid({
                           inputMode="numeric"
                           aria-label={`${student.fullName} — ${column.title}`}
                           placeholder="—"
-                          className="min-h-10 w-20 rounded-xl border border-border bg-white px-3 text-sm font-semibold text-charcoal focus:border-curry-orange focus:outline-none"
+                          className="min-h-10 w-20 rounded-xl border border-border bg-white px-3 text-sm font-semibold text-charcoal tabular-nums focus:border-curry-orange focus:outline-none"
                         />
                       </td>
                     );
                   })}
-                  <td className="px-3 py-2 font-bold text-charcoal">
+                  <td className="px-3 py-2 font-bold text-charcoal tabular-nums">
                     {percent === null ? "—" : `${percent}%`}
                   </td>
                 </tr>

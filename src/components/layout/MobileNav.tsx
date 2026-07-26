@@ -75,7 +75,7 @@ export function MobileNav({ items, overlay = false }: MobileNavProps) {
       <div
         id="mobile-navigation"
         className={cn(
-          "fixed inset-x-0 top-[78px] max-h-[calc(100vh-78px)] overflow-y-auto border-t border-border bg-white shadow-card",
+          "fixed inset-x-0 top-[78px] max-h-[calc(100vh-78px)] overflow-y-auto overscroll-contain border-t border-border bg-white shadow-card",
           isOpen ? "block" : "hidden",
         )}
       >

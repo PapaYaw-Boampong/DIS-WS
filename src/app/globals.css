@@ -47,6 +47,7 @@
 
 html {
   /* font-size: 15px; */
+  color-scheme: light;
   scroll-behavior: smooth;
   /* Keep in-page anchor targets clear of the fixed public header. */
   scroll-padding-top: var(--header-h);

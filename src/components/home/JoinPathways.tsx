@@ -7,7 +7,7 @@ export function JoinPathways() {
   return (
     <section className="bg-white py-20 sm:py-24">
       <Container>
-        <SectionHeader eyebrow="Pathways" title="Join Divine as..." />
+        <SectionHeader eyebrow="Pathways" title="Join Divine as…" />
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
           {homePathways.map((pathway, index) =>
             pathway.image ? (

@@ -160,6 +160,7 @@ export default async function PortalLoginPage({
                   name="email"
                   type="email"
                   autoComplete="username"
+                  spellCheck={false}
                   required
                   className="mt-2 min-h-13 w-full rounded-2xl border border-border bg-white px-4 text-charcoal outline-none transition focus:border-curry-orange focus:ring-4 focus:ring-curry-orange/10"
                 />

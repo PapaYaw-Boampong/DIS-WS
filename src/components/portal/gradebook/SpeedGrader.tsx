@@ -132,7 +132,7 @@ export function SpeedGrader({
                 }
                 inputMode="numeric"
                 placeholder="—"
-                className="min-h-11 w-24 rounded-2xl border border-border bg-white px-4 text-lg font-bold text-charcoal focus:border-curry-orange focus:outline-none"
+                className="min-h-11 w-24 rounded-2xl border border-border bg-white px-4 text-lg font-bold text-charcoal tabular-nums focus:border-curry-orange focus:outline-none"
               />
               <span className="text-sm font-semibold text-muted-grey">
                 / {column.total}

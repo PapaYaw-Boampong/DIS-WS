@@ -18,7 +18,7 @@ export function MetricCard({
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-muted-grey">{label}</p>
-          <p className="mt-3 text-3xl font-extrabold tracking-[-0.03em] text-charcoal">
+          <p className="mt-3 text-3xl font-extrabold tracking-[-0.03em] text-charcoal tabular-nums">
             {value}
           </p>
         </div>

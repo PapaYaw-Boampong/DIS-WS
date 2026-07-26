@@ -38,7 +38,7 @@ export function DataTable({
                 {row.cells.map((cell, index) => (
                   <td
                     key={`${row.id}-${columns[index] ?? index}`}
-                    className="px-5 py-4 text-charcoal"
+                    className="px-5 py-4 text-charcoal tabular-nums"
                   >
                     {cell}
                   </td>

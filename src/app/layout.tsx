@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
 
 import { HOME_INTRO_STORAGE_KEY } from "@/lib/homeIntro";
@@ -74,6 +74,12 @@ export const metadata: Metadata = {
     email: true,
     address: true,
   },
+};
+
+export const viewport: Viewport = {
+  // Matches the page background (--background) so browser chrome blends in.
+  themeColor: "#ffffff",
+  colorScheme: "light",
 };
 
 export default function RootLayout({
