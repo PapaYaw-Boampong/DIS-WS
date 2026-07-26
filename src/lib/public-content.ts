@@ -105,6 +105,16 @@ export async function getFeaturedEvents(): Promise<readonly EventItem[]> {
   return featured.length > 0 ? featured : data.events.slice(0, 1).map(mapEvent);
 }
 
+export async function getCalendarPdf(): Promise<{
+  hasPdf: boolean;
+  url: string;
+}> {
+  const data = await fetchPublic<{ hasPdf: boolean }>(
+    "/public/calendar/pdf/meta",
+  );
+  return { hasPdf: Boolean(data?.hasPdf), url: "/calendar/pdf" };
+}
+
 export async function getPublishedCalendarTerms(): Promise<
   readonly AcademicTerm[]
 > {

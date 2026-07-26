@@ -4,9 +4,10 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
 import { CalendarManager } from "@/components/portal/cms/CalendarManager";
+import { CalendarPdfManager } from "@/components/portal/cms/CalendarPdfManager";
 import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
-import { listCmsCalendar } from "@/lib/portal/data/cms";
+import { getCmsCalendarPdf, listCmsCalendar } from "@/lib/portal/data/cms";
 import { getMockRoleSession } from "@/lib/portal/mock-role";
 import { portalRoutes } from "@/lib/portal/routes";
 
@@ -17,7 +18,10 @@ export default async function WebsiteCalendarPage() {
     notFound();
   }
 
-  const terms = await listCmsCalendar();
+  const [terms, calendarPdf] = await Promise.all([
+    listCmsCalendar(),
+    getCmsCalendarPdf(),
+  ]);
 
   return (
     <>
@@ -38,8 +42,14 @@ export default async function WebsiteCalendarPage() {
         />
       </div>
 
-      <div className="mt-8 max-w-3xl">
-        <DashboardCard title="Academic terms" description="">
+      <div className="mt-8 max-w-3xl space-y-8">
+        <DashboardCard title="Calendar document" description="">
+          <CalendarPdfManager document={calendarPdf} />
+        </DashboardCard>
+        <DashboardCard
+          title="Academic terms"
+          description="Shown on the public calendar page when no PDF is published."
+        >
           <CalendarManager terms={terms} />
         </DashboardCard>
       </div>

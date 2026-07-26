@@ -73,3 +73,19 @@ export async function listCmsCalendar(): Promise<readonly CmsCalendarTerm[]> {
     await portalApiGet<{ terms?: CmsCalendarTerm[] }>("/cms/calendar", {})
   ).terms ?? [];
 }
+
+export type CmsCalendarDocument = {
+  readonly id: string;
+  readonly fileName: string;
+  readonly status: "draft" | "published";
+  readonly updatedAt: string;
+};
+
+export async function getCmsCalendarPdf(): Promise<CmsCalendarDocument | null> {
+  return (
+    await portalApiGet<{ document?: CmsCalendarDocument | null }>(
+      "/cms/calendar/pdf",
+      {},
+    )
+  ).document ?? null;
+}

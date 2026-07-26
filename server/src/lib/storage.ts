@@ -1,4 +1,5 @@
 import {
+  DeleteObjectCommand,
   GetObjectCommand,
   PutObjectCommand,
   S3Client,
@@ -31,6 +32,18 @@ export async function uploadObject(
       ContentType: contentType,
     }),
   );
+}
+
+// Best-effort delete (used when replacing a singleton asset). Swallows errors
+// so a missing/already-deleted object never blocks the caller.
+export async function deleteObject(key: string): Promise<void> {
+  try {
+    await client.send(
+      new DeleteObjectCommand({ Bucket: env.R2_BUCKET_NAME, Key: key }),
+    );
+  } catch {
+    // ignore — orphaned objects are harmless and cleanup is not critical
+  }
 }
 
 // Returns null if the object doesn't exist (mirrors a 404, not a throw).

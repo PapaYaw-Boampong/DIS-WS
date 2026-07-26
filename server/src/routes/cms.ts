@@ -4,7 +4,13 @@ import { z } from "zod";
 import { requireRole } from "../lib/auth-guard";
 import { recordAudit } from "../lib/audit";
 import { isContentIcon } from "../lib/content-icons";
+import { deleteObject, getObjectBytes, uploadObject } from "../lib/storage";
+import { randomUUID } from "node:crypto";
 import { prisma } from "../db";
+
+// The school-calendar PDF caps well under the Fastify JSON body limit
+// (base64 inflates raw bytes ~33%).
+const MAX_PDF_BYTES = 10 * 1024 * 1024;
 
 // Public website CMS. Two audiences:
 //   - Public (unauthenticated) read endpoints under /public/* serve only
@@ -79,6 +85,15 @@ const calendarCreateSchema = z.object({
 
 const calendarUpdateSchema = calendarCreateSchema.partial();
 
+// --- Calendar PDF (singleton document) -------------------------------------
+
+const calendarPdfSchema = z.object({
+  fileName: z.string().min(1),
+  mimeType: z.string().min(1),
+  dataBase64: z.string().min(1),
+  status: statusField.default("published"),
+});
+
 export async function cmsRoutes(app: FastifyInstance): Promise<void> {
   // ---------------------------------------------------------------- public
 
@@ -113,6 +128,34 @@ export async function cmsRoutes(app: FastifyInstance): Promise<void> {
       orderBy: [{ position: "asc" }, { createdAt: "asc" }],
     });
     return reply.send({ terms });
+  });
+
+  // Whether a published calendar PDF exists — the public page uses this to
+  // decide between the flipbook and the term tabs.
+  app.get("/public/calendar/pdf/meta", async (_request, reply) => {
+    const doc = await prisma.calendarDocument.findFirst({
+      where: { status: "published" },
+    });
+    return reply.send({
+      hasPdf: Boolean(doc),
+      fileName: doc?.fileName ?? null,
+      updatedAt: doc?.updatedAt ?? null,
+    });
+  });
+
+  // The published calendar PDF bytes (served same-origin via a Next proxy so
+  // PDF.js can load it without CORS).
+  app.get("/public/calendar/pdf", async (_request, reply) => {
+    const doc = await prisma.calendarDocument.findFirst({
+      where: { status: "published" },
+    });
+    if (!doc) return reply.code(404).send({ error: "not_found" });
+    const bytes = await getObjectBytes(doc.objectKey);
+    if (!bytes) return reply.code(404).send({ error: "not_found" });
+    return reply
+      .header("content-type", "application/pdf")
+      .header("content-disposition", `inline; filename="${doc.fileName}"`)
+      .send(bytes);
   });
 
   // ------------------------------------------------------------ admin: news
@@ -362,6 +405,132 @@ export async function cmsRoutes(app: FastifyInstance): Promise<void> {
       action: "cms.calendar_deleted",
       targetType: "calendar_term",
       targetId: id,
+    });
+    return reply.send({ ok: true });
+  });
+
+  // ---------------------------------------------------- admin: calendar PDF
+
+  app.get("/cms/calendar/pdf", async (request, reply) => {
+    const actor = await requireRole(request, reply, ADMIN);
+    if (!actor) return;
+    const doc = await prisma.calendarDocument.findFirst({
+      orderBy: { updatedAt: "desc" },
+    });
+    return reply.send({
+      document: doc
+        ? {
+            id: doc.id,
+            fileName: doc.fileName,
+            status: doc.status,
+            updatedAt: doc.updatedAt,
+          }
+        : null,
+    });
+  });
+
+  app.post("/cms/calendar/pdf", async (request, reply) => {
+    const actor = await requireRole(request, reply, ADMIN);
+    if (!actor) return;
+    const parsed = calendarPdfSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.code(400).send({ error: "invalid_request" });
+    }
+    const isPdf =
+      parsed.data.mimeType.toLowerCase().includes("pdf") ||
+      parsed.data.fileName.toLowerCase().endsWith(".pdf");
+    if (!isPdf) return reply.code(400).send({ error: "pdf_required" });
+
+    const bytes = Buffer.from(parsed.data.dataBase64, "base64");
+    if (bytes.length === 0 || bytes.length > MAX_PDF_BYTES) {
+      return reply.code(400).send({ error: "invalid_size" });
+    }
+
+    const objectKey = `calendar/${randomUUID()}.pdf`;
+    await uploadObject(objectKey, bytes, "application/pdf");
+
+    // Singleton: remove any previous document(s) and their R2 objects.
+    const previous = await prisma.calendarDocument.findMany();
+    await prisma.calendarDocument.deleteMany();
+    for (const doc of previous) {
+      await deleteObject(doc.objectKey);
+    }
+
+    const document = await prisma.calendarDocument.create({
+      data: {
+        fileName: parsed.data.fileName,
+        mimeType: "application/pdf",
+        objectKey,
+        status: parsed.data.status,
+        uploadedById: actor.id,
+      },
+    });
+    await recordAudit(request, {
+      actor,
+      action: "cms.calendar_pdf_uploaded",
+      targetType: "calendar_document",
+      targetId: document.id,
+      summary: `file=${document.fileName} status=${document.status}`,
+    });
+    return reply.code(201).send({
+      document: {
+        id: document.id,
+        fileName: document.fileName,
+        status: document.status,
+        updatedAt: document.updatedAt,
+      },
+    });
+  });
+
+  app.patch("/cms/calendar/pdf", async (request, reply) => {
+    const actor = await requireRole(request, reply, ADMIN);
+    if (!actor) return;
+    const parsed = z
+      .object({ status: statusField })
+      .safeParse(request.body);
+    if (!parsed.success) {
+      return reply.code(400).send({ error: "invalid_request" });
+    }
+    const existing = await prisma.calendarDocument.findFirst({
+      orderBy: { updatedAt: "desc" },
+    });
+    if (!existing) return reply.code(404).send({ error: "not_found" });
+    const document = await prisma.calendarDocument.update({
+      where: { id: existing.id },
+      data: { status: parsed.data.status },
+    });
+    await recordAudit(request, {
+      actor,
+      action: "cms.calendar_pdf_updated",
+      targetType: "calendar_document",
+      targetId: document.id,
+      summary: `status=${document.status}`,
+    });
+    return reply.send({
+      document: {
+        id: document.id,
+        fileName: document.fileName,
+        status: document.status,
+        updatedAt: document.updatedAt,
+      },
+    });
+  });
+
+  app.delete("/cms/calendar/pdf", async (request, reply) => {
+    const actor = await requireRole(request, reply, ADMIN);
+    if (!actor) return;
+    const docs = await prisma.calendarDocument.findMany();
+    const firstId = docs[0]?.id;
+    if (!firstId) return reply.code(404).send({ error: "not_found" });
+    await prisma.calendarDocument.deleteMany();
+    for (const doc of docs) {
+      await deleteObject(doc.objectKey);
+    }
+    await recordAudit(request, {
+      actor,
+      action: "cms.calendar_pdf_deleted",
+      targetType: "calendar_document",
+      targetId: firstId,
     });
     return reply.send({ ok: true });
   });

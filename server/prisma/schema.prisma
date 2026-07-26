@@ -671,3 +671,20 @@ model CalendarTermPost {
   @@index([status])
   @@map("calendar_terms")
 }
+
+// The school-calendar PDF. Effectively a singleton (one active document) —
+// uploading a new one replaces the previous row and its R2 object. When a
+// `published` document exists the public calendar page shows it as a flipbook
+// instead of the term tabs. Bytes live in R2; this row is metadata + object key.
+model CalendarDocument {
+  id           String   @id @default(cuid())
+  fileName     String
+  mimeType     String
+  objectKey    String
+  status       String   @default("draft")
+  uploadedById String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("calendar_documents")
+}

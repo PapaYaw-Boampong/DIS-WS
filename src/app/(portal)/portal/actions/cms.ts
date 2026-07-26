@@ -180,3 +180,51 @@ export async function deleteCalendarTerm(id: string): Promise<CmsActionResult> {
   if (result.ok) revalidatePublicContent();
   return { ok: result.ok, mode: "real", error: result.ok ? undefined : "delete_failed" };
 }
+
+// --- Calendar PDF ----------------------------------------------------------
+
+export type CalendarPdfInput = {
+  readonly fileName: string;
+  readonly mimeType: string;
+  readonly dataBase64: string;
+  readonly status: "draft" | "published";
+};
+
+export async function uploadCalendarPdf(
+  input: CalendarPdfInput,
+): Promise<CmsActionResult> {
+  if (!useRealPortalAuth) return mockResult;
+  const result = await portalApiPost<{ document?: { id: string }; error?: string }>(
+    "/cms/calendar/pdf",
+    input,
+  );
+  if (result.ok) revalidatePublicContent();
+  return {
+    ok: result.ok,
+    mode: "real",
+    error: result.ok
+      ? undefined
+      : result.data?.error === "invalid_size"
+        ? "file_too_large"
+        : result.data?.error === "pdf_required"
+          ? "pdf_required"
+          : "save_failed",
+    id: result.data?.document?.id,
+  };
+}
+
+export async function setCalendarPdfStatus(
+  status: "draft" | "published",
+): Promise<CmsActionResult> {
+  if (!useRealPortalAuth) return mockResult;
+  const result = await portalApiSend("PATCH", "/cms/calendar/pdf", { status });
+  if (result.ok) revalidatePublicContent();
+  return { ok: result.ok, mode: "real", error: result.ok ? undefined : "save_failed" };
+}
+
+export async function deleteCalendarPdf(): Promise<CmsActionResult> {
+  if (!useRealPortalAuth) return mockResult;
+  const result = await portalApiSend("DELETE", "/cms/calendar/pdf");
+  if (result.ok) revalidatePublicContent();
+  return { ok: result.ok, mode: "real", error: result.ok ? undefined : "delete_failed" };
+}
