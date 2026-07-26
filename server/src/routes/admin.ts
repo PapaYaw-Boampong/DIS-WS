@@ -6,7 +6,8 @@ import { requireRole } from "../lib/auth-guard";
 import { recordAudit } from "../lib/audit";
 import { toPublicUser } from "../lib/serialize";
 import { prisma } from "../db";
-import { hashPassword } from "../lib/password";
+import { generateTempPassword, hashPassword } from "../lib/password";
+import { revokeAllUserSessions } from "../lib/session";
 
 const lowerRoles = [
   "student",
@@ -124,6 +125,44 @@ export async function adminRoutes(app: FastifyInstance): Promise<void> {
       } catch {
         return reply.code(404).send({ error: "not_found" });
       }
+    },
+  );
+
+  // Admin-initiated password reset: sets a temporary password, forces a change
+  // on next sign-in, and revokes the user's active sessions. The temp password
+  // is returned once for the admin to relay to the user.
+  app.post<{ Params: { id: string } }>(
+    "/admin/users/:id/reset-password",
+    async (request, reply) => {
+      const actor = await requireRole(request, reply, ["admin"]);
+      if (!actor) return;
+
+      const target = await prisma.user.findUnique({
+        where: { id: request.params.id },
+      });
+      if (!target) {
+        return reply.code(404).send({ error: "not_found" });
+      }
+
+      const tempPassword = generateTempPassword();
+      await prisma.user.update({
+        where: { id: target.id },
+        data: {
+          passwordHash: await hashPassword(tempPassword),
+          mustChangePassword: true,
+        },
+      });
+      await revokeAllUserSessions(target.id);
+
+      await recordAudit(request, {
+        actor,
+        action: "admin.password_reset",
+        targetType: "user",
+        targetId: target.id,
+        summary: `email=${target.email}`,
+      });
+
+      return reply.send({ tempPassword });
     },
   );
 }

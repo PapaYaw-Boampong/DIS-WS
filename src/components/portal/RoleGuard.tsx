@@ -23,6 +23,12 @@ export async function RoleGuard({ children, role }: RoleGuardProps) {
     redirect(portalRoutes.dashboard(session.user.role));
   }
 
+  // After an admin password reset the user must set a new password before using
+  // the portal. The change-password page lives outside this guard, so no loop.
+  if (session.user.mustChangePassword) {
+    redirect(portalRoutes.changePassword);
+  }
+
   const notifications = await getPortalNotifications();
 
   return (

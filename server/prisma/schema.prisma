@@ -34,6 +34,9 @@ model User {
   role         Role
   status       UserStatus @default(ACTIVE)
   passwordHash String
+  // Set when an admin resets the password to a temporary one; the portal forces
+  // a password change on next sign-in and clears it once changed.
+  mustChangePassword Boolean @default(false)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 

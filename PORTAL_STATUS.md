@@ -7,6 +7,33 @@ brief.
 
 ## Current Phase
 
+**Portal Phase 21: Go-live hardening & deployment prep**
+Status: `in progress`
+Started: July 26, 2026
+
+Preparing the stack for a real (staging-first) deployment. Capability audit
+against `PORTAL_IMPLEMENTATION_PLAN.md` confirms the **MVP Definition of Done is
+fully met and the backend goes well beyond it**; remaining items are password
+reset (now built), a handful of minor admin management pages, and the
+explicitly-deferred integrations (card provider, GPS, SMS, MTN-API/OCR/bank-email
+auto-verify).
+
+- **Admin-initiated password reset** (the one real auth gap): `User` gains
+  `mustChangePassword` (migration `user_must_change_password`); admins reset a
+  user's password from a new **User Accounts** page (`/portal/admin/accounts`),
+  which returns a one-time temporary password and revokes the user's sessions;
+  the user is forced through a `/portal/change-password` page on next sign-in
+  (`POST /auth/change-password`, session rotated). Verified end-to-end.
+- **Clean-production first admin**: `server/scripts/create-admin.ts`
+  (`npm run create:admin`) creates a single real admin on an unseeded database —
+  no fictional data. That admin creates everyone else from the portal.
+- **Deployment config**: `render.yaml` fixed to include the required R2 env vars
+  (the backend fails fast without them); added `DEPLOYMENT.md` runbook (Render +
+  Vercel env matrix, staging-first flow, go-live checklist).
+
+Remaining (external, user-driven): provision Render (DB + web service) and the
+Vercel project per `DEPLOYMENT.md`, set the secrets, and validate on staging.
+
 **Portal Phase 20: Design-intelligence polish pass**
 Status: `complete`
 Completed: July 26, 2026
@@ -345,6 +372,7 @@ unchanged and continues to run on the mock session.
 | Portal Phase 18: Public Website CMS | `complete` | July 25, 2026 | Admin-managed news/events/calendar for the public marketing site: backend models + published-only public read endpoints + admin CRUD (audited, icon-allowlisted); public pages read via `USE_REAL_PUBLIC_CONTENT` with ISR + static fallback; portal admin managers with `revalidatePath` so edits go live instantly |
 | Portal Phase 19: CMS media (flipbook & images) | `complete` | July 26, 2026 | School-calendar PDF flipbook (PDF.js + page-flip; admin upload, R2, public flipbook replacing term tabs with embedded-PDF fallback); news/event images picked from the built-in gallery or uploaded to R2 via a reusable ImagePicker + `/cms-image` proxy; Student Life carousel heights trimmed to fit the viewport |
 | Portal Phase 20: Design-intelligence polish | `complete` | July 26, 2026 | App-wide interaction polish (pointer cursor + `touch-action` on all interactive elements, `not-allowed` when disabled), press-feedback on the shared Button (reduced-motion aware), CMS image-picker label fix, and a documented `design-system/dis/MASTER.md`; verified with `tsc`/`eslint`/production build |
+| Portal Phase 21: Go-live hardening & deployment prep | `in progress` | — | Admin-initiated password reset (`mustChangePassword`, `/portal/admin/accounts` reset issuing a one-time temp password + session revoke, forced `/portal/change-password` flow); `create:admin` script for a clean production first admin; `render.yaml` R2 env fix; `DEPLOYMENT.md` runbook (Render + Vercel, staging-first). Capability audit confirms MVP complete + backend beyond |
 
 ## Phase 1 Delivered
 

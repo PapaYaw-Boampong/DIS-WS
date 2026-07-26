@@ -42,6 +42,7 @@ function toPortalUser(value: unknown): PortalUser | null {
     email,
     role,
     status: status as PortalAccountStatus,
+    mustChangePassword: record.mustChangePassword === true,
   };
 }
 
@@ -89,6 +90,37 @@ export async function apiGetMe(token: string): Promise<PortalUser | null> {
     return toPortalUser(data.user);
   } catch {
     return null;
+  }
+}
+
+export async function apiChangePassword(
+  token: string,
+  currentPassword: string,
+  newPassword: string,
+): Promise<{ token: string; user: PortalUser } | { error: string }> {
+  try {
+    const response = await fetch(`${portalApiUrl}/auth/change-password`, {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ currentPassword, newPassword }),
+      cache: "no-store",
+    });
+    const data = (await response.json().catch(() => ({}))) as Partial<
+      LoginResponse & { error: string }
+    >;
+    if (!response.ok) {
+      return { error: data.error ?? "change_failed" };
+    }
+    const user = toPortalUser(data.user);
+    if (typeof data.token !== "string" || !user) {
+      return { error: "change_failed" };
+    }
+    return { token: data.token, user };
+  } catch {
+    return { error: "change_failed" };
   }
 }
 

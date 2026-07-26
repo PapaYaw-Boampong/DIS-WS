@@ -12,9 +12,9 @@ Completed: July 15, 2026
 
 ## Active Development Cycle
 
-**Portal Phase 20: Design-intelligence polish pass**
-Status: `complete`
-Completed: July 26, 2026
+**Portal Phase 21: Go-live hardening & deployment prep**
+Status: `in progress`
+Started: July 26, 2026
 
 Portal delivery is tracked in `PORTAL_STATUS.md`. The public website is complete
 through Phase 11. The private portal now has a real backend (separate Render

@@ -58,3 +58,9 @@ export async function getSessionUser(token: string): Promise<User | null> {
 export async function revokeSession(token: string): Promise<void> {
   await prisma.session.deleteMany({ where: { tokenHash: hashToken(token) } });
 }
+
+// Invalidates every active session for a user (used on password reset/change so
+// old credentials can't keep a session alive).
+export async function revokeAllUserSessions(userId: string): Promise<void> {
+  await prisma.session.deleteMany({ where: { userId } });
+}

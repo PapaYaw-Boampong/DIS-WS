@@ -15,9 +15,23 @@ services:
           name: dis-portal-db
           property: connectionString
       - key: ALLOWED_ORIGIN
-        sync: false
+        sync: false # set to the deployed Vercel web origin(s), comma-separated
       - key: NODE_ENV
         value: production
+      # Cloudflare R2 object storage — REQUIRED (env.ts fails fast without them).
+      # Marked sync:false so the secret values are entered in the Render
+      # dashboard, never committed to the repo.
+      - key: R2_ACCOUNT_ID
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_BUCKET_NAME
+        sync: false
+      # Only needed if you seed demo data on this environment.
+      - key: SEED_PASSWORD
+        sync: false
 
 databases:
   - name: dis-portal-db

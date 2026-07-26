@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { mockPortalUsers } from "@/data/portal/users";
-import { apiLogin, apiLogout } from "@/lib/portal/api";
+import { apiChangePassword, apiLogin, apiLogout } from "@/lib/portal/api";
 import {
   PORTAL_SESSION_MAX_AGE,
   REAL_PORTAL_SESSION_COOKIE,
@@ -61,6 +61,54 @@ export async function loginWithCredentials(formData: FormData) {
   }
 
   const cookieStore = await cookies();
+  cookieStore.set(REAL_PORTAL_SESSION_COOKIE, result.token, {
+    httpOnly: true,
+    maxAge: PORTAL_SESSION_MAX_AGE,
+    path: "/",
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  });
+
+  if (result.user.mustChangePassword) {
+    redirect(portalRoutes.changePassword);
+  }
+  redirect(portalRoutes.dashboard(result.user.role));
+}
+
+// Signed-in user sets a new password (used after an admin reset forces a
+// change). The backend rotates the session token, so we refresh the cookie.
+export async function changePortalPassword(formData: FormData) {
+  const currentPassword = String(formData.get("currentPassword") ?? "");
+  const newPassword = String(formData.get("newPassword") ?? "");
+  const confirmPassword = String(formData.get("confirmPassword") ?? "");
+
+  if (!useRealPortalAuth) {
+    redirect(portalRoutes.login);
+  }
+  if (newPassword.length < 8) {
+    redirect(`${portalRoutes.changePassword}?error=too-short`);
+  }
+  if (newPassword !== confirmPassword) {
+    redirect(`${portalRoutes.changePassword}?error=mismatch`);
+  }
+
+  const cookieStore = await cookies();
+  const token = cookieStore.get(REAL_PORTAL_SESSION_COOKIE)?.value;
+  if (!token) {
+    redirect(portalRoutes.login);
+  }
+
+  const result = await apiChangePassword(token!, currentPassword, newPassword);
+  if ("error" in result) {
+    const code =
+      result.error === "invalid_credentials"
+        ? "current"
+        : result.error === "password_unchanged"
+          ? "reuse"
+          : "failed";
+    redirect(`${portalRoutes.changePassword}?error=${code}`);
+  }
+
   cookieStore.set(REAL_PORTAL_SESSION_COOKIE, result.token, {
     httpOnly: true,
     maxAge: PORTAL_SESSION_MAX_AGE,

@@ -8,6 +8,7 @@ export type PublicUser = {
   email: string;
   role: string;
   status: string;
+  mustChangePassword: boolean;
 };
 
 export function toPublicUser(user: User): PublicUser {
@@ -17,5 +18,6 @@ export function toPublicUser(user: User): PublicUser {
     email: user.email,
     role: user.role.toLowerCase(),
     status: user.status.toLowerCase(),
+    mustChangePassword: user.mustChangePassword,
   };
 }

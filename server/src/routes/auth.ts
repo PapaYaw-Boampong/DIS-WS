@@ -3,17 +3,23 @@ import { z } from "zod";
 
 import { recordAudit } from "../lib/audit";
 import { prisma } from "../db";
-import { verifyPassword } from "../lib/password";
+import { hashPassword, verifyPassword } from "../lib/password";
 import { toPublicUser } from "../lib/serialize";
 import {
   createSession,
   getSessionUser,
+  revokeAllUserSessions,
   revokeSession,
 } from "../lib/session";
 
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
+});
+
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1),
+  newPassword: z.string().min(8),
 });
 
 function bearerToken(request: FastifyRequest): string | null {
@@ -90,6 +96,60 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
     }
 
     return reply.send({ user: toPublicUser(user) });
+  });
+
+  // Signed-in user changes their own password (also clears the forced-change
+  // flag). Revokes other sessions, then issues a fresh session for this client.
+  app.post("/auth/change-password", async (request, reply) => {
+    const token = bearerToken(request);
+    if (!token) {
+      return reply.code(401).send({ error: "unauthenticated" });
+    }
+    const user = await getSessionUser(token);
+    if (!user) {
+      return reply.code(401).send({ error: "unauthenticated" });
+    }
+    const parsed = changePasswordSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.code(400).send({ error: "invalid_request" });
+    }
+    const currentOk = await verifyPassword(
+      user.passwordHash,
+      parsed.data.currentPassword,
+    );
+    if (!currentOk) {
+      return reply.code(401).send({ error: "invalid_credentials" });
+    }
+    if (parsed.data.newPassword === parsed.data.currentPassword) {
+      return reply.code(400).send({ error: "password_unchanged" });
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        passwordHash: await hashPassword(parsed.data.newPassword),
+        mustChangePassword: false,
+      },
+    });
+    // Invalidate all sessions (including this one), then re-issue for the client.
+    await revokeAllUserSessions(user.id);
+    const { token: newToken, expiresAt } = await createSession(user.id, {
+      userAgent: request.headers["user-agent"],
+    });
+
+    await recordAudit(request, {
+      actor: toPublicUser(user),
+      action: "auth.password_changed",
+      targetType: "user",
+      targetId: user.id,
+    });
+
+    const updated = await prisma.user.findUnique({ where: { id: user.id } });
+    return reply.send({
+      token: newToken,
+      expiresAt: expiresAt.toISOString(),
+      user: updated ? toPublicUser(updated) : toPublicUser(user),
+    });
   });
 
   app.post("/auth/logout", async (request, reply) => {

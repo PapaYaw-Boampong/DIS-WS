@@ -151,6 +151,12 @@ export const portalNavigation: Record<
     dashboardItem("admin"),
     messagesItem("admin"),
     notificationsItem("admin"),
+    {
+      label: "User Accounts",
+      icon: "settings",
+      href: portalRoutes.adminAccounts,
+      phase: 21,
+    },
     { label: "Students", icon: "users", href: portalRoutes.adminStudents, phase: 6 },
     { label: "Parents", icon: "users", href: portalRoutes.adminParents, phase: 6 },
     { label: "Staff", icon: "users", href: portalRoutes.adminStaff, phase: 6 },

@@ -17,6 +17,8 @@ export type PortalUser = {
   readonly email: string;
   readonly role: PortalRole;
   readonly status: PortalAccountStatus;
+  // Set by an admin password reset; the portal forces a change before use.
+  readonly mustChangePassword?: boolean;
 };
 
 export type MockPortalSession = {
