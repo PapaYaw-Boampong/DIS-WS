@@ -19,12 +19,31 @@ The frontend holds **no secrets**. All credentials (DB URL, R2 keys) live on the
 Render backend. The frontend talks to the backend server-to-server via
 `PORTAL_API_URL`.
 
+## Repository model: one monorepo, two platforms
+
+Keep this **single repo**. Frontend is at the root (deployed by **Vercel**);
+backend is in `server/` (deployed by **Render**). Both platforms connect to the
+*same* GitHub repo and each builds only its own part:
+
+- **Render** builds from `rootDir: server`, and `render.yaml`'s `buildFilter`
+  makes it redeploy only when `server/**` changes.
+- **Vercel** builds the Next.js app from the repo root. To skip a frontend
+  rebuild on server-only pushes, set an **Ignored Build Step** in the Vercel
+  project (optional; a wasted build is harmless, just uses minutes):
+  `bash -c "git diff --quiet HEAD^ HEAD -- . ':(exclude)server'"`
+
+Why not split into two repos? The frontend and backend share domain concepts
+(icon allowlist, user/role shapes, the API contract), so a monorepo keeps
+cross-cutting changes atomic and the docs/plans in one place — the right call for
+a small team.
+
 ---
 
 ## 1. Backend on Render (`server/`)
 
-The repo ships `server/render.yaml` (a Blueprint) provisioning the web service +
-a free Postgres. Build runs `prisma migrate deploy` automatically.
+The repo ships a root **`render.yaml`** Blueprint (Render only auto-detects a
+Blueprint at the repo root) that provisions the web service + a free Postgres and
+runs `prisma migrate deploy` on build.
 
 **Steps**
 1. Render → **New → Blueprint** → connect the GitHub repo → it reads
