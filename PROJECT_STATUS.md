@@ -12,9 +12,9 @@ Completed: July 15, 2026
 
 ## Active Development Cycle
 
-**Portal Phase 18: Public Website CMS (portal-managed site content)**
+**Portal Phase 19: CMS media — calendar flipbook & post images**
 Status: `complete`
-Completed: July 25, 2026
+Completed: July 26, 2026
 
 Portal delivery is tracked in `PORTAL_STATUS.md`. The public website is complete
 through Phase 11. The private portal now has a real backend (separate Render

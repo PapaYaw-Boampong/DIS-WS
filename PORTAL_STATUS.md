@@ -7,6 +7,29 @@ brief.
 
 ## Current Phase
 
+**Portal Phase 19: CMS media — calendar flipbook & post images**
+Status: `complete`
+Completed: July 26, 2026
+
+Extends the Phase 18 CMS with rich media, all portal-managed and R2-backed.
+
+- **School-calendar PDF flipbook**: admins upload the official calendar PDF
+  (`portal/admin/website/calendar`); when published, the public calendar page
+  renders it as a realistic page-turning book (PDF.js renders pages, page-flip
+  animates) instead of the academic-term tabs, which remain the fallback. A new
+  `CalendarDocument` (singleton, R2) with admin upload/publish/delete (audited)
+  and public metadata + byte-serving endpoints; a same-origin `/calendar/pdf`
+  proxy lets PDF.js load it without CORS; reduced-motion/failure falls back to
+  an embedded PDF + download. Deps added: `pdfjs-dist`, `page-flip`.
+- **News & event images**: each post can carry an image chosen from the site's
+  built-in photo gallery (rendered through the optimized pipeline) or uploaded
+  from the admin's computer (R2, served via a `/cms-image/:ref` proxy restricted
+  to the `cms-images/` prefix). A reusable `ImagePicker` (gallery grid + upload)
+  is wired into the news form and events manager; `POST /cms/images` +
+  `GET /public/cms-image/:ref` back it. No image → the existing icon placeholder.
+- **Public site polish**: reduced the Student Life feature-carousel heights so
+  the Campus/Voices sections fit within a laptop viewport.
+
 **Portal Phase 18: Public Website CMS (portal-managed site content)**
 Status: `complete`
 Completed: July 25, 2026
@@ -299,6 +322,7 @@ unchanged and continues to run on the mock session.
 | Portal Phase 16: Audit Logging | `complete` | July 25, 2026 | Append-only `AuditLog` table + `recordAudit()` helper wired into every sensitive write (auth, admin accounts, payments, statements, academics writes, Phase 17 file operations); admin-only paginated `GET /audit-logs` read |
 | Portal Phase 17: Real File Storage for Course Materials & Submissions | `complete` | July 25, 2026 | R2-backed course-material upload/download (class-scoped) and assignment-submission upload/list/download (student's own class; staff/admin see and download all); staff "Add material" and student assignment pages now do real uploads instead of device-only previews |
 | Portal Phase 18: Public Website CMS | `complete` | July 25, 2026 | Admin-managed news/events/calendar for the public marketing site: backend models + published-only public read endpoints + admin CRUD (audited, icon-allowlisted); public pages read via `USE_REAL_PUBLIC_CONTENT` with ISR + static fallback; portal admin managers with `revalidatePath` so edits go live instantly |
+| Portal Phase 19: CMS media (flipbook & images) | `complete` | July 26, 2026 | School-calendar PDF flipbook (PDF.js + page-flip; admin upload, R2, public flipbook replacing term tabs with embedded-PDF fallback); news/event images picked from the built-in gallery or uploaded to R2 via a reusable ImagePicker + `/cms-image` proxy; Student Life carousel heights trimmed to fit the viewport |
 
 ## Phase 1 Delivered
 
