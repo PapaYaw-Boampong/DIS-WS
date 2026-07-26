@@ -47,9 +47,9 @@ type FeatureCarouselProps = {
 const transitionDuration = 420;
 
 const mediaSizeClasses: Record<FeatureCarouselMediaSize, string> = {
-  compact: "h-[280px] sm:h-[340px]",
-  large: "h-[360px] sm:h-[500px] lg:h-[620px]",
-  wide: "h-[360px] sm:h-[520px] lg:h-[640px]",
+  compact: "h-[260px] sm:h-[320px]",
+  large: "h-[300px] sm:h-[420px] lg:h-[500px]",
+  wide: "h-[300px] sm:h-[440px] lg:h-[520px]",
 };
 
 function SlideMedia({
