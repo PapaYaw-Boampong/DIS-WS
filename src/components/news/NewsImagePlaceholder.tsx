@@ -14,8 +14,12 @@ export function NewsImagePlaceholder({
 }: NewsImagePlaceholderProps) {
   return (
     <div
-      role={article.image ? undefined : "img"}
-      aria-label={article.image ? undefined : article.imageDescription}
+      role={article.image || article.imageUrl ? undefined : "img"}
+      aria-label={
+        article.image || article.imageUrl
+          ? undefined
+          : article.imageDescription
+      }
       className={cn(
         "pattern-checker relative flex min-h-64 items-center justify-center overflow-hidden rounded-card border border-curry-orange/10 bg-soft-cream",
         className,
@@ -25,6 +29,13 @@ export function NewsImagePlaceholder({
         <ResponsiveImage
           image={article.image}
           sizes="(min-width: 1024px) 40vw, 100vw"
+        />
+      ) : article.imageUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={article.imageUrl}
+          alt={article.imageAlt ?? article.imageDescription}
+          className="absolute inset-0 size-full object-cover"
         />
       ) : (
         <>

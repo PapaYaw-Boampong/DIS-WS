@@ -4,8 +4,14 @@ import { calendarEvents, featuredEvents } from "@/data/events";
 import { featuredNews, newsArticles } from "@/data/news";
 import { academicTerms } from "@/data/academics";
 import { toContentIcon } from "@/lib/content-icons";
+import { imageById } from "@/lib/images";
 import { routes } from "@/lib/routes";
-import type { AcademicTerm, EventItem, NewsArticle } from "@/types/content";
+import type {
+  AcademicTerm,
+  EventItem,
+  NewsArticle,
+  SiteImage,
+} from "@/types/content";
 
 // Public-website content layer. When USE_REAL_PUBLIC_CONTENT is enabled the
 // marketing site reads portal-managed content from the backend's public
@@ -30,7 +36,13 @@ async function fetchPublic<T>(path: string): Promise<T | null> {
   }
 }
 
-type BackendNews = {
+type BackendImageFields = {
+  readonly imageId?: string | null;
+  readonly imageObjectKey?: string | null;
+  readonly imageAlt?: string | null;
+};
+
+type BackendNews = BackendImageFields & {
   readonly slug: string;
   readonly title: string;
   readonly excerpt: string;
@@ -41,13 +53,36 @@ type BackendNews = {
   readonly body: NewsArticle["body"];
 };
 
-type BackendEvent = {
+type BackendEvent = BackendImageFields & {
   readonly title: string;
   readonly dateLabel: string;
   readonly description: string;
   readonly icon: string;
   readonly featured: boolean;
 };
+
+// Resolves a post's image: a gallery `imageId` renders through the optimized
+// pipeline (SiteImage); an uploaded `imageObjectKey` renders via the same-origin
+// proxy. At most one is set.
+function resolveImage(fields: BackendImageFields): {
+  image?: SiteImage;
+  imageUrl?: string;
+  imageAlt?: string;
+} {
+  if (fields.imageId) {
+    const galleryImage = (imageById as Record<string, SiteImage | undefined>)[
+      fields.imageId
+    ];
+    if (galleryImage) return { image: galleryImage };
+  }
+  if (fields.imageObjectKey) {
+    return {
+      imageUrl: `/cms-image/${fields.imageObjectKey}`,
+      imageAlt: fields.imageAlt ?? undefined,
+    };
+  }
+  return {};
+}
 
 function mapNews(post: BackendNews): NewsArticle {
   return {
@@ -59,7 +94,7 @@ function mapNews(post: BackendNews): NewsArticle {
     icon: toContentIcon(post.icon, "newspaper"),
     imageDescription: post.imageDescription,
     body: post.body,
-    // CMS content is text + icon based; authored photography stays static.
+    ...resolveImage(post),
   };
 }
 
@@ -70,6 +105,7 @@ function mapEvent(event: BackendEvent): EventItem {
     description: event.description,
     href: routes.calendar,
     icon: toContentIcon(event.icon, "calendar"),
+    ...resolveImage(event),
   };
 }
 

@@ -619,6 +619,9 @@ model AuditLog {
 // name the frontend maps to a Lucide icon (validated against an allowlist on
 // write).
 
+// `imageId` references a built-in gallery image (rendered via the optimized
+// pipeline); `imageObjectKey` is an admin-uploaded image in R2 (served via a
+// same-origin proxy). At most one is set; `imageAlt` is the accessible caption.
 model NewsArticlePost {
   id               String    @id @default(cuid())
   slug             String    @unique
@@ -628,6 +631,9 @@ model NewsArticlePost {
   icon             String    @default("newspaper")
   publishedLabel   String    @default("School Notice")
   imageDescription String    @default("")
+  imageId          String?
+  imageObjectKey   String?
+  imageAlt         String?
   body             Json // NewsBodySection[]: { heading?: string; paragraphs: string[] }
   status           String    @default("draft")
   authorId         String?
@@ -640,17 +646,20 @@ model NewsArticlePost {
 }
 
 model EventPost {
-  id          String   @id @default(cuid())
-  title       String
-  dateLabel   String   @default("")
-  description String
-  icon        String   @default("calendar")
-  featured    Boolean  @default(false)
-  status      String   @default("draft")
-  position    Int      @default(0)
-  authorId    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String   @id @default(cuid())
+  title          String
+  dateLabel      String   @default("")
+  description    String
+  icon           String   @default("calendar")
+  featured       Boolean  @default(false)
+  imageId        String?
+  imageObjectKey String?
+  imageAlt       String?
+  status         String   @default("draft")
+  position       Int      @default(0)
+  authorId       String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@index([status])
   @@map("event_posts")

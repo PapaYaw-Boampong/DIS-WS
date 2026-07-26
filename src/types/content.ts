@@ -329,6 +329,9 @@ export type EventItem = {
   readonly actionLabel?: string;
   readonly icon: ContentIcon;
   readonly image?: SiteImage;
+  // An admin-uploaded image (proxy URL) used when there is no gallery `image`.
+  readonly imageUrl?: string;
+  readonly imageAlt?: string;
 };
 
 export type NewsItem = {
@@ -338,6 +341,9 @@ export type NewsItem = {
   readonly publishedAt: string;
   readonly category: string;
   readonly image?: SiteImage;
+  // An admin-uploaded image (proxy URL) used when there is no gallery `image`.
+  readonly imageUrl?: string;
+  readonly imageAlt?: string;
   readonly icon: ContentIcon;
 };
 

@@ -11,7 +11,13 @@ export type CmsNewsBodySection = {
   readonly paragraphs: readonly string[];
 };
 
-export type CmsNewsPost = {
+type CmsImageFields = {
+  readonly imageId: string | null;
+  readonly imageObjectKey: string | null;
+  readonly imageAlt: string | null;
+};
+
+export type CmsNewsPost = CmsImageFields & {
   readonly id: string;
   readonly slug: string;
   readonly title: string;
@@ -26,7 +32,7 @@ export type CmsNewsPost = {
   readonly updatedAt: string;
 };
 
-export type CmsEventPost = {
+export type CmsEventPost = CmsImageFields & {
   readonly id: string;
   readonly title: string;
   readonly dateLabel: string;

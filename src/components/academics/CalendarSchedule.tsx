@@ -90,6 +90,15 @@ export async function CalendarEventsSection() {
                     sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
                   />
                 </div>
+              ) : event.imageUrl ? (
+                <div className="relative aspect-[4/3] bg-soft-cream">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={event.imageUrl}
+                    alt={event.imageAlt ?? event.title}
+                    className="absolute inset-0 size-full object-cover"
+                  />
+                </div>
               ) : null}
               <div className="flex flex-1 flex-col p-6">
                 <div className="flex size-12 items-center justify-center rounded-[0.875rem] bg-soft-cream text-curry-orange">

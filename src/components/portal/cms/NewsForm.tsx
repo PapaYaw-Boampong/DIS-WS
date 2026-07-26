@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Plus, Save, Trash2 } from "lucide-react";
 
 import { IconSelect } from "@/components/portal/cms/IconSelect";
+import { ImagePicker, type ImageValue } from "@/components/portal/cms/ImagePicker";
 import {
   createNews,
   deleteNews,
@@ -53,6 +54,11 @@ export function NewsForm({ post }: NewsFormProps) {
   const [status, setStatus] = useState<"draft" | "published">(
     post?.status ?? "draft",
   );
+  const [image, setImage] = useState<ImageValue>({
+    imageId: post?.imageId ?? null,
+    imageObjectKey: post?.imageObjectKey ?? null,
+    imageAlt: post?.imageAlt ?? null,
+  });
   const [sections, setSections] = useState<Section[]>(sectionsFromPost(post));
 
   function buildInput(): NewsInput | null {
@@ -83,6 +89,9 @@ export function NewsForm({ post }: NewsFormProps) {
       imageDescription: imageDescription.trim(),
       body,
       status,
+      imageId: image.imageId ?? null,
+      imageObjectKey: image.imageObjectKey ?? null,
+      imageAlt: image.imageAlt ?? null,
     };
   }
 
@@ -195,9 +204,9 @@ export function NewsForm({ post }: NewsFormProps) {
       </div>
 
       <label className={labelClass}>
-        Image description{" "}
+        Placeholder description{" "}
         <span className="font-normal text-muted-grey">
-          — for accessibility when no photo is set
+          — shown with the icon when no image is set
         </span>
         <input
           value={imageDescription}
@@ -205,6 +214,13 @@ export function NewsForm({ post }: NewsFormProps) {
           className={fieldClass}
         />
       </label>
+
+      <div>
+        <span className={labelClass}>Image</span>
+        <div className="mt-2">
+          <ImagePicker value={image} onChange={setImage} />
+        </div>
+      </div>
 
       <fieldset className="space-y-4">
         <legend className="text-sm font-bold text-charcoal">Article body</legend>

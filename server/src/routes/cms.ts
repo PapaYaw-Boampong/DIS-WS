@@ -11,6 +11,24 @@ import { prisma } from "../db";
 // The school-calendar PDF caps well under the Fastify JSON body limit
 // (base64 inflates raw bytes ~33%).
 const MAX_PDF_BYTES = 10 * 1024 * 1024;
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+
+const IMAGE_EXT: Record<string, string> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+  "image/webp": "webp",
+  "image/gif": "gif",
+};
+
+function contentTypeForKey(key: string): string {
+  const ext = key.slice(key.lastIndexOf(".") + 1).toLowerCase();
+  if (ext === "png") return "image/png";
+  if (ext === "jpg" || ext === "jpeg") return "image/jpeg";
+  if (ext === "webp") return "image/webp";
+  if (ext === "gif") return "image/gif";
+  return "application/octet-stream";
+}
 
 // Public website CMS. Two audiences:
 //   - Public (unauthenticated) read endpoints under /public/* serve only
@@ -44,6 +62,12 @@ const newsBodySchema = z.array(
   }),
 );
 
+const imageFields = {
+  imageId: z.string().nullish(),
+  imageObjectKey: z.string().nullish(),
+  imageAlt: z.string().nullish(),
+};
+
 const newsCreateSchema = z.object({
   title: z.string().min(1),
   slug: z.string().min(1).optional(),
@@ -52,6 +76,7 @@ const newsCreateSchema = z.object({
   icon: iconField.default("newspaper"),
   publishedLabel: z.string().min(1).default("School Notice"),
   imageDescription: z.string().default(""),
+  ...imageFields,
   body: newsBodySchema,
   status: statusField.default("draft"),
 });
@@ -66,6 +91,7 @@ const eventCreateSchema = z.object({
   description: z.string().min(1),
   icon: iconField.default("calendar"),
   featured: z.boolean().default(false),
+  ...imageFields,
   status: statusField.default("draft"),
   position: z.number().int().default(0),
 });
@@ -158,6 +184,58 @@ export async function cmsRoutes(app: FastifyInstance): Promise<void> {
       .send(bytes);
   });
 
+  // Serve an admin-uploaded CMS image. The ref is a single filename segment;
+  // it's always resolved under the fixed `cms-images/` prefix, so this public
+  // endpoint can never be used to read other R2 objects.
+  app.get("/public/cms-image/:ref", async (request, reply) => {
+    const { ref } = request.params as { ref: string };
+    if (!ref || ref.includes("/") || ref.includes("..")) {
+      return reply.code(400).send({ error: "invalid_key" });
+    }
+    const key = `cms-images/${ref}`;
+    const bytes = await getObjectBytes(key);
+    if (!bytes) return reply.code(404).send({ error: "not_found" });
+    return reply
+      .header("content-type", contentTypeForKey(key))
+      .header("cache-control", "public, max-age=86400")
+      .send(bytes);
+  });
+
+  // ---------------------------------------------------------- admin: images
+
+  // Uploads an image to R2 and returns a `ref` (the filename segment). The
+  // caller stores it on a news/event post as `imageObjectKey`; the public site
+  // renders it via GET /public/cms-image/:ref.
+  app.post("/cms/images", async (request, reply) => {
+    const actor = await requireRole(request, reply, ADMIN);
+    if (!actor) return;
+    const parsed = z
+      .object({
+        fileName: z.string().min(1),
+        mimeType: z.string().min(1),
+        dataBase64: z.string().min(1),
+      })
+      .safeParse(request.body);
+    if (!parsed.success) {
+      return reply.code(400).send({ error: "invalid_request" });
+    }
+    const ext = IMAGE_EXT[parsed.data.mimeType.toLowerCase()];
+    if (!ext) return reply.code(400).send({ error: "image_required" });
+    const bytes = Buffer.from(parsed.data.dataBase64, "base64");
+    if (bytes.length === 0 || bytes.length > MAX_IMAGE_BYTES) {
+      return reply.code(400).send({ error: "invalid_size" });
+    }
+    const ref = `${randomUUID()}.${ext}`;
+    await uploadObject(`cms-images/${ref}`, bytes, parsed.data.mimeType);
+    await recordAudit(request, {
+      actor,
+      action: "cms.image_uploaded",
+      targetType: "cms_image",
+      targetId: ref,
+    });
+    return reply.code(201).send({ ref });
+  });
+
   // ------------------------------------------------------------ admin: news
 
   app.get("/cms/news", async (request, reply) => {
@@ -189,6 +267,9 @@ export async function cmsRoutes(app: FastifyInstance): Promise<void> {
           icon: parsed.data.icon,
           publishedLabel: parsed.data.publishedLabel,
           imageDescription: parsed.data.imageDescription,
+          imageId: parsed.data.imageId ?? null,
+          imageObjectKey: parsed.data.imageObjectKey ?? null,
+          imageAlt: parsed.data.imageAlt ?? null,
           body: parsed.data.body,
           status: parsed.data.status,
           authorId: actor.id,

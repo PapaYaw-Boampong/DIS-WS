@@ -28,6 +28,15 @@ export async function EventsPreview() {
                     sizes="(min-width: 1024px) 40vw, 100vw"
                   />
                 </div>
+              ) : event.imageUrl ? (
+                <div className="relative min-h-64 bg-soft-cream lg:min-h-full">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={event.imageUrl}
+                    alt={event.imageAlt ?? event.title}
+                    className="absolute inset-0 size-full object-cover"
+                  />
+                </div>
               ) : null}
               <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-12">
                 <div className="flex size-14 items-center justify-center rounded-2xl bg-soft-cream text-curry-orange">

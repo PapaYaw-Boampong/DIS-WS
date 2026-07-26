@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Pencil, Plus, Save, Trash2, X } from "lucide-react";
 
 import { IconSelect } from "@/components/portal/cms/IconSelect";
+import { ImagePicker } from "@/components/portal/cms/ImagePicker";
 import { StatusBadge } from "@/components/portal/StatusBadge";
 import {
   createEvent,
@@ -30,6 +31,9 @@ const emptyDraft: EventInput = {
   featured: false,
   status: "draft",
   position: 0,
+  imageId: null,
+  imageObjectKey: null,
+  imageAlt: null,
 };
 
 export function EventsManager({ events }: EventsManagerProps) {
@@ -54,6 +58,9 @@ export function EventsManager({ events }: EventsManagerProps) {
       featured: event.featured,
       status: event.status,
       position: event.position,
+      imageId: event.imageId,
+      imageObjectKey: event.imageObjectKey,
+      imageAlt: event.imageAlt,
     });
     setMessage(null);
   }
@@ -202,6 +209,20 @@ export function EventsManager({ events }: EventsManagerProps) {
           />
           Feature on the homepage
         </label>
+
+        <div>
+          <span className={labelClass}>Image</span>
+          <div className="mt-2">
+            <ImagePicker
+              value={{
+                imageId: draft.imageId,
+                imageObjectKey: draft.imageObjectKey,
+                imageAlt: draft.imageAlt,
+              }}
+              onChange={(next) => setDraft({ ...draft, ...next })}
+            />
+          </div>
+        </div>
 
         <button
           type="submit"

@@ -34,9 +34,35 @@ const mockResult: CmsActionResult = {
   error: "backend_required",
 };
 
+// A post's image is either a built-in gallery id or an uploaded ref; passing
+// null clears it.
+export type ImageSelection = {
+  readonly imageId?: string | null;
+  readonly imageObjectKey?: string | null;
+  readonly imageAlt?: string | null;
+};
+
+// Uploads an image and returns its ref (stored as imageObjectKey on a post).
+export async function uploadCmsImage(input: {
+  readonly fileName: string;
+  readonly mimeType: string;
+  readonly dataBase64: string;
+}): Promise<{ ok: boolean; ref?: string; error?: string }> {
+  if (!useRealPortalAuth) return { ok: false, error: "backend_required" };
+  const result = await portalApiPost<{ ref?: string; error?: string }>(
+    "/cms/images",
+    input,
+  );
+  return {
+    ok: result.ok,
+    ref: result.data?.ref,
+    error: result.ok ? undefined : (result.data?.error ?? "upload_failed"),
+  };
+}
+
 // --- News ------------------------------------------------------------------
 
-export type NewsInput = {
+export type NewsInput = ImageSelection & {
   readonly title: string;
   readonly slug?: string;
   readonly excerpt: string;
@@ -94,7 +120,7 @@ export async function deleteNews(id: string): Promise<CmsActionResult> {
 
 // --- Events ----------------------------------------------------------------
 
-export type EventInput = {
+export type EventInput = ImageSelection & {
   readonly title: string;
   readonly dateLabel: string;
   readonly description: string;
