@@ -1,24 +1,15 @@
-"use client";
-
-import { useState } from "react";
-import { CheckCircle2 } from "lucide-react";
-
 import { Button } from "@/components/ui/Button";
 import { ContentIcon } from "@/components/ui/ContentIcon";
 import { cn } from "@/lib/utils";
-import type { PortalItem, PortalNotice } from "@/types/content";
+import type { PortalItem } from "@/types/content";
 
 type PortalAccessCardsProps = {
   items: readonly PortalItem[];
-  notice: PortalNotice;
 };
 
 export function PortalAccessCards({
   items,
-  notice,
 }: PortalAccessCardsProps) {
-  const [selectedPortal, setSelectedPortal] = useState<string | null>(null);
-
   return (
     <div>
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -55,37 +46,16 @@ export function PortalAccessCards({
               ))}
             </ul>
             <Button
-              type="button"
+              href={item.href}
               variant="secondary"
               className="mt-6"
-              onClick={() => setSelectedPortal(item.title)}
-              ariaLabel={`${item.actionLabel} coming soon`}
+              ariaLabel={`${item.actionLabel} mock preview`}
             >
               {item.actionLabel}
             </Button>
           </article>
         ))}
       </div>
-
-      {selectedPortal ? (
-        <div
-          role="status"
-          className="mt-16 flex gap-3 rounded-card border border-curry-orange/25 bg-soft-cream p-5 text-charcoal"
-        >
-          <CheckCircle2
-            aria-hidden="true"
-            className="mt-1 size-5 shrink-0 text-curry-orange"
-          />
-          <div>
-            <p className="font-bold">
-              {selectedPortal}: {notice.title}
-            </p>
-            <p className="mt-2 leading-7 text-muted-grey">
-              {notice.description}
-            </p>
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }

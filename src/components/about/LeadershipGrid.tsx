@@ -26,17 +26,17 @@ export function LeadershipGrid({
         <div
           className={
             showHeader
-              ? "mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4"
-              : "grid gap-6 md:grid-cols-2 lg:grid-cols-4"
+              ? "mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+              : "grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
           }
         >
           {profiles.map((profile) => (
             <article
-              key={profile.title}
+              key={profile.name ?? profile.title}
               className="overflow-hidden rounded-card border border-border bg-white shadow-card"
             >
               <AboutImagePlaceholder
-                label={profile.title}
+                label={profile.name ?? profile.title}
                 description={profile.imageDescription}
                 icon={profile.icon}
                 image={profile.image}
@@ -48,8 +48,13 @@ export function LeadershipGrid({
                   {profile.role}
                 </p>
                 <h3 className="mt-2 text-xl font-bold text-charcoal">
-                  {profile.title}
+                  {profile.name ?? profile.title}
                 </h3>
+                {profile.name ? (
+                  <p className="mt-1 text-sm font-semibold text-charcoal/70">
+                    {profile.title}
+                  </p>
+                ) : null}
                 <p className="mt-3 leading-7 text-muted-grey">
                   {profile.description}
                 </p>

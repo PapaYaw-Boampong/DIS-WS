@@ -251,6 +251,7 @@ export function AdmissionsEnquiryForm() {
                   name="email"
                   type="email"
                   autoComplete="email"
+                  spellCheck={false}
                   value={values.email}
                   onChange={handleChange}
                   aria-invalid={Boolean(errors.email)}
@@ -393,7 +394,7 @@ export function AdmissionsEnquiryForm() {
                 />
               ) : null}
               {status === "submitting"
-                ? "Sending..."
+                ? "Sending…"
                 : "Send Enquiry"}
             </Button>
 

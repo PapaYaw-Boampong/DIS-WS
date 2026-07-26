@@ -119,6 +119,7 @@ export function NewsletterSignup() {
               autoComplete="email"
               aria-label="Email address"
               placeholder="Email address"
+              spellCheck={false}
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
@@ -135,7 +136,7 @@ export function NewsletterSignup() {
                   className="size-4 animate-spin"
                 />
               ) : null}
-              {status === "submitting" ? "Joining..." : "Subscribe"}
+              {status === "submitting" ? "Joining…" : "Subscribe"}
             </button>
           </div>
           <label className="mt-3 flex items-start gap-3 text-xs leading-5 text-soft-white/70">

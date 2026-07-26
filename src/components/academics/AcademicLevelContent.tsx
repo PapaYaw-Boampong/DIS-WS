@@ -41,7 +41,7 @@ export function AcademicLevelContent({ level }: AcademicLevelContentProps) {
             title={`What learners explore in ${level.title}`}
             description="Learning experiences are planned to establish essential knowledge, practise important skills and connect ideas to real situations."
           />
-          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-2">
             {level.subjects.map((subject) => (
               <Card
                 key={subject.title}

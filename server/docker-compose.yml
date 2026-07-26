@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: dis-portal-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: dis
+      POSTGRES_PASSWORD: dis
+      POSTGRES_DB: dis_portal
+    ports:
+      - "5432:5432"
+    volumes:
+      - dis_pgdata:/var/lib/postgresql/data
+
+volumes:
+  dis_pgdata:

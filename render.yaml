@@ -1,0 +1,45 @@
+# Render Blueprint for the DIS portal backend + database.
+# Must live at the REPO ROOT for Render to detect it as a Blueprint. The backend
+# code lives in server/ (rootDir), and the frontend (this repo's root) is
+# deployed separately on Vercel — Render only manages what's declared here.
+services:
+  - type: web
+    name: dis-portal-api
+    runtime: node
+    rootDir: server
+    plan: free
+    # Only redeploy the backend when something under server/ changes, so
+    # frontend-only pushes to this monorepo don't rebuild the API.
+    buildFilter:
+      paths:
+        - server/**
+    buildCommand: npm install && npx prisma generate && npm run build && npx prisma migrate deploy
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: dis-portal-db
+          property: connectionString
+      - key: ALLOWED_ORIGIN
+        sync: false # set to the deployed Vercel web origin(s), comma-separated
+      - key: NODE_ENV
+        value: production
+      # Cloudflare R2 object storage — REQUIRED (env.ts fails fast without them).
+      # Marked sync:false so the secret values are entered in the Render
+      # dashboard, never committed to the repo.
+      - key: R2_ACCOUNT_ID
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_BUCKET_NAME
+        sync: false
+      # Only needed if you seed demo data on this environment.
+      - key: SEED_PASSWORD
+        sync: false
+
+databases:
+  - name: dis-portal-db
+    plan: free

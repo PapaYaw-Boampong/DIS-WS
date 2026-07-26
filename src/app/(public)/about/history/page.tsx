@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 
 import { HistoryLegacy } from "@/components/about/HistoryLegacy";
 import { HistoryOrigin } from "@/components/about/HistoryOrigin";
-import { HistoryTimeline } from "@/components/about/HistoryTimeline";
 import { RelatedAboutLinks } from "@/components/about/RelatedAboutLinks";
 import { CTASection } from "@/components/ui/CTASection";
 import { PageHero } from "@/components/ui/PageHero";
@@ -23,7 +22,6 @@ export default function HistoryPage() {
         variant="orange"
       />
       <HistoryOrigin />
-      <HistoryTimeline />
       <HistoryLegacy />
       <RelatedAboutLinks excludeHref={routes.history} />
       <CTASection

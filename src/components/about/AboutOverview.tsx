@@ -1,5 +1,6 @@
 import { AboutImagePlaceholder } from "@/components/about/AboutImagePlaceholder";
 import { Container } from "@/components/ui/Container";
+import { ContentIcon } from "@/components/ui/ContentIcon";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { aboutOverview } from "@/data/about";
 
@@ -17,6 +18,18 @@ export function AboutOverview() {
               <p key={paragraph}>{paragraph}</p>
             ))}
           </div>
+          <ul className="mt-8 space-y-3">
+            {aboutOverview.highlights.map((highlight) => (
+              <li key={highlight.label} className="flex items-center gap-3">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-soft-cream text-curry-orange">
+                  <ContentIcon name={highlight.icon} className="size-5" />
+                </span>
+                <span className="font-semibold text-charcoal">
+                  {highlight.label}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
         <AboutImagePlaceholder
           label={aboutOverview.imageLabel}

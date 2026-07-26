@@ -2,15 +2,23 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #1f2933;
-  --soft-white: #fffbf3;
-  --soft-cream: #fff6e7;
-  --curry: #d99a1e;
-  --curry-orange: #f28c28;
-  --deep-orange: #b45309;
-  --muted-grey: #6b7280;
-  --border: #e8ded0;
+  --foreground: #1b222b;
+  --soft-white: #fbf8f2;
+  --soft-cream: #f7f1e6;
+  --curry: #b4841c;
+  --curry-orange: #c2751c;
+  --deep-orange: #8f4a16;
+  --muted-grey: #5c6470;
+  --border: #e7decf;
   --dark-footer: #111827;
+  /* Fixed public header height: mobile = nav bar only; lg = utility bar + nav bar. */
+  --header-h: 78px;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --header-h: 136px;
+  }
 }
 
 @theme inline {
@@ -26,6 +34,7 @@
   --color-border: var(--border);
   --color-dark-footer: var(--dark-footer);
   --font-sans: var(--font-inter);
+  --font-display: var(--font-fraunces);
   --shadow-card: 0 8px 24px rgb(0 0 0 / 0.08);
   --shadow-card-strong: 0 8px 24px rgb(0 0 0 / 0.11);
   --shadow-header: 0 8px 24px rgb(0 0 0 / 0.06);
@@ -38,7 +47,13 @@
 
 html {
   /* font-size: 15px; */
+  color-scheme: light;
   scroll-behavior: smooth;
+  /* Keep in-page anchor targets clear of the fixed public header. */
+  scroll-padding-top: var(--header-h);
+
+  scrollbar-color: var(--curry-orange) var(--soft-white);
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -54,27 +69,92 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Interactive elements read as clickable and skip the mobile 300ms tap delay.
+   Tailwind v4's preflight no longer sets a button cursor, so set it here once
+   for the whole app instead of per-button. */
+button,
+a,
+label[for],
+summary,
+[role="button"],
+select {
+  touch-action: manipulation;
+}
+
+button:not(:disabled),
+label[for],
+summary,
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
 a {
   text-underline-offset: 0.2em;
 }
 
 :focus-visible {
-  outline: 3px solid rgb(242 140 40 / 0.45);
+  outline: 3px solid rgb(194 117 28 / 0.45);
   outline-offset: 3px;
 }
 
 ::selection {
-  background: rgb(242 140 40 / 0.24);
+  background: rgb(194 117 28 / 0.24);
 }
 
 .pattern-checker {
-  background-color: var(--soft-white);
-  background-image: conic-gradient(
-    from 90deg at 1px 1px,
-    transparent 90deg,
-    rgb(242 140 40 / 0.055) 0
-  );
-  background-size: 32px 32px;
+  /* White base with a soft curry-orange checkerboard. */
+  background-color: #ffffff;
+  background-image:
+    linear-gradient(
+      45deg,
+      rgb(194 117 28 / 0.08) 25%,
+      transparent 25%,
+      transparent 75%,
+      rgb(194 117 28 / 0.08) 75%
+    ),
+    linear-gradient(
+      45deg,
+      rgb(194 117 28 / 0.08) 25%,
+      transparent 25%,
+      transparent 75%,
+      rgb(194 117 28 / 0.08) 75%
+    );
+  background-size: 44px 44px;
+  background-position:
+    0 0,
+    22px 22px;
+}
+
+@keyframes mvv-breath {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.018);
+  }
+}
+
+/* Breath hints that an option is selectable — it never changes the selection
+   (only a click/tap does). Touch devices breathe continuously since they cannot
+   hover; pointer devices breathe only while hovered. */
+@media (hover: none) and (pointer: coarse) {
+  .mvv-breath {
+    animation: mvv-breath 3.6s ease-in-out infinite;
+    will-change: transform;
+  }
+}
+
+@media (hover: hover) {
+  .mvv-breath:hover {
+    animation: mvv-breath 1.8s ease-in-out infinite;
+    will-change: transform;
+  }
 }
 
 .text-balance {
@@ -92,17 +172,41 @@ a {
 @keyframes route-enter {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(10px) scale(0.995);
   }
 
   to {
     opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.route-enter,
+.portal-route-enter {
+  animation: route-enter 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes portal-title-bounce {
+  0% {
+    transform: translateY(0);
+  }
+
+  34% {
+    transform: translateY(-4px);
+  }
+
+  62% {
+    transform: translateY(1px);
+  }
+
+  100% {
     transform: translateY(0);
   }
 }
 
-.route-enter {
-  animation: route-enter 240ms ease-out both;
+.portal-title-bounce {
+  animation: portal-title-bounce 700ms cubic-bezier(0.34, 1.56, 0.64, 1) 120ms
+    both;
 }
 
 @keyframes carousel-in-next {
@@ -189,7 +293,9 @@ html[data-dis-home-intro="seen"] .home-intro {
     scroll-behavior: auto;
   }
 
-  .route-enter {
+  .route-enter,
+  .portal-route-enter,
+  .portal-title-bounce {
     animation: none;
   }
 
@@ -197,6 +303,10 @@ html[data-dis-home-intro="seen"] .home-intro {
   .carousel-slide-outgoing-next,
   .carousel-slide-incoming-previous,
   .carousel-slide-outgoing-previous {
+    animation: none;
+  }
+
+  .mvv-breath {
     animation: none;
   }
 }

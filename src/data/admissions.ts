@@ -2,7 +2,7 @@ import type {
   AdmissionBenefit,
   AdmissionFAQ,
   AdmissionRequirementGroup,
-  AdmissionStep,
+  AdmissionStage,
 } from "@/types/content";
 import { createPageMetadata } from "@/lib/metadata";
 import { siteImages } from "@/lib/images";
@@ -58,50 +58,33 @@ export const admissionBenefits = [
   },
 ] satisfies readonly AdmissionBenefit[];
 
-export const admissionSteps = [
+export const admissionStages = [
   {
     step: 1,
-    title: "Make an enquiry",
-    description:
-      "Share your contact details and the learner's intended academic level so Admissions can guide your next step.",
+    title: "Enquiry & Application",
+    points: [
+      "Make an enquiry by phone or email",
+      "Request the official application form and complete it",
+    ],
   },
   {
     step: 2,
-    title: "Visit the school or speak with Admissions",
-    description:
-      "Learn about the school environment, academic pathways and current entry arrangements.",
+    title: "Assessment",
+    points: [
+      "Sit an age-appropriate entrance examination",
+      "Attend a short oral interview with the school",
+    ],
   },
   {
     step: 3,
-    title: "Submit the application form",
-    description:
-      "Complete the official application form supplied by Admissions and review all requested information.",
+    title: "Enrollment",
+    points: [
+      "Provide two passport photographs and ID (Birth Certificate or Ghana Card)",
+      "Receive your package documents and instructions",
+      "Complete fee payment — first-time admits pay the one-time admission fee and school fees in full; payment plans are available for continuing students on enquiry",
+    ],
   },
-  {
-    step: 4,
-    title: "Provide required documents",
-    description:
-      "Submit the relevant learner, guardian and previous-school records confirmed for your application.",
-  },
-  {
-    step: 5,
-    title: "Student assessment or interview",
-    description:
-      "Where required, the school will arrange an age-appropriate assessment or conversation with the learner and family.",
-  },
-  {
-    step: 6,
-    title: "Admission decision",
-    description:
-      "Admissions will communicate the outcome and explain any conditions or remaining enrollment steps.",
-  },
-  {
-    step: 7,
-    title: "Fee payment and enrollment",
-    description:
-      "Complete the confirmed payment and enrollment requirements to secure the learner's place.",
-  },
-] satisfies readonly AdmissionStep[];
+] satisfies readonly AdmissionStage[];
 
 export const admissionRequirements = [
   {
@@ -109,10 +92,11 @@ export const admissionRequirements = [
     description:
       "Documents used to confirm the learner's identity and age.",
     icon: "user-round",
+    requirement: "required",
     items: [
-      "Official proof of identity or age",
-      "Recent learner photograph, if requested",
-      "Completed learner information supplied by Admissions",
+      "Two (2) recent passport photographs",
+      "A form of ID — Birth Certificate or Ghana Card",
+      "Completed application form supplied by the school",
     ],
   },
   {
@@ -120,6 +104,7 @@ export const admissionRequirements = [
     description:
       "Records that help the school understand the learner's current stage.",
     icon: "school",
+    requirement: "recommended",
     items: [
       "Recent school reports, where applicable",
       "Transfer or attendance records, where applicable",
@@ -131,6 +116,7 @@ export const admissionRequirements = [
     description:
       "Information needed for communication, safety and learner support.",
     icon: "heart",
+    requirement: "recommended",
     items: [
       "Parent or guardian contact information",
       "Emergency contact details",

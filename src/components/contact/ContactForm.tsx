@@ -231,6 +231,7 @@ export function ContactForm() {
                   name="email"
                   type="email"
                   autoComplete="email"
+                  spellCheck={false}
                   value={values.email}
                   onChange={handleChange}
                   aria-invalid={Boolean(errors.email)}
@@ -340,7 +341,7 @@ export function ContactForm() {
                   className="size-5 animate-spin"
                 />
               ) : null}
-              {status === "submitting" ? "Sending..." : "Send Message"}
+              {status === "submitting" ? "Sending…" : "Send Message"}
             </Button>
 
             {status === "success" || status === "error" ? (

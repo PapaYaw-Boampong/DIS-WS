@@ -14,6 +14,11 @@ export function WelcomeSection() {
             title={welcomeContent.title}
             description={welcomeContent.description}
           />
+          <div className="mt-6 space-y-4 leading-8 text-muted-grey">
+            {welcomeContent.paragraphs.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
           <Button href={welcomeContent.action.href} className="mt-8">
             {welcomeContent.action.label}
           </Button>

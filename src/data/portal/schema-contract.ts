@@ -1,0 +1,651 @@
+import type {
+  PortalSchemaIndexSpec,
+  PortalSchemaMigrationStep,
+  PortalSchemaRelationshipSpec,
+  PortalSchemaRetentionRule,
+  PortalSchemaTableSpec,
+} from "@/types/portal-schema";
+
+export const portalSchemaTables = [
+  {
+    name: "users",
+    domain: "identity",
+    purpose:
+      "Stores administrator-issued portal identities, role status, contact handles, and account state.",
+    primaryKey: "id",
+    keyFields: ["email", "phone", "role", "status"],
+    currentMockSources: ["src/data/portal/users.ts"],
+    sensitivity: "credential",
+    auditLevel: "immutable",
+    migrationGroup: 1,
+    status: "designed",
+    notes: "No public sign-up fields or anonymous registration workflow.",
+  },
+  {
+    name: "user_sessions",
+    domain: "identity",
+    purpose:
+      "Tracks production sessions, revocation state, expiry, and device metadata.",
+    primaryKey: "id",
+    keyFields: ["user_id", "expires_at", "revoked_at"],
+    currentMockSources: ["src/lib/portal/mock-session.ts"],
+    sensitivity: "credential",
+    auditLevel: "write",
+    migrationGroup: 1,
+    status: "planned",
+  },
+  {
+    name: "students",
+    domain: "identity",
+    purpose:
+      "Stores student profile, school identifier, class assignment, account link, and status.",
+    primaryKey: "id",
+    keyFields: ["user_id", "student_number", "class_id", "status"],
+    currentMockSources: ["src/data/portal/students.ts"],
+    sensitivity: "student_record",
+    auditLevel: "immutable",
+    migrationGroup: 2,
+    status: "designed",
+  },
+  {
+    name: "parents",
+    domain: "identity",
+    purpose:
+      "Stores guardian profile, account link, contact fields, and account status.",
+    primaryKey: "id",
+    keyFields: ["user_id", "phone", "email", "status"],
+    currentMockSources: ["src/data/portal/parents.ts"],
+    sensitivity: "student_record",
+    auditLevel: "immutable",
+    migrationGroup: 2,
+    status: "designed",
+  },
+  {
+    name: "parent_student_links",
+    domain: "identity",
+    purpose:
+      "Authoritative relationship table controlling which children a parent can access.",
+    primaryKey: "id",
+    keyFields: ["parent_id", "student_id", "relationship", "status"],
+    currentMockSources: ["src/data/portal/parents.ts", "src/data/portal/students.ts"],
+    sensitivity: "student_record",
+    auditLevel: "immutable",
+    migrationGroup: 2,
+    status: "designed",
+  },
+  {
+    name: "staff_profiles",
+    domain: "identity",
+    purpose:
+      "Stores teacher and staff profile records, staff identifiers, active status, and account links.",
+    primaryKey: "id",
+    keyFields: ["user_id", "staff_number", "title", "status"],
+    currentMockSources: ["src/data/portal/staff.ts"],
+    sensitivity: "internal",
+    auditLevel: "immutable",
+    migrationGroup: 2,
+    status: "designed",
+  },
+  {
+    name: "classes",
+    domain: "academics",
+    purpose:
+      "Stores class shells, academic level, current student count snapshot, and class teacher.",
+    primaryKey: "id",
+    keyFields: ["name", "level", "class_teacher_id", "academic_year"],
+    currentMockSources: ["src/data/portal/academics.ts"],
+    sensitivity: "internal",
+    auditLevel: "write",
+    migrationGroup: 3,
+    status: "designed",
+  },
+  {
+    name: "subjects",
+    domain: "academics",
+    purpose:
+      "Stores subjects used by courses, timetable entries, assignments, and gradebook records.",
+    primaryKey: "id",
+    keyFields: ["code", "name", "level"],
+    currentMockSources: ["src/data/portal/academics.ts", "src/data/portal/staff.ts"],
+    sensitivity: "internal",
+    auditLevel: "write",
+    migrationGroup: 3,
+    status: "designed",
+  },
+  {
+    name: "staff_class_assignments",
+    domain: "academics",
+    purpose:
+      "Controls which classes and subjects a staff member can view or manage.",
+    primaryKey: "id",
+    keyFields: ["staff_id", "class_id", "subject_id", "assignment_role"],
+    currentMockSources: ["src/data/portal/staff.ts"],
+    sensitivity: "internal",
+    auditLevel: "immutable",
+    migrationGroup: 3,
+    status: "designed",
+  },
+  {
+    name: "courses",
+    domain: "courses",
+    purpose:
+      "Stores Canvas-inspired course shells linked to class, subject, teacher, term, and academic year.",
+    primaryKey: "id",
+    keyFields: ["class_id", "subject_id", "teacher_id", "term", "course_code"],
+    currentMockSources: ["src/data/portal/academics.ts"],
+    sensitivity: "student_record",
+    auditLevel: "write",
+    migrationGroup: 4,
+    status: "designed",
+  },
+  {
+    name: "course_modules",
+    domain: "courses",
+    purpose:
+      "Stores ordered course modules, publication state, and module descriptions.",
+    primaryKey: "id",
+    keyFields: ["course_id", "position", "status"],
+    currentMockSources: ["src/data/portal/academics.ts"],
+    sensitivity: "student_record",
+    auditLevel: "write",
+    migrationGroup: 4,
+    status: "designed",
+  },
+  {
+    name: "course_module_items",
+    domain: "courses",
+    purpose:
+      "Stores module pages, assignment links, material links, quizzes, and discussions.",
+    primaryKey: "id",
+    keyFields: ["module_id", "item_type", "position", "status"],
+    currentMockSources: ["src/data/portal/academics.ts"],
+    sensitivity: "student_record",
+    auditLevel: "write",
+    migrationGroup: 4,
+    status: "designed",
+  },
+  {
+    name: "assignments",
+    domain: "courses",
+    purpose:
+      "Stores coursework, instructions, due dates, status, and class/course linkage.",
+    primaryKey: "id",
+    keyFields: ["course_id", "class_id", "subject_id", "due_at", "status"],
+    currentMockSources: ["src/data/portal/academics.ts"],
+    sensitivity: "student_record",
+    auditLevel: "write",
+    migrationGroup: 4,
+    status: "designed",
+  },
+  {
+    name: "assignment_submissions",
+    domain: "courses",
+    purpose:
+      "Stores student submission metadata and links to private file assets when storage is enabled.",
+    primaryKey: "id",
+    keyFields: ["assignment_id", "student_id", "submitted_at", "status"],
+    currentMockSources: ["src/app/(portal)/portal/(workspace)/[role]/todo/page.tsx"],
+    sensitivity: "student_record",
+    auditLevel: "immutable",
+    migrationGroup: 5,
+    status: "planned",
+    notes: "Requires secure file storage before live uploads are enabled.",
+  },
+  {
+    name: "attendance_records",
+    domain: "academics",
+    purpose:
+      "Stores daily attendance marks with staff submitter, class, student, date, and note.",
+    primaryKey: "id",
+    keyFields: ["class_id", "student_id", "date", "mark", "submitted_by"],
+    currentMockSources: ["src/data/portal/academics.ts"],
+    sensitivity: "student_record",
+    auditLevel: "immutable",
+    migrationGroup: 5,
+    status: "designed",
+  },
+  {
+    name: "gradebook_entries",
+    domain: "academics",
+    purpose:
+      "Stores assessment marks, totals, publication state, and teacher ownership.",
+    primaryKey: "id",
+    keyFields: ["class_id", "student_id", "subject_id", "assessment", "status"],
+    currentMockSources: ["src/data/portal/academics.ts"],
+    sensitivity: "student_record",
+    auditLevel: "immutable",
+    migrationGroup: 5,
+    status: "designed",
+  },
+  {
+    name: "fee_items",
+    domain: "finance",
+    purpose:
+      "Stores approved fee categories, titles, amounts, terms, academic years, and due dates.",
+    primaryKey: "id",
+    keyFields: ["category", "term", "academic_year", "amount"],
+    currentMockSources: ["src/data/portal/fees.ts"],
+    sensitivity: "financial",
+    auditLevel: "immutable",
+    migrationGroup: 6,
+    status: "designed",
+  },
+  {
+    name: "invoices",
+    domain: "finance",
+    purpose:
+      "Stores invoice ownership, term, totals, paid amount snapshots, balance, and status.",
+    primaryKey: "id",
+    keyFields: ["student_id", "term", "academic_year", "status", "due_at"],
+    currentMockSources: ["src/data/portal/fees.ts"],
+    sensitivity: "financial",
+    auditLevel: "immutable",
+    migrationGroup: 6,
+    status: "designed",
+  },
+  {
+    name: "invoice_items",
+    domain: "finance",
+    purpose:
+      "Stores individual fee item lines assigned to an invoice with amount snapshots.",
+    primaryKey: "id",
+    keyFields: ["invoice_id", "fee_item_id", "amount"],
+    currentMockSources: ["src/data/portal/fees.ts"],
+    sensitivity: "financial",
+    auditLevel: "immutable",
+    migrationGroup: 6,
+    status: "designed",
+  },
+  {
+    name: "payments",
+    domain: "finance",
+    purpose:
+      "Stores payment references, methods, provider state, amount, status, and reconciliation metadata.",
+    primaryKey: "id",
+    keyFields: ["student_id", "invoice_id", "reference", "method", "status"],
+    currentMockSources: ["src/data/portal/payments.ts"],
+    sensitivity: "financial",
+    auditLevel: "immutable",
+    migrationGroup: 7,
+    status: "designed",
+  },
+  {
+    name: "wallet_transactions",
+    domain: "finance",
+    purpose:
+      "Stores feeding and transport wallet credits/debits with remaining balance snapshots.",
+    primaryKey: "id",
+    keyFields: ["student_id", "wallet", "type", "occurred_at"],
+    currentMockSources: ["src/data/portal/payments.ts"],
+    sensitivity: "financial",
+    auditLevel: "immutable",
+    migrationGroup: 7,
+    status: "designed",
+  },
+  {
+    name: "transport_routes",
+    domain: "transport",
+    purpose:
+      "Stores bus routes, route names, vehicles, capacity, driver information, and stops.",
+    primaryKey: "id",
+    keyFields: ["route_name", "vehicle_registration", "driver_name"],
+    currentMockSources: ["src/data/portal/transport.ts"],
+    sensitivity: "operational",
+    auditLevel: "write",
+    migrationGroup: 8,
+    status: "designed",
+  },
+  {
+    name: "transport_assignments",
+    domain: "transport",
+    purpose:
+      "Links students to transport routes, pickup/drop-off points, estimated times, and fee state.",
+    primaryKey: "id",
+    keyFields: ["student_id", "route_id", "fee_status"],
+    currentMockSources: ["src/data/portal/transport.ts"],
+    sensitivity: "student_record",
+    auditLevel: "immutable",
+    migrationGroup: 8,
+    status: "designed",
+  },
+  {
+    name: "transport_trips",
+    domain: "transport",
+    purpose:
+      "Stores morning/afternoon route trips, manual status updates, location labels, and next stops.",
+    primaryKey: "id",
+    keyFields: ["route_id", "date", "direction", "status", "last_updated_at"],
+    currentMockSources: ["src/data/portal/transport.ts"],
+    sensitivity: "operational",
+    auditLevel: "immutable",
+    migrationGroup: 8,
+    status: "designed",
+  },
+  {
+    name: "file_assets",
+    domain: "files",
+    purpose:
+      "Stores private file metadata, storage keys, ownership, visibility, checksums, and retention rules.",
+    primaryKey: "id",
+    keyFields: ["owner_id", "storage_key", "file_type", "visibility"],
+    currentMockSources: ["src/components/portal/MockCourseMaterialForm.tsx"],
+    sensitivity: "student_record",
+    auditLevel: "immutable",
+    migrationGroup: 9,
+    status: "planned",
+    notes: "File binaries belong in private object storage, not PostgreSQL.",
+  },
+  {
+    name: "notification_events",
+    domain: "notifications",
+    purpose:
+      "Stores queued notification events, channels, delivery status, provider reference, and consent state.",
+    primaryKey: "id",
+    keyFields: ["recipient_user_id", "channel", "status", "created_at"],
+    currentMockSources: ["src/data/portal/announcements.ts"],
+    sensitivity: "operational",
+    auditLevel: "immutable",
+    migrationGroup: 10,
+    status: "planned",
+  },
+  {
+    name: "audit_logs",
+    domain: "audit",
+    purpose:
+      "Stores immutable audit events for sensitive reads/writes, actor, target, request id, and value summaries.",
+    primaryKey: "id",
+    keyFields: ["actor_user_id", "action", "target_table", "target_id", "created_at"],
+    currentMockSources: ["PORTAL_BACKEND_API_CONTRACT.md"],
+    sensitivity: "internal",
+    auditLevel: "immutable",
+    migrationGroup: 1,
+    status: "designed",
+  },
+] satisfies readonly PortalSchemaTableSpec[];
+
+export const portalSchemaRelationships = [
+  {
+    id: "users-students",
+    fromTable: "students.user_id",
+    toTable: "users.id",
+    type: "one_to_one",
+    rule: "A student record may link to one active portal user account.",
+    required: false,
+  },
+  {
+    id: "parents-students",
+    fromTable: "parent_student_links.parent_id/student_id",
+    toTable: "parents.id/students.id",
+    type: "many_to_many",
+    rule: "Parents can only see students linked through this table.",
+    required: true,
+  },
+  {
+    id: "staff-assignments",
+    fromTable: "staff_class_assignments.staff_id",
+    toTable: "staff_profiles.id",
+    type: "one_to_many",
+    rule: "Staff route permissions are derived from assigned classes and subjects.",
+    required: true,
+  },
+  {
+    id: "courses-class-subject",
+    fromTable: "courses.class_id/subject_id",
+    toTable: "classes.id/subjects.id",
+    type: "one_to_many",
+    rule: "Every course belongs to one class and one subject.",
+    required: true,
+  },
+  {
+    id: "modules-course",
+    fromTable: "course_modules.course_id",
+    toTable: "courses.id",
+    type: "one_to_many",
+    rule: "Course modules are ordered within a course.",
+    required: true,
+  },
+  {
+    id: "assignments-course",
+    fromTable: "assignments.course_id",
+    toTable: "courses.id",
+    type: "one_to_many",
+    rule: "Student To Do items are derived from course assignments and module items.",
+    required: true,
+  },
+  {
+    id: "attendance-student-class",
+    fromTable: "attendance_records.student_id/class_id",
+    toTable: "students.id/classes.id",
+    type: "one_to_many",
+    rule: "Attendance writes require the staff member to be assigned to the class.",
+    required: true,
+  },
+  {
+    id: "invoice-student",
+    fromTable: "invoices.student_id",
+    toTable: "students.id",
+    type: "one_to_many",
+    rule: "Parent invoice reads are limited to linked children.",
+    required: true,
+  },
+  {
+    id: "payment-invoice",
+    fromTable: "payments.invoice_id",
+    toTable: "invoices.id",
+    type: "one_to_many",
+    rule: "Payments update balances only through backend reconciliation logic.",
+    required: false,
+  },
+  {
+    id: "transport-assignment",
+    fromTable: "transport_assignments.student_id/route_id",
+    toTable: "students.id/transport_routes.id",
+    type: "one_to_many",
+    rule: "Parents can only see transport records for linked children.",
+    required: true,
+  },
+] satisfies readonly PortalSchemaRelationshipSpec[];
+
+export const portalSchemaIndexes = [
+  {
+    table: "users",
+    fields: ["email"],
+    unique: true,
+    purpose: "Prevent duplicate account credentials.",
+  },
+  {
+    table: "students",
+    fields: ["student_number"],
+    unique: true,
+    purpose: "Stable school identifier lookup.",
+  },
+  {
+    table: "parent_student_links",
+    fields: ["parent_id", "student_id"],
+    unique: true,
+    purpose: "Prevent duplicate guardian-child links.",
+  },
+  {
+    table: "staff_class_assignments",
+    fields: ["staff_id", "class_id", "subject_id"],
+    unique: true,
+    purpose: "Prevent duplicate staff teaching assignments.",
+  },
+  {
+    table: "courses",
+    fields: ["course_code", "term", "academic_year"],
+    unique: true,
+    purpose: "Stable course shell lookup.",
+  },
+  {
+    table: "assignments",
+    fields: ["course_id", "due_at"],
+    unique: false,
+    purpose: "Fast course To Do and upcoming work queries.",
+  },
+  {
+    table: "attendance_records",
+    fields: ["class_id", "student_id", "date"],
+    unique: true,
+    purpose: "One attendance mark per student per class day.",
+  },
+  {
+    table: "invoices",
+    fields: ["student_id", "term", "academic_year", "status"],
+    unique: false,
+    purpose: "Parent/accounts balance and invoice filters.",
+  },
+  {
+    table: "payments",
+    fields: ["reference"],
+    unique: true,
+    purpose: "Payment reconciliation and provider callback idempotency.",
+  },
+  {
+    table: "audit_logs",
+    fields: ["target_table", "target_id", "created_at"],
+    unique: false,
+    purpose: "Fast audit review for sensitive records.",
+  },
+] satisfies readonly PortalSchemaIndexSpec[];
+
+export const portalSchemaMigrationSteps = [
+  {
+    group: 1,
+    title: "System identity and audit foundation",
+    objective:
+      "Create users, sessions, and immutable audit logs before any sensitive portal writes.",
+    tables: ["users", "user_sessions", "audit_logs"],
+    guardrails: [
+      "No public signup table or anonymous account creation path.",
+      "Audit writes must be append-only.",
+      "Suspended and inactive accounts must be denied before route data loads.",
+    ],
+  },
+  {
+    group: 2,
+    title: "People records",
+    objective:
+      "Create students, parents, staff, and parent-child access links.",
+    tables: ["students", "parents", "parent_student_links", "staff_profiles"],
+    guardrails: [
+      "Parent access depends only on parent_student_links.",
+      "Student and staff school numbers must be unique.",
+    ],
+  },
+  {
+    group: 3,
+    title: "Academic setup",
+    objective:
+      "Create classes, subjects, and staff class/subject assignments.",
+    tables: ["classes", "subjects", "staff_class_assignments"],
+    guardrails: [
+      "Staff writes require matching class/subject assignment unless admin.",
+      "Class setup changes require admin audit.",
+    ],
+  },
+  {
+    group: 4,
+    title: "Courses and modules",
+    objective:
+      "Create Canvas-inspired DIS course shells, modules, module items, and assignments.",
+    tables: ["courses", "course_modules", "course_module_items", "assignments"],
+    guardrails: [
+      "Canvas is an inspiration only unless a future integration is approved.",
+      "Student To Do queries must be scoped to the signed-in student.",
+    ],
+  },
+  {
+    group: 5,
+    title: "Academic records",
+    objective:
+      "Enable attendance, gradebook, and submission metadata after core academics exist.",
+    tables: ["assignment_submissions", "attendance_records", "gradebook_entries"],
+    guardrails: [
+      "Grades and attendance are immutable-audited changes.",
+      "File-backed submissions wait for secure file storage.",
+    ],
+  },
+  {
+    group: 6,
+    title: "Finance setup",
+    objective:
+      "Create fee items, invoices, and invoice item snapshots.",
+    tables: ["fee_items", "invoices", "invoice_items"],
+    guardrails: [
+      "Invoice amounts preserve fee item snapshots.",
+      "Financial records require accounts/admin authorization.",
+    ],
+  },
+  {
+    group: 7,
+    title: "Payments and wallets",
+    objective:
+      "Create payments and wallet transactions after invoices exist.",
+    tables: ["payments", "wallet_transactions"],
+    guardrails: [
+      "Payment references are unique for idempotent reconciliation.",
+      "Provider webhook handling remains backend-only.",
+    ],
+  },
+  {
+    group: 8,
+    title: "Transport operations",
+    objective:
+      "Create transport routes, assignments, and manually updated trip records.",
+    tables: ["transport_routes", "transport_assignments", "transport_trips"],
+    guardrails: [
+      "Parent reads are limited to linked children.",
+      "Trip status updates require admin/transport role.",
+    ],
+  },
+  {
+    group: 9,
+    title: "Private files",
+    objective:
+      "Create file metadata after object storage and signed URL policy are chosen.",
+    tables: ["file_assets"],
+    guardrails: [
+      "Binaries do not live in PostgreSQL.",
+      "Downloads require backend authorization and signed URLs.",
+    ],
+  },
+  {
+    group: 10,
+    title: "Notifications",
+    objective:
+      "Create notification event storage after provider choice and consent rules.",
+    tables: ["notification_events"],
+    guardrails: [
+      "Notification sending is backend-event driven.",
+      "Provider tokens remain server-side only.",
+    ],
+  },
+] satisfies readonly PortalSchemaMigrationStep[];
+
+export const portalSchemaRetentionRules = [
+  {
+    entity: "audit_logs",
+    retention: "Keep for the legally approved school audit window.",
+    reason:
+      "Sensitive account, finance, attendance, grade, file, and transport changes require traceability.",
+  },
+  {
+    entity: "payments",
+    retention: "Keep for finance and statutory reporting requirements.",
+    reason:
+      "Receipts, reconciliations, refunds, and provider references must remain reviewable.",
+  },
+  {
+    entity: "student_records",
+    retention: "Keep while enrolled and archive according to school policy.",
+    reason:
+      "Academic, attendance, guardian, and transport records are sensitive student records.",
+  },
+  {
+    entity: "file_assets",
+    retention: "Expire temporary upload intents quickly; retain approved files by document type.",
+    reason:
+      "Private files need explicit retention and deletion handling.",
+  },
+] satisfies readonly PortalSchemaRetentionRule[];

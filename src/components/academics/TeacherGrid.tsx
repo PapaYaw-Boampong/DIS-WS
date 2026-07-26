@@ -3,11 +3,7 @@ import { Container } from "@/components/ui/Container";
 import { ContentIcon } from "@/components/ui/ContentIcon";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { FacultyExplorer } from "@/components/academics/FacultyExplorer";
-import {
-  facultyMembers,
-  teacherProfiles,
-  teachingPrinciples,
-} from "@/data/academics";
+import { teacherProfiles, teachingPrinciples } from "@/data/academics";
 
 export function TeacherGrid() {
   return (
@@ -19,7 +15,7 @@ export function TeacherGrid() {
             title="Working together across every stage"
             description="Official staff names and photographs will be added when approved. These role-based profiles show how teaching support is organised across the school."
           />
-          <FacultyExplorer teams={teacherProfiles} faculty={facultyMembers} />
+          <FacultyExplorer teams={teacherProfiles} />
         </Container>
       </section>
 

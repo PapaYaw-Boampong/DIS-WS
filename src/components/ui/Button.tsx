@@ -50,7 +50,8 @@ export function Button({
   ariaLabel,
 }: ButtonProps) {
   const classes = cn(
-    "inline-flex items-center justify-center rounded-full font-semibold transition-colors duration-200",
+    "inline-flex items-center justify-center rounded-full font-semibold transition duration-200",
+    "active:scale-[0.98] motion-reduce:transition-none motion-reduce:active:scale-100",
     "focus-visible:outline-2 focus-visible:outline-offset-3",
     variantClasses[variant],
     variant === "text" ? "min-h-0" : sizeClasses[size],

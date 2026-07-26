@@ -48,12 +48,16 @@ export type ContentIcon =
   | "baby"
   | "book-open"
   | "briefcase"
+  | "bus"
   | "calendar"
   | "calculator"
   | "clipboard-check"
   | "compass"
+  | "dumbbell"
   | "eye"
+  | "file-text"
   | "flask"
+  | "goal"
   | "graduation-cap"
   | "handshake"
   | "heart"
@@ -63,6 +67,7 @@ export type ContentIcon =
   | "lock-keyhole"
   | "mail"
   | "map-pin"
+  | "monitor"
   | "music"
   | "newspaper"
   | "palette"
@@ -75,9 +80,11 @@ export type ContentIcon =
   | "shield-check"
   | "sparkles"
   | "target"
+  | "trees"
   | "trophy"
   | "user-round"
-  | "users";
+  | "users"
+  | "utensils";
 
 export type LinkAction = {
   readonly label: string;
@@ -103,11 +110,19 @@ export type HomePathway = {
   readonly description: string;
   readonly href: string;
   readonly icon: ContentIcon;
+  readonly eyebrow?: string;
+  readonly image?: SiteImage;
 };
 
 export type AboutValue = {
   readonly title: string;
   readonly description: string;
+  readonly icon: ContentIcon;
+  readonly image?: SiteImage;
+};
+
+export type CoreValue = {
+  readonly label: string;
   readonly icon: ContentIcon;
 };
 
@@ -120,10 +135,34 @@ export type HistoryMilestone = {
 export type LeaderProfile = {
   readonly title: string;
   readonly role: string;
+  readonly name?: string;
   readonly description: string;
   readonly icon: ContentIcon;
   readonly imageDescription: string;
   readonly image?: SiteImage;
+};
+
+export type FacilityItem = {
+  readonly title: string;
+  readonly description: string;
+  readonly icon: ContentIcon;
+  readonly image?: SiteImage;
+  readonly status?: "available" | "planned";
+  readonly detail?: string;
+  readonly gallery?: readonly SiteImage[];
+};
+
+export type FeedingOption = {
+  readonly label: string;
+  readonly cadence: string;
+  readonly note?: string;
+  readonly icon: ContentIcon;
+};
+
+export type FeeCoverageItem = {
+  readonly title: string;
+  readonly description: string;
+  readonly icon: ContentIcon;
 };
 
 export type MessageSection = {
@@ -137,6 +176,7 @@ export type AcademicLevel = {
   readonly description: string;
   readonly image?: SiteImage;
   readonly icon: ContentIcon;
+  readonly eyebrow?: string;
 };
 
 export type AcademicLevelSlug =
@@ -181,6 +221,7 @@ export type TeacherProfile = {
   readonly icon: ContentIcon;
   readonly imageDescription: string;
   readonly image?: SiteImage;
+  readonly quip?: string;
 };
 
 export type FacultyMember = {
@@ -205,11 +246,18 @@ export type AdmissionStep = {
   readonly description: string;
 };
 
+export type AdmissionStage = {
+  readonly step: number;
+  readonly title: string;
+  readonly points: readonly string[];
+};
+
 export type AdmissionRequirementGroup = {
   readonly title: string;
   readonly description: string;
   readonly icon: ContentIcon;
   readonly items: readonly string[];
+  readonly requirement: "required" | "recommended";
 };
 
 export type AdmissionFAQ = {
@@ -281,6 +329,9 @@ export type EventItem = {
   readonly actionLabel?: string;
   readonly icon: ContentIcon;
   readonly image?: SiteImage;
+  // An admin-uploaded image (proxy URL) used when there is no gallery `image`.
+  readonly imageUrl?: string;
+  readonly imageAlt?: string;
 };
 
 export type NewsItem = {
@@ -290,6 +341,9 @@ export type NewsItem = {
   readonly publishedAt: string;
   readonly category: string;
   readonly image?: SiteImage;
+  // An admin-uploaded image (proxy URL) used when there is no gallery `image`.
+  readonly imageUrl?: string;
+  readonly imageAlt?: string;
   readonly icon: ContentIcon;
 };
 
@@ -310,6 +364,7 @@ export type PortalItem = {
   readonly icon: ContentIcon;
   readonly status: string;
   readonly actionLabel: string;
+  readonly href: string;
   readonly features: readonly string[];
 };
 
@@ -367,4 +422,33 @@ export type MapEmbed = {
   readonly title: string;
   readonly src: string;
   readonly externalHref: string;
+};
+
+export type DocumentCategory =
+  | "calendar"
+  | "menu"
+  | "newsletter"
+  | "admissions"
+  | "policy";
+
+// Document page images use plain /public path strings rather than the
+// SiteImage manifest, because documents change often (e.g. per-term calendars)
+// and must not affect the committed image registry / EXPECTED_IMAGE_COUNT.
+export type DocumentPage = {
+  readonly src: string;
+  readonly alt: string;
+  readonly width: number;
+  readonly height: number;
+};
+
+export type SchoolDocument = {
+  readonly slug: string;
+  readonly title: string;
+  readonly description: string;
+  readonly category: DocumentCategory;
+  readonly icon: ContentIcon;
+  readonly updatedAt?: string;
+  readonly pages: readonly DocumentPage[];
+  readonly downloadHref?: string;
+  readonly pickupNote?: string;
 };

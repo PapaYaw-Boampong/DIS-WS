@@ -44,6 +44,7 @@ export const academicOverview = {
   title: "Purposeful learning at every stage",
   paragraphs: [
     "Divine International School supports learners through clear instruction, active participation, guided practice and regular feedback.",
+    "Our programme follows the Ghana Education Service (GES) curriculum across every stage, with a Montessori-informed approach in the Early Years that nurtures independence and hands-on discovery.",
     "Academic progress is developed alongside curiosity, responsibility, communication and the confidence to apply learning in new situations.",
   ],
   imageLabel: "Teaching and learning at Divine",
@@ -56,23 +57,29 @@ export const academicLevels = [
   {
     title: "Early Years",
     slug: "early-years",
+    eyebrow: "Nursery · Crèche · KG",
     description:
-      "A nurturing start that develops curiosity, confidence and strong learning foundations.",
+      "Daycare/Nursery, Crèche and Kindergarten — a nurturing, Montessori-informed start that builds curiosity, confidence and strong foundations.",
     icon: "baby",
+    image: siteImages.earlyYears,
   },
   {
     title: "Primary School",
     slug: "primary",
+    eyebrow: "Basic 1 – 6",
     description:
-      "Strong foundations in literacy, numeracy, science, creativity and character.",
+      "Basic 1 to 6 — strong foundations in literacy, numeracy, science, creativity and character.",
     icon: "book-open",
+    image: siteImages.academicsOverview,
   },
   {
     title: "Junior High",
     slug: "junior-high",
+    eyebrow: "JHS 1 – 3",
     description:
-      "Preparing students for higher learning, independence and responsible leadership.",
+      "JHS 1 to 3 — preparing students for higher learning, independence and responsible leadership.",
     icon: "school",
+    image: siteImages.juniorHigh,
   },
   // {
   //   title: "Co-curricular",
@@ -174,7 +181,8 @@ const levelDetails = [
       "A secure, playful and language-rich environment where young learners build confidence and strong foundations.",
     overviewTitle: "A warm beginning to school life",
     overviewParagraphs: [
-      "Early Years learning is organised around purposeful play, conversation, movement, stories and guided exploration.",
+      "Our Early Years stage welcomes the youngest learners through Daycare/Nursery, Crèche and Kindergarten, following the GES curriculum with a Montessori-informed approach.",
+      "Early Years learning is organised around purposeful play, conversation, movement, stories and guided, hands-on exploration.",
       "Teachers establish consistent routines and responsive support so children can develop independence, friendships and readiness for more formal learning.",
     ],
     imageLabel: "Early Years learning environment",
@@ -247,6 +255,7 @@ const levelDetails = [
       "A structured programme that strengthens core skills, curiosity, responsibility and confidence across the curriculum.",
     overviewTitle: "Building capable and curious learners",
     overviewParagraphs: [
+      "Primary School spans Basic 1 to 6 and follows the Ghana Education Service (GES) curriculum.",
       "Primary learners deepen literacy and numeracy while exploring science, social understanding, creativity and practical problem solving.",
       "Lessons combine explicit teaching with discussion, guided practice and independent work so pupils can explain their thinking and apply new knowledge.",
     ],
@@ -320,6 +329,7 @@ const levelDetails = [
     heroImage: siteImages.juniorHighHero,
     overviewTitle: "Greater depth, independence and purpose",
     overviewParagraphs: [
+      "Junior High School covers JHS 1 to 3, following the GES curriculum in preparation for the Basic Education Certificate stage.",
       "Junior High learners engage with increasingly specialised content while strengthening analysis, communication and problem-solving skills.",
       "Teachers guide students to manage expectations, reflect on feedback and prepare confidently for the demands of higher learning.",
     ],
@@ -473,6 +483,7 @@ export const teacherProfiles = [
     icon: "baby",
     imageDescription:
       "Placeholder for an approved photograph of the Early Years teaching team.",
+    quip: "Powered by snack breaks, glitter and a heroic tolerance for the question “but why?”",
   },
   {
     team: "primary",
@@ -483,6 +494,7 @@ export const teacherProfiles = [
     icon: "book-open",
     imageDescription:
       "Placeholder for an approved photograph of the Primary teaching team.",
+    quip: "Masters of tying shoelaces, settling playground disputes and making long division sound fun.",
   },
   {
     team: "junior-high",
@@ -493,6 +505,7 @@ export const teacherProfiles = [
     icon: "school",
     imageDescription:
       "Placeholder for an approved photograph of the Junior High teaching team.",
+    quip: "Preparing tomorrow's leaders — and, occasionally, confiscating today's phones.",
   },
   {
     team: "co-curricular",
@@ -503,6 +516,7 @@ export const teacherProfiles = [
     icon: "trophy",
     imageDescription:
       "Placeholder for an approved photograph of the co-curricular teaching team.",
+    quip: "Home of the loudest whistles, the biggest talents and the best half-time pep talks.",
   },
 ] satisfies readonly TeacherProfile[];
 

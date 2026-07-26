@@ -1,0 +1,702 @@
+// Divine International School portal backend — Prisma schema.
+// Phase 15 (auth-first): identity + server-owned sessions only. Later
+// increments add academics, finance, transport, files, notifications, and audit
+// per PORTAL_DATABASE_SCHEMA_PLAN.md.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  PARENT
+  STAFF
+  ADMIN
+  ACCOUNTS
+  TRANSPORT
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+model User {
+  id           String     @id @default(cuid())
+  name         String
+  email        String     @unique
+  role         Role
+  status       UserStatus @default(ACTIVE)
+  passwordHash String
+  // Set when an admin resets the password to a temporary one; the portal forces
+  // a password change on next sign-in and clears it once changed.
+  mustChangePassword Boolean @default(false)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  sessions                 Session[]
+  conversationParticipants ConversationParticipant[]
+  authoredMessages         Message[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  // Only the SHA-256 hash of the opaque session token is stored.
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  userAgent String?
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+// --- Identity / people (Increment 3) -------------------------------------
+// Domain unions (fee category, statuses, methods, etc.) are stored as strings
+// holding the portal's exact lowercase values, so the API returns data the
+// Next.js portal consumes without any case remapping. String[] scalar lists
+// mirror the mock arrays (parentIds, childIds, classIds, stops...).
+
+model Student {
+  id               String   @id @default(cuid())
+  userId           String?
+  fullName         String
+  studentId        String   @unique
+  classId          String?
+  className        String?
+  level            String
+  status           String   @default("active")
+  parentIds        String[]
+  transportRouteId String?
+  feedingPlan      String   @default("none")
+  createdAt        DateTime @default(now())
+
+  @@map("students")
+}
+
+model Parent {
+  id        String   @id @default(cuid())
+  userId    String?
+  fullName  String
+  phone     String
+  email     String
+  childIds  String[]
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+
+  @@map("parents")
+}
+
+model Staff {
+  id         String   @id @default(cuid())
+  userId     String?
+  fullName   String
+  staffId    String   @unique
+  title      String
+  classIds   String[]
+  subjectIds String[]
+  status     String   @default("active")
+  createdAt  DateTime @default(now())
+
+  @@map("staff")
+}
+
+model SchoolClass {
+  id           String @id @default(cuid())
+  name         String
+  level        String
+  studentCount Int    @default(0)
+  classTeacher String
+
+  @@map("classes")
+}
+
+// --- Finance (Increment 4) ------------------------------------------------
+
+model FeeItem {
+  id           String  @id @default(cuid())
+  title        String
+  category     String // school_fees | feeding | transport | admission | miscellaneous | uniform | books | exam | other
+  amount       Int
+  term         String
+  academicYear String
+  dueDate      String?
+
+  @@map("fee_items")
+}
+
+model Invoice {
+  id          String   @id @default(cuid())
+  studentId   String
+  feeItemIds  String[]
+  totalAmount Int
+  amountPaid  Int      @default(0)
+  balance     Int
+  status      String // unpaid | partially_paid | paid | overpaid
+  dueDate     String?
+  createdAt   DateTime @default(now())
+
+  @@index([studentId])
+  @@map("invoices")
+}
+
+model Payment {
+  id        String   @id @default(cuid())
+  parentId  String?
+  studentId String
+  invoiceId String?
+  category  String
+  amount    Int
+  method    String // momo | bank | cash
+  status    String @default("pending") // pending | verified | rejected
+  reference String   @unique
+  note      String?
+  // Bank-deposit metadata (structured fields the parent submits).
+  bankName      String?
+  depositorName String?
+  depositDate   String?
+  // OCR-extracted structured data (seam; null until an OCR provider runs).
+  ocrData Json?
+  // Verification metadata.
+  verifiedById      String?
+  verifiedAt        DateTime?
+  rejectionReason   String?
+  receiptDocumentId String?
+  paidAt    DateTime @default(now())
+
+  attachment PaymentAttachment?
+
+  @@index([studentId])
+  @@index([status])
+  @@map("payments")
+}
+
+// Uploaded bank-deposit receipt. Bytes live in Cloudflare R2 (private
+// object storage); this row is metadata only plus the R2 object key.
+model PaymentAttachment {
+  id        String   @id @default(cuid())
+  paymentId String   @unique
+  fileName  String
+  mimeType  String
+  objectKey String
+  createdAt DateTime @default(now())
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@map("payment_attachments")
+}
+
+// --- Statement reconciliation (MoMo + Bank) --------------------------------
+// The school periodically requests a MoMo/bank statement; an admin uploads it
+// (CSV today — PDF/email-import is a documented future seam) and the backend
+// parses + auto-matches rows against pending payments of the same method.
+
+model StatementImport {
+  id           String   @id @default(cuid())
+  method       String // momo | bank
+  fileName     String
+  importedById String
+  importedAt   DateTime @default(now())
+  rowCount     Int
+  matchedCount Int      @default(0)
+
+  transactions StatementTransaction[]
+
+  @@map("statement_imports")
+}
+
+model StatementTransaction {
+  id               String   @id @default(cuid())
+  importId         String
+  amount           Int
+  date             String
+  reference        String?
+  counterpartyName String?
+  raw              Json
+  matchedPaymentId String?
+  matchType        String? // reference | amount_date_name | manual
+  matchConfidence  Int?
+  createdAt        DateTime @default(now())
+
+  import StatementImport @relation(fields: [importId], references: [id], onDelete: Cascade)
+
+  @@index([importId])
+  @@map("statement_transactions")
+}
+
+// --- Transport (Increment 5) ----------------------------------------------
+
+model TransportRoute {
+  id                  String   @id @default(cuid())
+  routeName           String
+  busName             String
+  vehicleRegistration String
+  capacity            Int
+  driverName          String?
+  driverPhone         String?
+  stops               String[]
+
+  @@map("transport_routes")
+}
+
+model TransportTrip {
+  id          String  @id @default(cuid())
+  routeId     String
+  date        String
+  direction   String
+  status      String
+  lastUpdated String
+  nextStop    String?
+
+  @@index([routeId])
+  @@map("transport_trips")
+}
+
+model TransportAssignment {
+  id                   String @id @default(cuid())
+  studentId            String
+  routeId              String
+  pickupPoint          String
+  dropOffPoint         String
+  estimatedPickupTime  String
+  estimatedDropOffTime String
+  feeStatus            String
+
+  @@index([studentId])
+  @@map("transport_assignments")
+}
+
+// --- Documents & notifications (Increment 6) ------------------------------
+
+model DocumentAsset {
+  id           String   @id @default(cuid())
+  title        String
+  description  String
+  category     String // bill | package | payment_plan | receipt | menu | calendar | announcement | policy
+  audience     String   @default("all")
+  studentId    String?
+  fileName     String?
+  url          String?
+  downloadable Boolean  @default(false)
+  publishedAt  String
+  createdAt    DateTime @default(now())
+
+  @@map("documents")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  body      String
+  audience  String   @default("all")
+  userId    String?
+  priority  String   @default("normal")
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("notifications")
+}
+
+// Per-user read state for (mostly broadcast) notifications. Presence of a row
+// means the user has read that notification; `GET /me/notifications` derives the
+// per-user `read` flag from this table.
+model NotificationRead {
+  id             String   @id @default(cuid())
+  notificationId String
+  userId         String
+  readAt         DateTime @default(now())
+
+  @@unique([notificationId, userId])
+  @@index([userId])
+  @@map("notification_reads")
+}
+
+// --- Academics (courses, assessment, timetable) ---------------------------
+
+model Course {
+  id          String @id @default(cuid())
+  classId     String
+  subjectId   String
+  subject     String
+  title       String
+  courseCode  String
+  teacher     String
+  term        String
+  description String
+  progress    Int    @default(0)
+
+  @@map("courses")
+}
+
+model CourseModule {
+  id          String @id @default(cuid())
+  courseId    String
+  title       String
+  description String
+  status      String @default("published")
+  position    Int    @default(0)
+  items       Json // CourseModuleItem[]
+
+  @@index([courseId])
+  @@map("course_modules")
+}
+
+model AssignmentRecord {
+  id             String  @id @default(cuid())
+  classId        String
+  courseId       String?
+  subject        String
+  title          String
+  instructions   String?
+  dueDate        String
+  totalStudents  Int?
+  submittedCount Int?
+  status         String
+
+  @@map("assignments")
+}
+
+model TimetableEntry {
+  id        String @id @default(cuid())
+  classId   String
+  className String
+  subject   String
+  teacher   String
+  room      String
+  day       String
+  startTime String
+  endTime   String
+
+  @@map("timetable_entries")
+}
+
+model ResultRecord {
+  id         String @id @default(cuid())
+  studentId  String
+  subject    String
+  assessment String
+  score      Int
+  total      Int
+  gradedAt   String
+
+  @@index([studentId])
+  @@map("results")
+}
+
+model AttendanceSummary {
+  id         String @id @default(cuid())
+  studentId  String
+  term       String
+  present    Int
+  absent     Int
+  late       Int
+  percentage Int
+
+  @@index([studentId])
+  @@map("attendance_summaries")
+}
+
+model DailyAttendanceRecord {
+  id        String  @id @default(cuid())
+  classId   String
+  studentId String
+  date      String
+  mark      String
+  note      String?
+
+  @@unique([classId, studentId, date])
+  @@map("daily_attendance")
+}
+
+model GradebookEntry {
+  id         String @id @default(cuid())
+  classId    String
+  studentId  String
+  subject    String
+  assessment String
+  score      Int
+  total      Int
+  status     String
+
+  @@unique([classId, studentId, subject, assessment])
+  @@map("gradebook_entries")
+}
+
+model LearningResource {
+  id        String  @id @default(cuid())
+  classId   String
+  courseId  String?
+  subject   String
+  title     String
+  fileName  String
+  fileType  String
+  sharedAt  String
+  status    String
+  // Bytes live in Cloudflare R2; null for resources that predate real storage
+  // or that are external links rather than uploaded files.
+  objectKey String?
+  mimeType  String?
+  fileSize  Int?
+  // Real timestamp for deterministic ordering — sharedAt is a day-granularity
+  // display date and ties within the same day (e.g. two uploads today).
+  createdAt DateTime @default(now())
+
+  @@map("learning_resources")
+}
+
+// A student's uploaded file for one assignment. One row per (assignment,
+// student) — a re-submission overwrites the same row/object rather than
+// stacking duplicates.
+model AssignmentSubmission {
+  id           String   @id @default(cuid())
+  assignmentId String
+  studentId    String
+  fileName     String
+  mimeType     String
+  objectKey    String
+  submittedAt  DateTime @default(now())
+  status       String   @default("submitted")
+
+  @@unique([assignmentId, studentId])
+  @@index([assignmentId])
+  @@map("assignment_submissions")
+}
+
+// --- Wallets --------------------------------------------------------------
+
+model FeedingBalance {
+  id          String  @id @default(cuid())
+  studentId   String  @unique
+  balance     Int
+  lastTopUpAt String?
+  status      String
+
+  @@map("feeding_balances")
+}
+
+model TransportWalletBalance {
+  id          String  @id @default(cuid())
+  studentId   String  @unique
+  balance     Int
+  lastTopUpAt String?
+  status      String
+
+  @@map("transport_wallet_balances")
+}
+
+model WalletTransaction {
+  id          String @id @default(cuid())
+  studentId   String
+  wallet      String
+  type        String
+  amount      Int
+  description String
+  reference   String
+  occurredAt  String
+
+  @@index([studentId])
+  @@map("wallet_transactions")
+}
+
+// --- Communication --------------------------------------------------------
+
+model Announcement {
+  id          String @id @default(cuid())
+  title       String
+  summary     String
+  publishedAt String
+  audience    String
+  priority    String
+
+  @@map("announcements")
+}
+
+model PortalEventRecord {
+  id       String  @id @default(cuid())
+  title    String
+  date     String
+  time     String?
+  audience String
+
+  @@map("events")
+}
+
+model TransportNoticeRecord {
+  id          String  @id @default(cuid())
+  title       String
+  description String
+  publishedAt String
+  routeId     String?
+
+  @@map("transport_notices")
+}
+
+// --- Messages (direct conversations) --------------------------------------
+// Viewer-relative fields the portal expects (counterpart, preview, unread,
+// fromMe) are computed per request from participants + messages; only the
+// durable graph lives here.
+
+model Conversation {
+  id        String   @id @default(cuid())
+  subject   String
+  createdAt DateTime @default(now())
+
+  participants ConversationParticipant[]
+  messages     Message[]
+
+  @@map("conversations")
+}
+
+model ConversationParticipant {
+  id             String    @id @default(cuid())
+  conversationId String
+  userId         String
+  lastReadAt     DateTime?
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@index([userId])
+  @@map("conversation_participants")
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  authorId       String
+  body           String
+  sentAt         DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  author       User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@map("messages")
+}
+
+// --- Audit log --------------------------------------------------------------
+// Append-only trail for every sensitive write (account lifecycle, financial
+// writes/verification, attendance, grades, file upload/download) per
+// PORTAL_BACKEND_API_CONTRACT.md section 8. No update/delete path is exposed —
+// only recordAudit() (insert) and the admin-only GET /audit-logs read.
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actorRole  String?
+  action     String
+  targetType String
+  targetId   String?
+  summary    String?
+  requestId  String
+  ip         String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([actorId])
+  @@index([targetType, targetId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// --- Public website CMS ----------------------------------------------------
+// Portal-managed content that the PUBLIC website renders (news, events, the
+// school calendar). Admin-only writes; unauthenticated public read endpoints
+// serve only `published` rows. `status` follows the string-union convention
+// (lowercase "draft" | "published"). CMS content is text + icon based — the
+// public site's photography uses a separate pre-optimized local image
+// pipeline that this content doesn't plug into. `icon` holds a ContentIcon
+// name the frontend maps to a Lucide icon (validated against an allowlist on
+// write).
+
+// `imageId` references a built-in gallery image (rendered via the optimized
+// pipeline); `imageObjectKey` is an admin-uploaded image in R2 (served via a
+// same-origin proxy). At most one is set; `imageAlt` is the accessible caption.
+model NewsArticlePost {
+  id               String    @id @default(cuid())
+  slug             String    @unique
+  title            String
+  excerpt          String
+  category         String    @default("Updates")
+  icon             String    @default("newspaper")
+  publishedLabel   String    @default("School Notice")
+  imageDescription String    @default("")
+  imageId          String?
+  imageObjectKey   String?
+  imageAlt         String?
+  body             Json // NewsBodySection[]: { heading?: string; paragraphs: string[] }
+  status           String    @default("draft")
+  authorId         String?
+  publishedAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([status])
+  @@map("news_posts")
+}
+
+model EventPost {
+  id             String   @id @default(cuid())
+  title          String
+  dateLabel      String   @default("")
+  description    String
+  icon           String   @default("calendar")
+  featured       Boolean  @default(false)
+  imageId        String?
+  imageObjectKey String?
+  imageAlt       String?
+  status         String   @default("draft")
+  position       Int      @default(0)
+  authorId       String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([status])
+  @@map("event_posts")
+}
+
+model CalendarTermPost {
+  id          String   @id @default(cuid())
+  name        String
+  period      String   @default("")
+  description String
+  highlights  Json // string[]
+  status      String   @default("draft")
+  position    Int      @default(0)
+  authorId    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@map("calendar_terms")
+}
+
+// The school-calendar PDF. Effectively a singleton (one active document) —
+// uploading a new one replaces the previous row and its R2 object. When a
+// `published` document exists the public calendar page shows it as a flipbook
+// instead of the term tabs. Bytes live in R2; this row is metadata + object key.
+model CalendarDocument {
+  id           String   @id @default(cuid())
+  fileName     String
+  mimeType     String
+  objectKey    String
+  status       String   @default("draft")
+  uploadedById String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("calendar_documents")
+}

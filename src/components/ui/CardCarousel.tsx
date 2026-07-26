@@ -12,6 +12,7 @@ import {
 } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
+import { CAROUSEL_SIDE_BUTTON } from "@/components/ui/carouselControls";
 import { cn } from "@/lib/utils";
 
 type CardCarouselProps = {
@@ -225,36 +226,42 @@ export function CardCarousel({
 
   return (
     <div
-      className={cn("min-w-0", className)}
+      className={cn("group relative min-w-0", className)}
       data-carousel-cooldown={isInCooldown ? "active" : "idle"}
       onFocusCapture={postponeAutomaticAdvance}
       onPointerDownCapture={postponeAutomaticAdvance}
     >
-      <div className="mb-5 flex items-center justify-end gap-3">
-        <p className="sr-only" aria-live="polite">
-          Item {currentItem} of {items.length}
-        </p>
+      <p className="sr-only" aria-live="polite">
+        Item {currentItem} of {items.length}
+      </p>
+      {canScrollPrevious ? (
         <button
           type="button"
-          className="flex size-11 items-center justify-center rounded-full border border-border bg-white text-charcoal transition-colors hover:border-curry-orange hover:text-curry-orange disabled:cursor-not-allowed disabled:opacity-35"
+          className={cn(CAROUSEL_SIDE_BUTTON, "left-2 sm:left-3")}
           aria-label={`Show previous items in ${label}`}
           aria-controls={viewportId}
-          disabled={!canScrollPrevious}
-          onClick={() => scroll("previous")}
+          onClick={() => {
+            postponeAutomaticAdvance();
+            scroll("previous");
+          }}
         >
           <ArrowLeft aria-hidden="true" className="size-5" />
         </button>
+      ) : null}
+      {canScrollNext ? (
         <button
           type="button"
-          className="flex size-11 items-center justify-center rounded-full border border-border bg-white text-charcoal transition-colors hover:border-curry-orange hover:text-curry-orange disabled:cursor-not-allowed disabled:opacity-35"
+          className={cn(CAROUSEL_SIDE_BUTTON, "right-2 sm:right-3")}
           aria-label={`Show next items in ${label}`}
           aria-controls={viewportId}
-          disabled={!canScrollNext}
-          onClick={() => scroll("next")}
+          onClick={() => {
+            postponeAutomaticAdvance();
+            scroll("next");
+          }}
         >
           <ArrowRight aria-hidden="true" className="size-5" />
         </button>
-      </div>
+      ) : null}
       <div
         ref={viewportRef}
         id={viewportId}

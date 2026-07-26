@@ -1,7 +1,7 @@
 import { PortalAccessCards } from "@/components/portal/PortalAccessCards";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { portalItems, portalNotice } from "@/data/portals";
+import { portalItems } from "@/data/portals";
 
 export function PortalPathways() {
   return (
@@ -13,10 +13,10 @@ export function PortalPathways() {
         <SectionHeader
           eyebrow="Pathways"
           title="Manage Your Life"
-          description="Choose the access area that matches your role in the school community. Full portal functionality is not active yet."
+          description="Choose the access area that matches your role. Phase 1 provides protected mock previews while operational features remain offline."
         />
         <div className="mt-12 lg:pb-20">
-          <PortalAccessCards items={portalItems} notice={portalNotice} />
+          <PortalAccessCards items={portalItems} />
         </div>
       </Container>
     </section>

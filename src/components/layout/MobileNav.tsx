@@ -11,9 +11,10 @@ import type { NavItem } from "@/types/content";
 
 type MobileNavProps = {
   items: readonly NavItem[];
+  overlay?: boolean;
 };
 
-export function MobileNav({ items }: MobileNavProps) {
+export function MobileNav({ items, overlay = false }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
 
@@ -29,6 +30,21 @@ export function MobileNav({ items }: MobileNavProps) {
     return () => document.removeEventListener("keydown", handleEscape);
   }, []);
 
+  // Close the panel on scroll so it never detaches from the auto-hiding header.
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    function handleScroll() {
+      setIsOpen(false);
+      setExpandedItem(null);
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isOpen]);
+
   function closeMenu() {
     setIsOpen(false);
     setExpandedItem(null);
@@ -38,7 +54,12 @@ export function MobileNav({ items }: MobileNavProps) {
     <div className="lg:hidden">
       <button
         type="button"
-        className="flex size-11 items-center justify-center rounded-full border border-border bg-white text-charcoal"
+        className={cn(
+          "flex size-11 items-center justify-center rounded-full border transition-colors",
+          overlay && !isOpen
+            ? "border-white/40 bg-white/10 text-white"
+            : "border-border bg-white text-charcoal",
+        )}
         aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
         aria-expanded={isOpen}
         aria-controls="mobile-navigation"
@@ -54,7 +75,7 @@ export function MobileNav({ items }: MobileNavProps) {
       <div
         id="mobile-navigation"
         className={cn(
-          "fixed inset-x-0 top-[78px] max-h-[calc(100vh-78px)] overflow-y-auto border-t border-border bg-white shadow-card",
+          "fixed inset-x-0 top-[78px] max-h-[calc(100vh-78px)] overflow-y-auto overscroll-contain border-t border-border bg-white shadow-card",
           isOpen ? "block" : "hidden",
         )}
       >

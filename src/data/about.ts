@@ -3,6 +3,7 @@ import { createPageMetadata } from "@/lib/metadata";
 import { siteImages } from "@/lib/images";
 import type {
   AboutValue,
+  CoreValue,
   HistoryMilestone,
   LeaderProfile,
   LinkAction,
@@ -56,39 +57,51 @@ export const aboutOverview = {
   eyebrow: "Who We Are",
   title: "A nurturing community for confident learners",
   paragraphs: [
-    "Divine International School exists to provide a safe, disciplined and inspiring environment where every child is known, supported and encouraged to grow.",
-    "We work in partnership with families to build strong academic foundations while developing character, creativity, responsibility and confidence.",
+    "Divine International School is a caring, disciplined and future-focused school in Accra. We exist to provide a safe and inspiring environment where every child is known, supported and encouraged to grow.",
+    "From Early Years through Basic and Junior High, we combine the Ghana Education Service curriculum — with a Montessori-informed approach in the early stages — to build strong academic foundations alongside character, creativity, responsibility and confidence.",
+    "We work in close partnership with families, guided by our motto, GOD's Security Builds Confidence, so that together we can help each learner thrive in school, in life and in service to others.",
   ],
   imageLabel: "Divine school community",
   imageDescription:
     "Placeholder for an approved photograph showing pupils and staff in the Divine International School community.",
   image: siteImages.aboutCommunity,
+  highlights: [
+    { label: "GES + Montessori-informed learning", icon: "book-open" },
+    { label: "A caring, disciplined community", icon: "heart" },
+    { label: "Purpose-built, well-equipped campus", icon: "school" },
+  ],
 } as const;
 
 export const aboutValues = [
   {
     title: "Our Mission",
     description:
-      "To nurture capable, disciplined and compassionate learners through excellent teaching, purposeful guidance and strong family partnership.",
+      "To nurture capable, disciplined and compassionate learners through excellent teaching, purposeful guidance and strong family partnership — helping every child reach their God-given potential.",
     icon: "target",
+    image: siteImages.studentConfidence,
   },
   {
     title: "Our Vision",
     description:
-      "To be a trusted school community where every learner develops the knowledge, confidence and character to thrive.",
+      "To be a trusted school community where every learner develops the knowledge, confidence and character to thrive in school, in life and in service to others.",
     icon: "eye",
-  },
-  {
-    title: "Our Values",
-    description:
-      "Faith, integrity, respect, excellence, responsibility and service shape how our community learns and works together.",
-    icon: "heart",
+    image: siteImages.graduation,
   },
 ] satisfies readonly AboutValue[];
 
+export const coreValues = [
+  { label: "Faith", icon: "heart" },
+  { label: "Integrity", icon: "shield-check" },
+  { label: "Respect", icon: "handshake" },
+  { label: "Excellence", icon: "trophy" },
+  { label: "Responsibility", icon: "clipboard-check" },
+  { label: "Service", icon: "users" },
+] satisfies readonly CoreValue[];
+
 export const principalProfile = {
-  title: "School Principal",
-  role: "Principal's name to be confirmed",
+  title: "Principal / Headmaster",
+  role: "Basic & Junior High leadership",
+  name: "Kwasi Ohene",
   description:
     "Our principal leads a caring, accountable school culture focused on strong teaching, pupil wellbeing and meaningful partnership with families.",
   imageDescription:
@@ -185,8 +198,9 @@ export const historyOrigin = {
   eyebrow: "Our Story",
   title: "A continuing commitment to children and families",
   paragraphs: [
-    "The Divine International School story is rooted in a clear purpose: to give children a secure place to learn, grow and discover their potential.",
-    "As the community has developed, that purpose has remained constant. Academic progress, personal responsibility, moral guidance and supportive relationships continue to shape the school experience.",
+    "Divine International School was founded with a clear purpose: to give children a secure place to learn, grow and discover their God-given potential.",
+    "What began as a small, close-knit school community has grown steadily — adding classrooms, laboratories and programmes — while holding firmly to the values that shaped it.",
+    "As the community has developed, that purpose has remained constant. Academic progress, personal responsibility, moral guidance and supportive relationships continue to shape the Divine experience today.",
   ],
   imageLabel: "Our school story",
   imageDescription:
@@ -226,42 +240,65 @@ export const principalMessageSections = [
 
 export const leadershipProfiles = [
   {
-    title: "School Principal",
-    role: "Whole-school leadership",
+    title: "Co-Director",
+    role: "School direction & governance",
+    name: "Kwame Wireko Boampong",
     description:
-      "Guides school direction, learning standards, staff culture and family partnership.",
+      "Provides overall direction, governance and stewardship of the school's vision and growth.",
     icon: "user-round",
+    imageDescription:
+      "Placeholder portrait for a Co-Director of Divine International School.",
+  },
+  {
+    title: "Co-Director",
+    role: "School direction & governance",
+    name: "Vivian Agbeme Boampong",
+    description:
+      "Provides overall direction, governance and stewardship of the school's vision and growth.",
+    icon: "user-round",
+    imageDescription:
+      "Placeholder portrait for a Co-Director of Divine International School.",
+  },
+  {
+    title: "Principal / Headmaster",
+    role: "Basic & Junior High",
+    name: "Kwasi Ohene",
+    description:
+      "Leads teaching standards, staff culture, pupil wellbeing and family partnership across Basic and JHS.",
+    icon: "graduation-cap",
     imageDescription:
       "The principal of Divine International School during a school celebration.",
     image: siteImages.principalCloseUp,
   },
   {
-    title: "Head of Academics",
-    role: "Teaching and learning",
+    title: "Assistant Headmaster",
+    role: "Basic & Junior High",
+    name: "Bismark",
     description:
-      "Supports curriculum quality, teacher development, assessment and pupil progress.",
+      "Supports academic leadership, daily coordination and pupil progress across Basic and JHS.",
     icon: "book-open",
     imageDescription:
-      "Members of the Divine International School leadership team.",
-    image: siteImages.leadershipGroup,
+      "Placeholder portrait for the Assistant Headmaster at Divine International School.",
   },
   {
-    title: "Head of Administration",
-    role: "School operations",
+    title: "Head Manager, Early Years",
+    role: "Early Years leadership",
+    name: "Deede Ayetee",
     description:
-      "Coordinates reliable systems, communication, facilities and daily school operations.",
-    icon: "briefcase",
+      "Leads the Early Years team, nurturing routines, care and foundation learning for the youngest pupils.",
+    icon: "baby",
     imageDescription:
-      "Placeholder portrait for the Head of Administration at Divine International School.",
+      "Placeholder portrait for the Early Years Head Manager at Divine International School.",
   },
   {
-    title: "Student Support Lead",
-    role: "Wellbeing and development",
+    title: "Assistant Manager, Early Years",
+    role: "Early Years support",
+    name: "Nancy Abatifie",
     description:
-      "Promotes pupil wellbeing, positive behaviour, belonging and personal development.",
+      "Supports Early Years planning, classroom care and responsive support for young learners.",
     icon: "heart",
     imageDescription:
-      "Placeholder portrait for the Student Support Lead at Divine International School.",
+      "Placeholder portrait for the Early Years Assistant Manager at Divine International School.",
   },
 ] satisfies readonly LeaderProfile[];
 
@@ -304,6 +341,24 @@ export const schoolCulturePoints = [
     description:
       "Pupils are encouraged to ask questions, solve problems and apply their learning with confidence.",
     icon: "sparkles",
+  },
+  {
+    title: "Safe and disciplined",
+    description:
+      "Clear, consistent routines create a secure setting where children feel free to participate and try.",
+    icon: "shield-check",
+  },
+  {
+    title: "Faith and values",
+    description:
+      "Our Christian ethos nurtures gratitude, kindness and a strong moral compass in every learner.",
+    icon: "heart",
+  },
+  {
+    title: "Families in partnership",
+    description:
+      "Open communication keeps parents close to their child's progress and school life.",
+    icon: "handshake",
   },
 ] satisfies readonly AboutValue[];
 

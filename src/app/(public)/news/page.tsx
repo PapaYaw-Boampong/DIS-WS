@@ -5,13 +5,14 @@ import { CTASection } from "@/components/ui/CTASection";
 import { Container } from "@/components/ui/Container";
 import { PageHero } from "@/components/ui/PageHero";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { newsArticles, newsHero, newsMetadata } from "@/data/news";
+import { newsHero, newsMetadata } from "@/data/news";
+import { getPublishedNews } from "@/lib/public-content";
 import { routes } from "@/lib/routes";
 
 export const metadata: Metadata = newsMetadata.listing;
 
-export default function NewsPage() {
-  const [featuredArticle, ...otherArticles] = newsArticles;
+export default async function NewsPage() {
+  const [featuredArticle, ...otherArticles] = await getPublishedNews();
 
   return (
     <>
@@ -29,12 +30,19 @@ export default function NewsPage() {
           <SectionHeader
             eyebrow="Latest"
             title="School notices and community updates"
-            description="These static updates can later be replaced by an approved CMS or school administration feed."
+            description="Notices and updates published by the school administration."
             align="center"
           />
-          <div className="mt-12">
-            <NewsCard article={featuredArticle} featured />
-          </div>
+          {featuredArticle ? (
+            <div className="mt-12">
+              <NewsCard article={featuredArticle} featured />
+            </div>
+          ) : (
+            <p className="mt-12 text-center text-muted-grey">
+              There are no published updates at the moment. Please check back
+              soon.
+            </p>
+          )}
         </Container>
       </section>
 
