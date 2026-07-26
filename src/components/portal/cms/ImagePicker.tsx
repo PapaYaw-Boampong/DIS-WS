@@ -131,7 +131,7 @@ export function ImagePicker({ value, onChange }: ImagePickerProps) {
             type="button"
             onClick={() => setTab(option)}
             className={cn(
-              "rounded-full px-4 py-1.5 text-sm font-bold capitalize transition-colors",
+              "rounded-full px-4 py-1.5 text-sm font-bold transition-colors",
               tab === option
                 ? "bg-curry-orange text-white"
                 : "text-muted-grey hover:text-charcoal",

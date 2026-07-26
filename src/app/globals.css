@@ -69,6 +69,30 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Interactive elements read as clickable and skip the mobile 300ms tap delay.
+   Tailwind v4's preflight no longer sets a button cursor, so set it here once
+   for the whole app instead of per-button. */
+button,
+a,
+label[for],
+summary,
+[role="button"],
+select {
+  touch-action: manipulation;
+}
+
+button:not(:disabled),
+label[for],
+summary,
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
 a {
   text-underline-offset: 0.2em;
 }

@@ -12,7 +12,7 @@ Completed: July 15, 2026
 
 ## Active Development Cycle
 
-**Portal Phase 19: CMS media — calendar flipbook & post images**
+**Portal Phase 20: Design-intelligence polish pass**
 Status: `complete`
 Completed: July 26, 2026
 

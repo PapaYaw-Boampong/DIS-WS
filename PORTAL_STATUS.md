@@ -7,6 +7,27 @@ brief.
 
 ## Current Phase
 
+**Portal Phase 20: Design-intelligence polish pass**
+Status: `complete`
+Completed: July 26, 2026
+
+A UI/UX design pass (guided by the `ui-ux-pro-max` skill's guidelines, applied
+within the existing brand rather than replacing it). The app was already strong
+on accessibility and semantic tokens, so the changes are surgical:
+
+- **Interaction (app-wide, `globals.css`)**: interactive elements now show a
+  pointer cursor (Tailwind v4's preflight drops the button cursor, so ~99 buttons
+  were showing the default arrow) and use `touch-action: manipulation` to skip the
+  mobile 300ms tap delay; disabled → `not-allowed`.
+- **Press feedback**: the shared `Button` scales to `0.98` on `:active`
+  (transform-only, no layout shift), disabled under `prefers-reduced-motion`.
+- **Consistency**: fixed an odd `capitalize` label in the CMS image picker.
+- **Documentation**: added `design-system/dis/MASTER.md` capturing the real
+  design system (tokens, type, spacing, interaction standards, a11y baseline, and
+  a pre-delivery checklist) so future work stays consistent.
+
+Verified: `tsc`, `eslint`, and a production `next build` all pass.
+
 **Portal Phase 19: CMS media — calendar flipbook & post images**
 Status: `complete`
 Completed: July 26, 2026
@@ -323,6 +344,7 @@ unchanged and continues to run on the mock session.
 | Portal Phase 17: Real File Storage for Course Materials & Submissions | `complete` | July 25, 2026 | R2-backed course-material upload/download (class-scoped) and assignment-submission upload/list/download (student's own class; staff/admin see and download all); staff "Add material" and student assignment pages now do real uploads instead of device-only previews |
 | Portal Phase 18: Public Website CMS | `complete` | July 25, 2026 | Admin-managed news/events/calendar for the public marketing site: backend models + published-only public read endpoints + admin CRUD (audited, icon-allowlisted); public pages read via `USE_REAL_PUBLIC_CONTENT` with ISR + static fallback; portal admin managers with `revalidatePath` so edits go live instantly |
 | Portal Phase 19: CMS media (flipbook & images) | `complete` | July 26, 2026 | School-calendar PDF flipbook (PDF.js + page-flip; admin upload, R2, public flipbook replacing term tabs with embedded-PDF fallback); news/event images picked from the built-in gallery or uploaded to R2 via a reusable ImagePicker + `/cms-image` proxy; Student Life carousel heights trimmed to fit the viewport |
+| Portal Phase 20: Design-intelligence polish | `complete` | July 26, 2026 | App-wide interaction polish (pointer cursor + `touch-action` on all interactive elements, `not-allowed` when disabled), press-feedback on the shared Button (reduced-motion aware), CMS image-picker label fix, and a documented `design-system/dis/MASTER.md`; verified with `tsc`/`eslint`/production build |
 
 ## Phase 1 Delivered
 
