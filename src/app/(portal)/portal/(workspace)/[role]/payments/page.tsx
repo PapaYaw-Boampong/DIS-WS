@@ -103,23 +103,17 @@ export default async function PaymentsPage({
         title="Payment history"
         description="Review filtered transaction records and receipt placeholders. New payment actions now live under Fees > Pay Now."
         badge="Mock transactions"
-      />
-
-      <div className="mt-8 max-w-md">
-        <DashboardCard
-          title="Ward focus"
-          description="Filter history by one linked child."
-          className="h-fit"
-        >
+        action={
           <WardFilterSelect
+            compact
             selectedWard={selectedWard}
             students={context.students.map((student) => ({
               id: student.id,
               name: student.fullName,
             }))}
           />
-        </DashboardCard>
-      </div>
+        }
+      />
 
       <div className="mt-8 space-y-8">
         <DashboardCard

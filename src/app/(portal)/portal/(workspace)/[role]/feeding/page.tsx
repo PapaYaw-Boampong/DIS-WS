@@ -102,23 +102,17 @@ export default async function FeedingPage({
         title="Feeding balances"
         description="Review filtered child-level balances, top-ups and usage records before preparing an advance feeding payment."
         badge="Mock wallet data"
-      />
-
-      <div className="mt-8 max-w-md">
-        <DashboardCard
-          title="Ward focus"
-          description="Filter feeding wallet records by one child."
-          className="h-fit"
-        >
+        action={
           <WardFilterSelect
+            compact
             selectedWard={selectedWard}
             students={context.students.map((student) => ({
               id: student.id,
               name: student.fullName,
             }))}
           />
-        </DashboardCard>
-      </div>
+        }
+      />
 
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.2fr)_minmax(20rem,0.8fr)]">
         <div className="space-y-8">

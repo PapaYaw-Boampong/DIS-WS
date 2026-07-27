@@ -1,24 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import {
-  Bus,
-  CircleAlert,
-  CircleDollarSign,
-  Route,
-  WalletCards,
-} from "lucide-react";
+import { Bus } from "lucide-react";
 
 import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { FinancialStatusBadge } from "@/components/portal/FinancialStatusBadge";
-import { MetricCard } from "@/components/portal/MetricCard";
 import { MockPaymentForm } from "@/components/portal/MockPaymentForm";
 import { WardFilterSelect } from "@/components/portal/WardFilterSelect";
 import { listFeeItems } from "@/lib/portal/data/finance";
 import {
   getParentInvoices,
-  getParentPayments,
   getParentTransport,
 } from "@/lib/portal/data/parent";
 import { getParentWallets } from "@/lib/portal/data/wallets";
@@ -56,44 +48,20 @@ export default async function TransportWalletPage({
   const selectedStudents = context.students.filter((student) =>
     selectedStudentIds.includes(student.id),
   );
-  const [wallets, invoices, payments, feeItems, transportEntries] =
-    await Promise.all([
-      getParentWallets(),
-      getParentInvoices(),
-      getParentPayments(),
-      listFeeItems(),
-      getParentTransport(),
-    ]);
+  const [wallets, invoices, feeItems, transportEntries] = await Promise.all([
+    getParentWallets(),
+    getParentInvoices(),
+    listFeeItems(),
+    getParentTransport(),
+  ]);
   const transportFee = feeItems.find((item) => item.category === "transport");
   const balances = wallets.transport.filter((balance) =>
     selectedStudentIds.includes(balance.studentId),
   );
-  const totalBalance = balances.reduce(
-    (total, balance) => total + balance.balance,
-    0,
-  );
-  const lowBalanceCount = balances.filter(
-    (balance) => balance.status !== "active",
-  ).length;
-  const assignments = transportEntries
-    .map((entry) => entry.assignment)
-    .filter((assignment) => selectedStudentIds.includes(assignment.studentId));
   const transportInvoices = invoices.filter(
     (invoice) =>
       selectedStudentIds.includes(invoice.studentId) &&
       invoice.feeItemIds.some((feeItemId) => feeItemId === transportFee?.id),
-  );
-  const transportPaid = payments
-    .filter(
-      (payment) =>
-        selectedStudentIds.includes(payment.studentId) &&
-        payment.category === "transport" &&
-        payment.status === "verified",
-    )
-    .reduce((total, payment) => total + payment.amount, 0);
-  const transportBalance = transportInvoices.reduce(
-    (total, invoice) => total + invoice.balance,
-    0,
   );
 
   const ledgerRows: readonly DataTableRow[] = wallets.transactions
@@ -137,50 +105,17 @@ export default async function TransportWalletPage({
         title="Transport wallet"
         description="Review route-linked transport balances and prepare transport top-ups without changing live records."
         badge="Backend payment required"
-      />
-
-      <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.35fr)]">
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-          <MetricCard
-            label="Wallet balance"
-            value={formatPortalCurrency(totalBalance)}
-            detail="Filtered ward view"
-            icon={<WalletCards aria-hidden="true" className="size-5" />}
-          />
-          <MetricCard
-            label="Route assignments"
-            value={String(assignments.length)}
-            detail="Linked transport accounts"
-            icon={<Route aria-hidden="true" className="size-5" />}
-          />
-          <MetricCard
-            label="Transport paid"
-            value={formatPortalCurrency(transportPaid)}
-            detail="Verified mock payments"
-            icon={<CircleDollarSign aria-hidden="true" className="size-5" />}
-          />
-          <MetricCard
-            label="Transport balance"
-            value={formatPortalCurrency(transportBalance)}
-            detail={`${lowBalanceCount} wallet(s) need review`}
-            icon={<CircleAlert aria-hidden="true" className="size-5" />}
-          />
-        </div>
-
-        <DashboardCard
-          title="Ward focus"
-          description="Filter transport wallet records by one child."
-          className="h-fit"
-        >
+        action={
           <WardFilterSelect
+            compact
             selectedWard={selectedWard}
             students={context.students.map((student) => ({
               id: student.id,
               name: student.fullName,
             }))}
           />
-        </DashboardCard>
-      </div>
+        }
+      />
 
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.2fr)_minmax(20rem,0.8fr)]">
         <div className="space-y-8">

@@ -56,6 +56,16 @@ export default async function PayNowPage({ searchParams }: PayNowPageProps) {
         title="Pay now"
         description="Pay by Mobile Money or bank deposit, then submit the details below. The school verifies each payment against the MoMo or bank statement before it counts toward a balance."
         badge="Verification required"
+        action={
+          <WardFilterSelect
+            compact
+            selectedWard={selectedWard}
+            students={context.students.map((student) => ({
+              id: student.id,
+              name: student.fullName,
+            }))}
+          />
+        }
       />
 
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.2fr)_minmax(20rem,0.8fr)]">
@@ -122,19 +132,6 @@ export default async function PayNowPage({ searchParams }: PayNowPageProps) {
                 {formatPortalCurrency(outstanding)}
               </span>
             </div>
-          </DashboardCard>
-
-          <DashboardCard
-            title="Ward focus"
-            description="Limit the payment form to one linked child when needed."
-          >
-            <WardFilterSelect
-              selectedWard={selectedWard}
-              students={context.students.map((student) => ({
-                id: student.id,
-                name: student.fullName,
-              }))}
-            />
           </DashboardCard>
 
           <DashboardCard

@@ -173,43 +173,37 @@ export default async function FeesPage({
         title="Fees overview"
         description="Focus all wards or one child, review open balances, and start a secure payment from the grouped Fees area."
         badge="Backend payment required"
-      />
-
-      <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.35fr)]">
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          <MetricCard
-            label="Outstanding"
-            value={formatPortalCurrency(outstanding)}
-            detail="Mock balance remaining"
-            icon={<WalletCards aria-hidden="true" className="size-5" />}
-          />
-          <MetricCard
-            label="Amount paid"
-            value={formatPortalCurrency(totalPaid)}
-            detail="Verified mock payments"
-            icon={<CircleDollarSign aria-hidden="true" className="size-5" />}
-          />
-          <MetricCard
-            label="Next due date"
-            value={nextDueDate ? formatPortalDate(nextDueDate) : "None"}
-            detail="Filtered ward view"
-            icon={<CalendarClock aria-hidden="true" className="size-5" />}
-          />
-        </div>
-
-        <DashboardCard
-          title="Ward focus"
-          description="Filter this Fees view by one linked child."
-          className="h-fit"
-        >
+        action={
           <WardFilterSelect
+            compact
             selectedWard={selectedWard}
             students={context.students.map((student) => ({
               id: student.id,
               name: student.fullName,
             }))}
           />
-        </DashboardCard>
+        }
+      />
+
+      <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        <MetricCard
+          label="Outstanding"
+          value={formatPortalCurrency(outstanding)}
+          detail="Mock balance remaining"
+          icon={<WalletCards aria-hidden="true" className="size-5" />}
+        />
+        <MetricCard
+          label="Amount paid"
+          value={formatPortalCurrency(totalPaid)}
+          detail="Verified mock payments"
+          icon={<CircleDollarSign aria-hidden="true" className="size-5" />}
+        />
+        <MetricCard
+          label="Next due date"
+          value={nextDueDate ? formatPortalDate(nextDueDate) : "None"}
+          detail="Filtered ward view"
+          icon={<CalendarClock aria-hidden="true" className="size-5" />}
+        />
       </div>
 
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.65fr)]">
