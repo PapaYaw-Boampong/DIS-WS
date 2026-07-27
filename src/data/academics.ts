@@ -191,28 +191,40 @@ const levelDetails = [
     image: siteImages.earlyYears,
     subjects: [
       {
-        title: "Communication & Language",
+        title: "Language & Literacy",
         description:
-          "Stories, songs and conversation strengthen vocabulary, listening and confident expression.",
+          "Stories, songs, phonics and conversation strengthen vocabulary, listening and early reading.",
         icon: "languages",
       },
       {
-        title: "Early Numeracy",
+        title: "Numeracy",
         description:
-          "Practical activities introduce counting, patterns, comparison and mathematical language.",
+          "Hands-on materials introduce counting, patterns, comparison and early mathematical language.",
         icon: "calculator",
       },
       {
-        title: "Creative Discovery",
+        title: "Our World Our People",
         description:
-          "Art, music, movement and imaginative play encourage curiosity and self-expression.",
+          "Guided discovery helps children notice people, places, nature and everyday systems around them.",
+        icon: "compass",
+      },
+      {
+        title: "Creative Arts",
+        description:
+          "Art, music, movement and imaginative play encourage curiosity and confident self-expression.",
         icon: "palette",
       },
       {
-        title: "Understanding Our World",
+        title: "Physical Development",
         description:
-          "Guided observation helps children notice people, places, nature and everyday systems.",
-        icon: "compass",
+          "Movement and fine-motor activities build coordination, control and healthy participation.",
+        icon: "shapes",
+      },
+      {
+        title: "Practical Life & Sensorial",
+        description:
+          "Montessori practical-life and sensorial work nurtures independence, concentration and care.",
+        icon: "sparkles",
       },
     ],
     developmentFocus: [
@@ -270,6 +282,12 @@ const levelDetails = [
         icon: "book-open",
       },
       {
+        title: "Ghanaian Language",
+        description:
+          "Speaking, reading and writing in a Ghanaian language build literacy and cultural identity.",
+        icon: "languages",
+      },
+      {
         title: "Mathematics",
         description:
           "Number, measurement, geometry and reasoning build accuracy and problem-solving confidence.",
@@ -282,10 +300,46 @@ const levelDetails = [
         icon: "flask",
       },
       {
-        title: "Creative & Social Learning",
+        title: "History",
         description:
-          "Arts and social themes help pupils understand identity, community and creative communication.",
+          "Learners explore Ghana's past, key figures and how communities and nations develop.",
+        icon: "landmark",
+      },
+      {
+        title: "Our World Our People",
+        description:
+          "Pupils study people, places, the environment, citizenship and everyday systems around them.",
+        icon: "compass",
+      },
+      {
+        title: "Religious & Moral Education",
+        description:
+          "Shared values, respect and moral reasoning are explored across Ghana's faith traditions.",
+        icon: "shield-check",
+      },
+      {
+        title: "Computing",
+        description:
+          "Foundational digital skills introduce safe, confident and creative use of technology.",
+        icon: "monitor",
+      },
+      {
+        title: "Creative Arts",
+        description:
+          "Visual arts, music, dance and drama develop imagination, skill and self-expression.",
         icon: "palette",
+      },
+      {
+        title: "Physical & Health Education",
+        description:
+          "Movement, games and health topics build fitness, coordination and healthy habits.",
+        icon: "dumbbell",
+      },
+      {
+        title: "French",
+        description:
+          "An introduction to French language and culture from the upper primary stage.",
+        icon: "quote",
       },
     ],
     developmentFocus: [
@@ -339,9 +393,15 @@ const levelDetails = [
     image: siteImages.juniorHigh,
     subjects: [
       {
-        title: "Languages & Communication",
+        title: "English Language",
         description:
-          "Reading, writing and speaking tasks develop comprehension, argument and accurate expression.",
+          "Comprehension, composition and oral tasks develop clear argument and accurate expression.",
+        icon: "book-open",
+      },
+      {
+        title: "Ghanaian Language",
+        description:
+          "Advanced reading, writing and literature strengthen fluency and cultural understanding.",
         icon: "languages",
       },
       {
@@ -357,10 +417,46 @@ const levelDetails = [
         icon: "flask",
       },
       {
-        title: "Social & Creative Studies",
+        title: "Social Studies",
         description:
-          "Learners examine society, citizenship, design and creative expression from multiple perspectives.",
-        icon: "compass",
+          "Learners examine society, governance, citizenship and Ghana's place in the wider world.",
+        icon: "landmark",
+      },
+      {
+        title: "Religious & Moral Education",
+        description:
+          "Values, ethics and responsibility are studied across Ghana's major faith traditions.",
+        icon: "shield-check",
+      },
+      {
+        title: "Computing",
+        description:
+          "Digital literacy, applications and introductory problem solving prepare students for a connected world.",
+        icon: "monitor",
+      },
+      {
+        title: "Career Technology",
+        description:
+          "Practical design, technology and enterprise skills connect learning to real-world work.",
+        icon: "shapes",
+      },
+      {
+        title: "Creative Arts & Design",
+        description:
+          "Learners plan, make and present creative and design work across a range of media.",
+        icon: "palette",
+      },
+      {
+        title: "Physical & Health Education",
+        description:
+          "Sport, fitness and health education support wellbeing, teamwork and discipline.",
+        icon: "dumbbell",
+      },
+      {
+        title: "French",
+        description:
+          "Continued French study builds communication skills and cultural awareness.",
+        icon: "quote",
       },
     ],
     developmentFocus: [
