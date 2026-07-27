@@ -45,10 +45,15 @@ export const portalNavigation: Record<
       href: portalRoutes.studentTodo,
       phase: 7,
     },
+    {
+      label: "Attendance",
+      icon: "calendar",
+      href: portalRoutes.studentAttendance,
+      phase: 21,
+    },
     { label: "Profile", icon: "user", phase: 2 },
     { label: "Timetable", icon: "calendar", phase: 2 },
     { label: "Results", icon: "chart", phase: 2 },
-    { label: "Attendance", icon: "calendar", phase: 2 },
   ],
   parent: [
     dashboardItem("parent"),

@@ -96,29 +96,6 @@ export default async function TransportWalletPage({
     0,
   );
 
-  const walletRows: readonly DataTableRow[] = balances.map((balance) => {
-    const student = context.students.find(
-      (item) => item.id === balance.studentId,
-    );
-    const route =
-      transportEntries.find(
-        (item) => item.assignment.studentId === balance.studentId,
-      )?.route ?? null;
-
-    return {
-      id: balance.id,
-      cells: [
-        student?.fullName ?? "Student",
-        route?.routeName ?? "No route assigned",
-        formatPortalCurrency(balance.balance),
-        balance.lastTopUpAt
-          ? formatPortalDate(balance.lastTopUpAt.slice(0, 10))
-          : "No top-up",
-        <FinancialStatusBadge key={balance.id} status={balance.status} />,
-      ],
-    };
-  });
-
   const ledgerRows: readonly DataTableRow[] = wallets.transactions
     .filter(
       (entry) =>
@@ -211,11 +188,71 @@ export default async function TransportWalletPage({
             title="Transport wallet accounts"
             description="Balances and route context are fictional."
           >
-            <DataTable
-              caption="Transport wallet accounts"
-              columns={["Child", "Route", "Wallet balance", "Last top-up", "Status"]}
-              rows={walletRows}
-            />
+            <div className="grid gap-5 sm:grid-cols-2">
+              {balances.map((balance) => {
+                const student = context.students.find(
+                  (item) => item.id === balance.studentId,
+                );
+                const route =
+                  transportEntries.find(
+                    (item) => item.assignment.studentId === balance.studentId,
+                  )?.route ?? null;
+                const arrears = transportInvoices
+                  .filter((invoice) => invoice.studentId === balance.studentId)
+                  .reduce((total, invoice) => total + invoice.balance, 0);
+
+                return (
+                  <article
+                    key={balance.id}
+                    className="rounded-2xl border border-border bg-soft-white p-5"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0">
+                        <p className="font-bold text-charcoal">
+                          {student?.fullName ?? "Student"}
+                        </p>
+                        <p className="mt-1 truncate text-sm text-muted-grey">
+                          {route?.routeName ?? "No route assigned"}
+                        </p>
+                      </div>
+                      <FinancialStatusBadge status={balance.status} />
+                    </div>
+
+                    <div className="mt-5 grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs font-bold tracking-[0.1em] text-muted-grey uppercase">
+                          Wallet balance
+                        </p>
+                        <p className="mt-1 text-2xl font-extrabold tabular-nums text-charcoal">
+                          {formatPortalCurrency(balance.balance)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold tracking-[0.1em] text-muted-grey uppercase">
+                          Arrears
+                        </p>
+                        <p
+                          className={`mt-1 text-2xl font-extrabold tabular-nums ${
+                            arrears > 0 ? "text-red-700" : "text-emerald-700"
+                          }`}
+                        >
+                          {formatPortalCurrency(arrears)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <p className="mt-4 border-t border-border pt-4 text-sm text-muted-grey">
+                      Last top-up:{" "}
+                      <span className="font-semibold text-charcoal">
+                        {balance.lastTopUpAt
+                          ? formatPortalDate(balance.lastTopUpAt.slice(0, 10))
+                          : "None yet"}
+                      </span>
+                    </p>
+                  </article>
+                );
+              })}
+            </div>
           </DashboardCard>
 
           <DashboardCard

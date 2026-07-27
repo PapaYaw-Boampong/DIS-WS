@@ -32,6 +32,7 @@ export const portalRoutes = {
     `/portal/${role}/messages/${conversationId}`,
   studentCourses: "/portal/student/courses",
   studentTodo: "/portal/student/todo",
+  studentAttendance: "/portal/student/attendance",
   parentEvents: "/portal/parent/events",
   parentFees: "/portal/parent/fees",
   parentFeesPay: "/portal/parent/fees/pay",

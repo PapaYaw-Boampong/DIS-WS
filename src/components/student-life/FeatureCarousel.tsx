@@ -651,7 +651,7 @@ export function FeatureCarousel({
       <p className="sr-only" aria-live="polite">
         Showing {visibleIndex + 1} of {slides.length}
       </p>
-      {hasMultipleSlides ? (
+      {hasMultipleSlides && variant === "media" ? (
         <>
           <button
             type="button"
@@ -693,6 +693,52 @@ export function FeatureCarousel({
             ))}
           </div>
         </>
+      ) : null}
+
+      {/* Split layout places the media beside text, so a bottom control bar is
+          used instead of side arrows that would overlap the copy. */}
+      {hasMultipleSlides && variant !== "media" ? (
+        <div className="mt-8 flex items-center justify-center gap-5">
+          <button
+            type="button"
+            className="flex size-11 items-center justify-center rounded-full border border-border bg-white text-charcoal shadow-card transition-colors hover:border-curry-orange hover:text-curry-orange disabled:cursor-not-allowed disabled:opacity-50"
+            aria-label={`Show previous slide in ${label}`}
+            aria-controls={carouselId}
+            disabled={isTransitioning}
+            onClick={showPrevious}
+          >
+            <ArrowLeft aria-hidden="true" className="size-5" />
+          </button>
+          <div className="flex items-center gap-2">
+            {slides.map((slide, index) => (
+              <button
+                key={slide.id}
+                type="button"
+                className={cn(
+                  "size-2.5 rounded-full transition-colors",
+                  index === visibleIndex
+                    ? "bg-curry-orange"
+                    : "bg-border hover:bg-curry-orange/50",
+                )}
+                aria-label={`Show ${slide.title}`}
+                aria-current={index === visibleIndex ? "true" : undefined}
+                aria-controls={carouselId}
+                disabled={isTransitioning}
+                onClick={() => goToSlide(index, directionToIndex(index))}
+              />
+            ))}
+          </div>
+          <button
+            type="button"
+            className="flex size-11 items-center justify-center rounded-full border border-border bg-white text-charcoal shadow-card transition-colors hover:border-curry-orange hover:text-curry-orange disabled:cursor-not-allowed disabled:opacity-50"
+            aria-label={`Show next slide in ${label}`}
+            aria-controls={carouselId}
+            disabled={isTransitioning}
+            onClick={() => showNext()}
+          >
+            <ArrowRight aria-hidden="true" className="size-5" />
+          </button>
+        </div>
       ) : null}
     </div>
   );
