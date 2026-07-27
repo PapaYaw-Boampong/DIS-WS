@@ -1,17 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  CircleCheckBig,
-  Clock3,
-  WalletCards,
-} from "lucide-react";
 
 import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { FinancialStatusBadge } from "@/components/portal/FinancialStatusBadge";
-import { MetricCard } from "@/components/portal/MetricCard";
 import { ReceiptPlaceholderButton } from "@/components/portal/ReceiptPlaceholderButton";
 import { WardFilterSelect } from "@/components/portal/WardFilterSelect";
 import { AccountsPaymentsView } from "@/components/portal/dashboards/AccountsPaymentsView";
@@ -71,14 +65,6 @@ export default async function PaymentsPage({
   const payments = allPayments
     .filter((payment) => selectedStudentIds.includes(payment.studentId))
     .toSorted((a, b) => b.paidAt.localeCompare(a.paidAt));
-  const successfulPayments = payments.filter(
-    (payment) => payment.status === "verified",
-  );
-  const totalPaid = successfulPayments.reduce(
-    (total, payment) => total + payment.amount,
-    0,
-  );
-
   const paymentRows: readonly DataTableRow[] = payments.map((payment) => {
     const student = context.students.find(
       (item) => item.id === payment.studentId,
@@ -119,32 +105,7 @@ export default async function PaymentsPage({
         badge="Mock transactions"
       />
 
-      <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.35fr)]">
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          <MetricCard
-            label="Verified total"
-            value={formatPortalCurrency(totalPaid)}
-            detail="Filtered linked wards"
-            icon={<CircleCheckBig aria-hidden="true" className="size-5" />}
-          />
-          <MetricCard
-            label="Latest payment"
-            value={
-              payments[0]
-                ? formatPortalDate(payments[0].paidAt.slice(0, 10))
-                : "None"
-            }
-            detail="Most recent record"
-            icon={<Clock3 aria-hidden="true" className="size-5" />}
-          />
-          <MetricCard
-            label="Receipts"
-            value={String(successfulPayments.length)}
-            detail="Download placeholders"
-            icon={<WalletCards aria-hidden="true" className="size-5" />}
-          />
-        </div>
-
+      <div className="mt-8 max-w-md">
         <DashboardCard
           title="Ward focus"
           description="Filter history by one linked child."

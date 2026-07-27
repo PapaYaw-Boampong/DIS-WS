@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { CircleAlert, Soup, WalletCards } from "lucide-react";
 
 import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { FinancialStatusBadge } from "@/components/portal/FinancialStatusBadge";
-import { MetricCard } from "@/components/portal/MetricCard";
 import { MockPaymentForm } from "@/components/portal/MockPaymentForm";
 import { WardFilterSelect } from "@/components/portal/WardFilterSelect";
 import { AccountsFeedingView } from "@/components/portal/dashboards/AccountsFeedingView";
@@ -63,13 +61,6 @@ export default async function FeedingPage({
   const balances = wallets.feeding.filter((balance) =>
     selectedStudentIds.includes(balance.studentId),
   );
-  const totalBalance = balances.reduce(
-    (total, balance) => total + balance.balance,
-    0,
-  );
-  const lowBalanceCount = balances.filter(
-    (balance) => balance.status !== "active",
-  ).length;
 
   const ledgerRows: readonly DataTableRow[] = wallets.transactions
     .filter(
@@ -113,28 +104,7 @@ export default async function FeedingPage({
         badge="Mock wallet data"
       />
 
-      <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.35fr)]">
-        <div className="grid gap-5 sm:grid-cols-3">
-          <MetricCard
-            label="Wallet balance"
-            value={formatPortalCurrency(totalBalance)}
-            detail="Filtered ward view"
-            icon={<WalletCards aria-hidden="true" className="size-5" />}
-          />
-          <MetricCard
-            label="Active plans"
-            value={String(balances.length)}
-            detail="Fictional feeding accounts"
-            icon={<Soup aria-hidden="true" className="size-5" />}
-          />
-          <MetricCard
-            label="Low balances"
-            value={String(lowBalanceCount)}
-            detail="Needs parent review"
-            icon={<CircleAlert aria-hidden="true" className="size-5" />}
-          />
-        </div>
-
+      <div className="mt-8 max-w-md">
         <DashboardCard
           title="Ward focus"
           description="Filter feeding wallet records by one child."

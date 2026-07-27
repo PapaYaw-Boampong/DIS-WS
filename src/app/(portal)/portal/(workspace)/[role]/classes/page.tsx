@@ -1,16 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import {
-  BookOpen,
-  GraduationCap,
-  School,
-  Users,
-} from "lucide-react";
+import { School } from "lucide-react";
 
 import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
-import { MetricCard } from "@/components/portal/MetricCard";
 import { StatusBadge } from "@/components/portal/StatusBadge";
 import { AdminClassesView } from "@/components/portal/dashboards/AdminClassesView";
 import { getMockRoleSession } from "@/lib/portal/mock-role";
@@ -56,10 +50,6 @@ export default async function ClassesPage({ params }: ClassesPageProps) {
     }),
   );
 
-  const primaryStudents = context.students.filter(
-    (student) => student.level === "Primary School",
-  ).length;
-
   return (
     <>
       <DashboardHeader
@@ -68,33 +58,6 @@ export default async function ClassesPage({ params }: ClassesPageProps) {
         description="Review assigned classes and fictional student rosters. Student profile editing remains outside this staff operations phase."
         badge="Mock class records"
       />
-
-      <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard
-          label="Assigned classes"
-          value={String(context.classes.length)}
-          detail="Across primary and JHS"
-          icon={<School aria-hidden="true" className="size-5" />}
-        />
-        <MetricCard
-          label="Roster preview"
-          value={String(context.students.length)}
-          detail="Sample fictional learners"
-          icon={<Users aria-hidden="true" className="size-5" />}
-        />
-        <MetricCard
-          label="Primary learners"
-          value={String(primaryStudents)}
-          detail="In the sample roster"
-          icon={<GraduationCap aria-hidden="true" className="size-5" />}
-        />
-        <MetricCard
-          label="Subjects"
-          value={String(context.staff.subjectIds.length)}
-          detail="Mathematics and Science"
-          icon={<BookOpen aria-hidden="true" className="size-5" />}
-        />
-      </div>
 
       <div className="mt-8 space-y-8">
         <DashboardCard

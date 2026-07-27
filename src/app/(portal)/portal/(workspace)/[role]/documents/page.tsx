@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Bell, Download, FileText } from "lucide-react";
+import { FileText } from "lucide-react";
 
 import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
-import { MetricCard } from "@/components/portal/MetricCard";
 import { StatusBadge } from "@/components/portal/StatusBadge";
 import {
   getParentDocuments,
@@ -33,36 +32,6 @@ export default async function ParentDocumentsPage() {
         description="Read school documents shared with your family and review recent notifications."
         badge="School documents"
       />
-
-      <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard
-          label="Documents"
-          value={String(documents.length)}
-          detail="Shared with you"
-          icon={<FileText aria-hidden="true" className="size-5" />}
-        />
-        <MetricCard
-          label="Downloadable"
-          value={String(documents.filter((doc) => doc.downloadable).length)}
-          detail="Available to save"
-          icon={<Download aria-hidden="true" className="size-5" />}
-        />
-        <MetricCard
-          label="Notifications"
-          value={String(notifications.length)}
-          detail="Recent messages"
-          icon={<Bell aria-hidden="true" className="size-5" />}
-        />
-        <MetricCard
-          label="Important"
-          value={String(
-            notifications.filter((note) => note.priority === "important")
-              .length,
-          )}
-          detail="Flagged for attention"
-          icon={<Bell aria-hidden="true" className="size-5" />}
-        />
-      </div>
 
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(22rem,0.65fr)]">
         <DashboardCard
