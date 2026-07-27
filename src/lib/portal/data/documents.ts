@@ -26,6 +26,15 @@ export async function getParentDocuments(): Promise<readonly PortalDocument[]> {
   return data.documents ?? [];
 }
 
+// Admin document management: the full list (all audiences), incl. non-downloadable.
+export async function listCmsDocuments(): Promise<readonly PortalDocument[]> {
+  const data = await portalApiGet<{ documents?: PortalDocument[] }>(
+    "/documents",
+    {},
+  );
+  return data.documents ?? [];
+}
+
 export async function getPortalNotifications(): Promise<
   readonly PortalNotification[]
 > {

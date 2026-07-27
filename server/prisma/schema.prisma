@@ -284,10 +284,16 @@ model DocumentAsset {
   title        String
   description  String
   category     String // bill | package | payment_plan | receipt | menu | calendar | announcement | policy
+  // audience: all | parent | staff | student (matches a portal role, or "all")
   audience     String   @default("all")
   studentId    String?
   fileName     String?
   url          String?
+  // Admin-uploaded file lives in R2 under this key; served via the download
+  // endpoint after an audience/role check.
+  objectKey    String?
+  mimeType     String?
+  uploadedById String?
   downloadable Boolean  @default(false)
   publishedAt  String
   createdAt    DateTime @default(now())

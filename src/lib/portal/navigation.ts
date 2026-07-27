@@ -151,6 +151,12 @@ export const portalNavigation: Record<
       href: portalRoutes.staffGradebook,
       phase: 5,
     },
+    {
+      label: "Documents",
+      icon: "file",
+      href: portalRoutes.staffDocuments,
+      phase: 21,
+    },
   ],
   admin: [
     dashboardItem("admin"),
@@ -172,6 +178,12 @@ export const portalNavigation: Record<
       icon: "wallet",
       href: portalRoutes.adminPayments,
       phase: 17,
+    },
+    {
+      label: "Documents",
+      icon: "file",
+      href: portalRoutes.adminDocuments,
+      phase: 21,
     },
     {
       label: "Website",

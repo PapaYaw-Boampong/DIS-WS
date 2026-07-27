@@ -41,6 +41,8 @@ export const portalRoutes = {
   parentTransportWallet: "/portal/parent/transport-wallet",
   parentTransport: "/portal/parent/transport",
   parentDocuments: "/portal/parent/documents",
+  staffDocuments: "/portal/staff/documents",
+  adminDocuments: "/portal/admin/documents",
   adminTransport: "/portal/admin/transport",
   staffClasses: "/portal/staff/classes",
   staffCourses: "/portal/staff/courses",
