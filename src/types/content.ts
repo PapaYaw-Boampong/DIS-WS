@@ -238,6 +238,7 @@ export type AdmissionBenefit = {
   readonly title: string;
   readonly description: string;
   readonly icon: ContentIcon;
+  readonly image?: SiteImage;
 };
 
 export type AdmissionStep = {

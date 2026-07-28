@@ -25,8 +25,8 @@ export default function AdmissionsPage() {
         align="center"
         size="spacious"
       />
-      <AdmissionsIntroduction />
       <AdmissionsSteps />
+      <AdmissionsIntroduction />
       <RequirementsSection />
       <AdmissionsEnquiryForm />
       <WhyChooseDivine />

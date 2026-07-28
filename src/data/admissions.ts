@@ -5,7 +5,7 @@ import type {
   AdmissionStage,
 } from "@/types/content";
 import { createPageMetadata } from "@/lib/metadata";
-import { siteImages } from "@/lib/images";
+import { imageById, siteImages } from "@/lib/images";
 import { routes } from "@/lib/routes";
 
 export const admissionsMetadata = createPageMetadata({
@@ -37,24 +37,28 @@ export const admissionBenefits = [
     description:
       "Clear teaching, guided practice and thoughtful feedback support progress at every academic stage.",
     icon: "book-open",
+    image: imageById["academics-elearners-kids-arc-learning"],
   },
   {
     title: "Nurturing Community",
     description:
       "Consistent routines and caring relationships help learners feel known, supported and ready to participate.",
     icon: "heart",
+    image: siteImages.colourDay,
   },
   {
     title: "Character Development",
     description:
       "Respect, responsibility, discipline and service are reinforced throughout school life.",
     icon: "shield-check",
+    image: imageById["events-career-day-soldiers"],
   },
   {
     title: "Family Partnership",
     description:
       "Clear communication helps families understand expectations, progress and the next steps for their child.",
     icon: "users",
+    image: imageById["events-graduation-group-younger-student-walk-up-close-up"],
   },
 ] satisfies readonly AdmissionBenefit[];
 

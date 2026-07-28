@@ -7,7 +7,7 @@ import type {
   TeacherProfile,
 } from "@/types/content";
 import { createPageMetadata } from "@/lib/metadata";
-import { siteImages } from "@/lib/images";
+import { imageById, siteImages } from "@/lib/images";
 import { routes } from "@/lib/routes";
 
 export const academicMetadata = {
@@ -96,24 +96,28 @@ export const curriculumAreas = [
     description:
       "Reading, writing, speaking and listening experiences build clear communication and confident expression.",
     icon: "languages",
+    image: imageById["academics-elearners-kids-signing"],
   },
   {
     title: "Mathematics",
     description:
       "Learners develop number fluency, logical reasoning and practical problem-solving strategies.",
     icon: "calculator",
+    image: imageById["academics-elearners-kids-circle"],
   },
   {
     title: "Science & Discovery",
     description:
       "Observation, investigation and discussion help pupils understand the world around them.",
     icon: "flask",
+    image: imageById["academics-jhs-sci-4"],
   },
   {
     title: "Creative Expression",
     description:
       "Art, music and performance encourage imagination, collaboration and individual voice.",
     icon: "palette",
+    image: imageById["events-graduation-dance-dance3"],
   },
 ] satisfies readonly AcademicCardItem[];
 
@@ -123,7 +127,7 @@ export const beyondClassroom: readonly AcademicCardItem[] = [
     description:
       "Structured activities give pupils space to discover interests and practise new skills.",
     icon: "puzzle",
-    image: siteImages.culturalPlay,
+    image: imageById["events-graduation-play-m2"],
   },
   {
     title: "Sport & Wellbeing",
@@ -137,7 +141,7 @@ export const beyondClassroom: readonly AcademicCardItem[] = [
     description:
       "Age-appropriate responsibilities help learners contribute to school and community life.",
     icon: "handshake",
-    image: siteImages.graduation,
+    image: imageById["events-escursions-group-2-political-party"],
   },
 ];
 

@@ -14,8 +14,8 @@ export default function PortalPage() {
   return (
     <>
       <PortalHero />
-      <PortalOverview />
       <PortalPathways />
+      <PortalOverview />
       <PortalAccessNotes />
       <CTASection
         title="Need portal support?"
