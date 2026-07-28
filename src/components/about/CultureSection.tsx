@@ -1,6 +1,8 @@
 import { ContentIcon } from "@/components/ui/ContentIcon";
 import { Container } from "@/components/ui/Container";
+import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { siteImages } from "@/lib/images";
 import { schoolCulturePoints } from "@/data/about";
 
 export function CultureSection() {
@@ -13,7 +15,13 @@ export function CultureSection() {
           description="A warm, structured environment helps children feel secure enough to participate, persevere and grow."
           className="[&_h2]:text-white [&_p:last-child]:text-soft-white/80"
         />
-        <div className="mt-14 grid gap-x-12 gap-y-2 sm:grid-cols-2">
+        <div className="relative mt-12 aspect-[21/9] overflow-hidden rounded-card border border-white/10">
+          <ResponsiveImage
+            image={siteImages.studentConfidence}
+            sizes="(min-width: 1024px) 1100px, 100vw"
+          />
+        </div>
+        <div className="mt-12 grid gap-x-12 gap-y-2 sm:grid-cols-2">
           {schoolCulturePoints.map((point, index) => (
             <div
               key={point.title}

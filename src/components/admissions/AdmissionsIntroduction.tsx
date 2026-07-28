@@ -1,5 +1,7 @@
 import { Container } from "@/components/ui/Container";
+import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { siteImages } from "@/lib/images";
 import { admissionsIntroduction } from "@/data/admissions";
 
 export function AdmissionsIntroduction() {
@@ -15,6 +17,12 @@ export function AdmissionsIntroduction() {
           {admissionsIntroduction.paragraphs.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
           ))}
+        </div>
+        <div className="relative mx-auto mt-12 aspect-[16/9] max-w-4xl overflow-hidden rounded-card border border-border bg-soft-cream shadow-card">
+          <ResponsiveImage
+            image={siteImages.aboutCommunity}
+            sizes="(min-width: 1024px) 900px, 100vw"
+          />
         </div>
       </Container>
     </section>
