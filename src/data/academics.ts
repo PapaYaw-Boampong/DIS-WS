@@ -123,18 +123,21 @@ export const beyondClassroom: readonly AcademicCardItem[] = [
     description:
       "Structured activities give pupils space to discover interests and practise new skills.",
     icon: "puzzle",
+    image: siteImages.culturalPlay,
   },
   {
     title: "Sport & Wellbeing",
     description:
       "Movement, teamwork and healthy competition support physical confidence and resilience.",
     icon: "trophy",
+    image: siteImages.competition,
   },
   {
     title: "Leadership & Service",
     description:
       "Age-appropriate responsibilities help learners contribute to school and community life.",
     icon: "handshake",
+    image: siteImages.graduation,
   },
 ];
 
@@ -144,18 +147,21 @@ export const learningResources: readonly AcademicCardItem[] = [
     description:
       "Age-appropriate texts, practical materials and visual resources reinforce classroom instruction.",
     icon: "library",
+    image: siteImages.earlyLearningGallery,
   },
   {
     title: "Guided Technology",
     description:
       "Digital tools are introduced purposefully to support research, practice and creative work.",
     icon: "presentation",
+    image: siteImages.scienceGallery,
   },
   {
     title: "Teacher Collaboration",
     description:
       "Teachers plan together, review learner needs and align support across each academic stage.",
     icon: "users",
+    image: siteImages.juniorHigh,
   },
 ];
 
