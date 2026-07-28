@@ -1,6 +1,6 @@
 import { routes } from "@/lib/routes";
 import { createPageMetadata } from "@/lib/metadata";
-import { siteImages } from "@/lib/images";
+import { imageById, siteImages } from "@/lib/images";
 import type {
   StudentActivity,
   StudentLifeSlide,
@@ -27,6 +27,13 @@ export const studentLifeHero = {
     href: "#experience",
   },
   image: siteImages.studentLifeHero,
+  images: [
+    imageById["events-graduation-group-early-learners-walk-up"],
+    imageById["events-graduation-dance-dance2"],
+    imageById["events-graduation-play-p4"],
+    imageById["events-competitions-group3"],
+    imageById["events-escursions-group-3"],
+  ],
 } as const;
 
 export const experienceSlides = [

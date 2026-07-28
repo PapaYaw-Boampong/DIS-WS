@@ -37,6 +37,11 @@ export const academicsHero = {
   description:
     "Our academic programme combines strong foundations, purposeful teaching and opportunities for every learner to participate, practise and grow.",
   image: siteImages.academicsHero,
+  images: [
+    imageById["academics-jhs-sci-2"],
+    imageById["academics-elearners-kids-arc-learning"],
+    imageById["academics-elearners-kids-signing"],
+  ],
 } as const;
 
 export const academicOverview = {

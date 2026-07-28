@@ -1,6 +1,6 @@
 import { routes } from "@/lib/routes";
 import { createPageMetadata } from "@/lib/metadata";
-import { siteImages } from "@/lib/images";
+import { imageById, siteImages } from "@/lib/images";
 import type {
   AboutValue,
   CoreValue,
@@ -43,6 +43,11 @@ export const aboutHero = {
   description:
     "We are a caring school community where pupils are guided academically, socially, morally and spiritually.",
   image: siteImages.aboutHero,
+  images: [
+    imageById["events-graduation-adults-leadership"],
+    imageById["history-students-year-group-2024"],
+    imageById["events-graduation-group-c1"],
+  ],
 } as const;
 
 export const historyHero = {

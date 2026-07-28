@@ -20,6 +20,11 @@ export const admissionsHero = {
   description:
     "A nurturing school community committed to academic excellence, discipline and character development.",
   image: siteImages.admissionsHero,
+  images: [
+    imageById["events-graduation-group-early-learners-walk-up"],
+    imageById["events-career-day-docs-mixed"],
+    imageById["events-graduation-group-g1"],
+  ],
 } as const;
 
 export const admissionsIntroduction = {

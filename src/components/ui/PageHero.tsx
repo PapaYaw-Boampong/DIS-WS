@@ -1,4 +1,5 @@
 import { Container } from "@/components/ui/Container";
+import { HeroImageRotator } from "@/components/ui/HeroImageRotator";
 import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
 import { cn } from "@/lib/utils";
 import type { SiteImage } from "@/types/content";
@@ -8,6 +9,7 @@ type PageHeroProps = {
   title: string;
   description: string;
   image?: SiteImage;
+  images?: readonly SiteImage[];
   preloadImage?: boolean;
   variant?: "light" | "dark" | "orange" | "pattern";
   align?: "left" | "center";
@@ -19,12 +21,16 @@ export function PageHero({
   title,
   description,
   image,
+  images,
   preloadImage = false,
   variant = "light",
   align = "left",
   size = "default",
 }: PageHeroProps) {
-  const isDark = variant === "dark" || Boolean(image);
+  const heroImages =
+    images && images.length > 0 ? images : image ? [image] : [];
+  const hasImage = heroImages.length > 0;
+  const isDark = variant === "dark" || hasImage;
 
   return (
     <section
@@ -52,14 +58,18 @@ export function PageHero({
           />
         </>
       ) : null}
-      {image ? (
+      {hasImage ? (
         <>
-          <ResponsiveImage
-            image={image}
-            sizes="100vw"
-            preload={preloadImage}
-            className="absolute inset-0 -z-20 object-cover"
-          />
+          {heroImages.length > 1 ? (
+            <HeroImageRotator images={heroImages} preload={preloadImage} />
+          ) : (
+            <ResponsiveImage
+              image={heroImages[0]}
+              sizes="100vw"
+              preload={preloadImage}
+              className="absolute inset-0 -z-20 object-cover"
+            />
+          )}
           <div
             className="absolute inset-0 -z-20 bg-charcoal/75"
             aria-hidden="true"

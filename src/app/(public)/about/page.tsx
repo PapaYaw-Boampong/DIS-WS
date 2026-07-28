@@ -17,7 +17,7 @@ export default function AboutPage() {
         eyebrow={aboutHero.eyebrow}
         title={aboutHero.title}
         description={aboutHero.description}
-        image={aboutHero.image}
+        images={aboutHero.images}
         preloadImage
         variant="orange"
       />

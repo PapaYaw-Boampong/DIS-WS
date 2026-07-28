@@ -1,17 +1,12 @@
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
+import { HeroImageRotator } from "@/components/ui/HeroImageRotator";
 import { studentLifeHero } from "@/data/studentLife";
 
 export function StudentLifeHero() {
   return (
     <section className="relative isolate overflow-hidden bg-curry-orange pt-[calc(var(--header-h)+4rem)] pb-24 text-white sm:pt-[calc(var(--header-h)+5rem)] sm:pb-32 lg:pt-[calc(var(--header-h)+7rem)] lg:pb-44">
-      <ResponsiveImage
-        image={studentLifeHero.image}
-        sizes="100vw"
-        preload
-        className="absolute inset-0 -z-20"
-      />
+      <HeroImageRotator images={studentLifeHero.images} preload />
       <div
         className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgba(17,24,39,0.88)_0%,rgba(17,24,39,0.7)_52%,rgba(17,24,39,0.3)_100%)]"
         aria-hidden="true"

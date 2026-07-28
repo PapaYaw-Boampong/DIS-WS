@@ -587,7 +587,12 @@ export function FeatureCarousel({
         role="region"
         aria-label={label}
         tabIndex={0}
-        className="grid focus-visible:rounded-card"
+        className={cn(
+          "grid focus-visible:rounded-card",
+          // Split layout reserves side gutters on desktop so the arrows have
+          // room beside the content instead of overlapping the copy.
+          variant !== "media" && "lg:px-14",
+        )}
       >
         {transition ? (
           <>
@@ -695,13 +700,14 @@ export function FeatureCarousel({
         </>
       ) : null}
 
-      {/* Split layout places the media beside text, so a bottom control bar is
-          used instead of side arrows that would overlap the copy. */}
+      {/* Split layout keeps the media beside the text. On desktop the arrows sit
+          in the reserved side gutters (vertically centred on the media, never
+          over the copy); stacked/mobile layouts fall back to a compact bar. */}
       {hasMultipleSlides && variant !== "media" ? (
-        <div className="mt-8 flex items-center justify-center gap-5">
+        <>
           <button
             type="button"
-            className="flex size-11 items-center justify-center rounded-full border border-border bg-white text-charcoal shadow-card transition-colors hover:border-curry-orange hover:text-curry-orange disabled:cursor-not-allowed disabled:opacity-50"
+            className={cn(CAROUSEL_SIDE_BUTTON, "left-0 xl:left-2 max-lg:hidden")}
             aria-label={`Show previous slide in ${label}`}
             aria-controls={carouselId}
             disabled={isTransitioning}
@@ -709,28 +715,9 @@ export function FeatureCarousel({
           >
             <ArrowLeft aria-hidden="true" className="size-5" />
           </button>
-          <div className="flex items-center gap-2">
-            {slides.map((slide, index) => (
-              <button
-                key={slide.id}
-                type="button"
-                className={cn(
-                  "size-2.5 rounded-full transition-colors",
-                  index === visibleIndex
-                    ? "bg-curry-orange"
-                    : "bg-border hover:bg-curry-orange/50",
-                )}
-                aria-label={`Show ${slide.title}`}
-                aria-current={index === visibleIndex ? "true" : undefined}
-                aria-controls={carouselId}
-                disabled={isTransitioning}
-                onClick={() => goToSlide(index, directionToIndex(index))}
-              />
-            ))}
-          </div>
           <button
             type="button"
-            className="flex size-11 items-center justify-center rounded-full border border-border bg-white text-charcoal shadow-card transition-colors hover:border-curry-orange hover:text-curry-orange disabled:cursor-not-allowed disabled:opacity-50"
+            className={cn(CAROUSEL_SIDE_BUTTON, "right-0 xl:right-2 max-lg:hidden")}
             aria-label={`Show next slide in ${label}`}
             aria-controls={carouselId}
             disabled={isTransitioning}
@@ -738,7 +725,48 @@ export function FeatureCarousel({
           >
             <ArrowRight aria-hidden="true" className="size-5" />
           </button>
-        </div>
+          <div className="mt-8 flex items-center justify-center gap-5 lg:hidden">
+            <button
+              type="button"
+              className="flex size-11 items-center justify-center rounded-full border border-border bg-white text-charcoal shadow-card transition-colors hover:border-curry-orange hover:text-curry-orange disabled:cursor-not-allowed disabled:opacity-50"
+              aria-label={`Show previous slide in ${label}`}
+              aria-controls={carouselId}
+              disabled={isTransitioning}
+              onClick={showPrevious}
+            >
+              <ArrowLeft aria-hidden="true" className="size-5" />
+            </button>
+            <div className="flex items-center gap-2">
+              {slides.map((slide, index) => (
+                <button
+                  key={slide.id}
+                  type="button"
+                  className={cn(
+                    "size-2.5 rounded-full transition-colors",
+                    index === visibleIndex
+                      ? "bg-curry-orange"
+                      : "bg-border hover:bg-curry-orange/50",
+                  )}
+                  aria-label={`Show ${slide.title}`}
+                  aria-current={index === visibleIndex ? "true" : undefined}
+                  aria-controls={carouselId}
+                  disabled={isTransitioning}
+                  onClick={() => goToSlide(index, directionToIndex(index))}
+                />
+              ))}
+            </div>
+            <button
+              type="button"
+              className="flex size-11 items-center justify-center rounded-full border border-border bg-white text-charcoal shadow-card transition-colors hover:border-curry-orange hover:text-curry-orange disabled:cursor-not-allowed disabled:opacity-50"
+              aria-label={`Show next slide in ${label}`}
+              aria-controls={carouselId}
+              disabled={isTransitioning}
+              onClick={() => showNext()}
+            >
+              <ArrowRight aria-hidden="true" className="size-5" />
+            </button>
+          </div>
+        </>
       ) : null}
     </div>
   );

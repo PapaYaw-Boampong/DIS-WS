@@ -19,7 +19,7 @@ export default function AdmissionsPage() {
       <PageHero
         title={admissionsHero.title}
         description={admissionsHero.description}
-        image={admissionsHero.image}
+        images={admissionsHero.images}
         preloadImage
         variant="orange"
         align="center"
