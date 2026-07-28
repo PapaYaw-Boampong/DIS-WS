@@ -11,6 +11,7 @@ import { cmsRoutes } from "./routes/cms";
 import { communicationRoutes } from "./routes/communication";
 import { documentRoutes } from "./routes/documents";
 import { financeRoutes } from "./routes/finance";
+import { formsRoutes } from "./routes/forms";
 import { healthRoutes } from "./routes/health";
 import { messageRoutes } from "./routes/messages";
 import { peopleRoutes } from "./routes/people";
@@ -78,6 +79,7 @@ async function main(): Promise<void> {
   await app.register(statementRoutes);
   await app.register(auditRoutes);
   await app.register(cmsRoutes);
+  await app.register(formsRoutes);
 
   async function shutdown(signal: string): Promise<void> {
     app.log.info(`Received ${signal}, shutting down`);

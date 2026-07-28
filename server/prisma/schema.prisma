@@ -618,6 +618,39 @@ model AuditLog {
   @@map("audit_logs")
 }
 
+// --- Public forms: mailing list + inquiries --------------------------------
+// Captured from the public website; managed by admins in the portal.
+model MailingListSignup {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  firstName String   @default("")
+  consent   Boolean  @default(true)
+  status    String   @default("active") // active | unsubscribed
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@map("mailing_list_signups")
+}
+
+model Inquiry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String   @default("")
+  subject   String   @default("")
+  message   String
+  type      String   @default("contact") // contact | admissions
+  status    String   @default("new") // new | in_progress | resolved
+  notes     String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([type])
+  @@map("inquiries")
+}
+
 // --- Public website CMS ----------------------------------------------------
 // Portal-managed content that the PUBLIC website renders (news, events, the
 // school calendar). Admin-only writes; unauthenticated public read endpoints

@@ -85,6 +85,42 @@ async function resendRequest(
   return response.json() as Promise<Record<string, unknown>>;
 }
 
+// Submissions are captured in the backend (Postgres) so admins can process
+// inquiries and use the mailing list in the portal. Resend email (below) is an
+// optional extra notification, not the system of record.
+const backendUrl = process.env.PORTAL_API_URL ?? "http://localhost:4000";
+
+async function postPublic(path: string, body: unknown): Promise<void> {
+  const response = await fetch(`${backendUrl}${path}`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body),
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(`FORM_STORE_FAILED:${response.status}`);
+  }
+}
+
+export async function submitMailingList(input: {
+  email: string;
+  firstName: string;
+  consent: boolean;
+}): Promise<void> {
+  await postPublic("/public/mailing-list", input);
+}
+
+export async function submitInquiry(input: {
+  name: string;
+  email: string;
+  phone: string;
+  subject: string;
+  message: string;
+  type: "contact" | "admissions";
+}): Promise<void> {
+  await postPublic("/public/inquiries", input);
+}
+
 export function getClientAddress(request: Request) {
   const forwardedFor = request.headers.get("x-forwarded-for");
   return forwardedFor?.split(",")[0]?.trim() || "unknown";
@@ -167,6 +203,33 @@ export async function sendFormEmail({
     },
     `${type}-${randomUUID()}`,
   );
+}
+
+// Sends a broadcast update to the mailing list via Resend (BCC, batched to stay
+// under provider per-request recipient limits). Requires Resend to be configured.
+export async function sendBroadcastEmail(
+  subject: string,
+  body: string,
+  recipients: readonly string[],
+): Promise<{ sent: number }> {
+  const { from } = requireResendConfig();
+  const active = recipients.filter((email) => isEmail(email));
+  if (active.length === 0) return { sent: 0 };
+
+  const html = `<div style="font-family:system-ui,sans-serif;line-height:1.6;color:#1b222b">${escapeHtml(
+    body,
+  ).replaceAll("\n", "<br/>")}</div>`;
+
+  const batchSize = 45;
+  for (let start = 0; start < active.length; start += batchSize) {
+    const batch = active.slice(start, start + batchSize);
+    await resendRequest(
+      "/emails",
+      { from, to: [from], bcc: batch, subject, html, text: body },
+      `broadcast-${randomUUID()}`,
+    );
+  }
+  return { sent: active.length };
 }
 
 export async function subscribeContact({

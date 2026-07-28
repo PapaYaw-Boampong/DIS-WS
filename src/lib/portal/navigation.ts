@@ -186,6 +186,18 @@ export const portalNavigation: Record<
       phase: 21,
     },
     {
+      label: "Inquiries",
+      icon: "message",
+      href: portalRoutes.adminInquiries,
+      phase: 21,
+    },
+    {
+      label: "Mailing List",
+      icon: "message",
+      href: portalRoutes.adminMailingList,
+      phase: 21,
+    },
+    {
       label: "Website",
       icon: "globe",
       phase: 18,

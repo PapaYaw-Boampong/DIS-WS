@@ -6,6 +6,7 @@ import {
   isRateLimited,
   readJsonObject,
   sendFormEmail,
+  submitInquiry,
 } from "@/lib/server/forms";
 
 const academicLevels = new Set([
@@ -61,19 +62,32 @@ export async function POST(request: Request) {
   }
 
   try {
-    await sendFormEmail({
+    await submitInquiry({
+      name: guardianName,
+      email,
+      phone,
+      subject: `Admissions enquiry: ${learnerName} (${academicLevel})`,
+      message: message || `Admissions enquiry for ${learnerName}.`,
       type: "admissions",
-      subject: `Admissions enquiry: ${learnerName}`,
-      replyTo: email,
-      fields: [
-        { label: "Parent or guardian", value: guardianName },
-        { label: "Email", value: email },
-        { label: "Phone", value: phone },
-        { label: "Learner", value: learnerName },
-        { label: "Academic level", value: academicLevel },
-        { label: "Message", value: message },
-      ],
     });
+
+    try {
+      await sendFormEmail({
+        type: "admissions",
+        subject: `Admissions enquiry: ${learnerName}`,
+        replyTo: email,
+        fields: [
+          { label: "Parent or guardian", value: guardianName },
+          { label: "Email", value: email },
+          { label: "Phone", value: phone },
+          { label: "Learner", value: learnerName },
+          { label: "Academic level", value: academicLevel },
+          { label: "Message", value: message },
+        ],
+      });
+    } catch {
+      // ignore — the inquiry is already captured for the admin
+    }
 
     return Response.json({ ok: true });
   } catch (error) {

@@ -5,7 +5,7 @@ import {
   isEmail,
   isRateLimited,
   readJsonObject,
-  subscribeContact,
+  submitMailingList,
 } from "@/lib/server/forms";
 
 export async function POST(request: Request) {
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    await subscribeContact({ email, firstName });
+    await submitMailingList({ email, firstName, consent });
     return Response.json({ ok: true });
   } catch (error) {
     return formErrorResponse(error);

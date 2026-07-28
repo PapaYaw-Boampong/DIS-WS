@@ -6,6 +6,7 @@ import {
   isRateLimited,
   readJsonObject,
   sendFormEmail,
+  submitInquiry,
 } from "@/lib/server/forms";
 
 const contactReasons = new Set([
@@ -60,18 +61,33 @@ export async function POST(request: Request) {
   }
 
   try {
-    await sendFormEmail({
+    // Store the inquiry (system of record); the admin processes it in the portal.
+    await submitInquiry({
+      name,
+      email,
+      phone,
+      subject: `Contact enquiry: ${reason}`,
+      message,
       type: "contact",
-      subject: `Website contact enquiry: ${reason}`,
-      replyTo: email,
-      fields: [
-        { label: "Name", value: name },
-        { label: "Email", value: email },
-        { label: "Phone", value: phone },
-        { label: "Reason", value: reason },
-        { label: "Message", value: message },
-      ],
     });
+
+    // Optional extra notification if Resend is configured (never fatal).
+    try {
+      await sendFormEmail({
+        type: "contact",
+        subject: `Website contact enquiry: ${reason}`,
+        replyTo: email,
+        fields: [
+          { label: "Name", value: name },
+          { label: "Email", value: email },
+          { label: "Phone", value: phone },
+          { label: "Reason", value: reason },
+          { label: "Message", value: message },
+        ],
+      });
+    } catch {
+      // ignore — the inquiry is already captured for the admin
+    }
 
     return Response.json({ ok: true });
   } catch (error) {

@@ -84,6 +84,8 @@ export const portalRoutes = {
     `/portal/admin/website/news/${postId}`,
   adminWebsiteEvents: "/portal/admin/website/events",
   adminWebsiteCalendar: "/portal/admin/website/calendar",
+  adminMailingList: "/portal/admin/mailing-list",
+  adminInquiries: "/portal/admin/inquiries",
   paymentsStatements: (role: PortalRole) =>
     `/portal/${role}/payments/statements`,
   paymentStatementDetail: (role: PortalRole, importId: string) =>
