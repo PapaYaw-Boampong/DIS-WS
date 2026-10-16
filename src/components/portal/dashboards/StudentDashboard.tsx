@@ -105,17 +105,6 @@ export async function StudentDashboard() {
           detail="Still active"
           icon={<ClipboardCheck aria-hidden="true" className="size-5" />}
         />
-        <MetricCard
-          label="Average score"
-          value={`${averageScore}%`}
-          detail="Recent assessments"
-          icon={
-            <ChartNoAxesColumnIncreasing
-              aria-hidden="true"
-              className="size-5"
-            />
-          }
-        />
       </div>
 
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.65fr)]">
@@ -192,22 +181,7 @@ export async function StudentDashboard() {
             </div>
           </DashboardCard>
 
-          <DashboardCard title="Student profile">
-            <div className="flex gap-4">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-soft-cream text-curry-orange">
-                <GraduationCap aria-hidden="true" className="size-6" />
-              </div>
-              <div>
-                <p className="font-bold text-charcoal">{student.fullName}</p>
-                <p className="mt-1 text-sm text-muted-grey">
-                  {student.level} · {student.className}
-                </p>
-                <p className="mt-1 text-sm text-muted-grey">
-                  Feeding plan: {student.feedingPlan ?? "None"}
-                </p>
-              </div>
-            </div>
-          </DashboardCard>
+
         </div>
       </div>
     </>

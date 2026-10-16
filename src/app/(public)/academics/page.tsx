@@ -11,6 +11,7 @@ import { CTASection } from "@/components/ui/CTASection";
 import { PageHero } from "@/components/ui/PageHero";
 import { academicMetadata, academicsHero } from "@/data/academics";
 import { routes } from "@/lib/routes";
+import { siteImages } from "@/lib/images";
 
 export const metadata: Metadata = academicMetadata.overview;
 
@@ -27,12 +28,13 @@ export default function AcademicsPage() {
       />
       <AcademicOverview />
       <AcademicLevelsGrid />
-      <CurriculumSection />
+      {/* <CurriculumSection /> */}
       <LearningResources />
       <AssessmentSection />
       <CalendarPreview />
       <TeachersPreview />
       <CTASection
+        backgroundImage={siteImages.ctaLibrary}
         title="Find the right learning pathway for your child"
         description="Speak with our admissions team about academic stages, learner support and joining the Divine school community."
         primaryLabel="Apply to Divine"

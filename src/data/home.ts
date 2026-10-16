@@ -22,6 +22,15 @@ export const homeHeroSlides: readonly HeroSlide[] = [
       href: routes.about,
     },
     image: siteImages.homeHero,
+    images: [
+      siteImages.homeHero,
+      siteImages.homeHero2,
+      siteImages.homeHero3,
+      siteImages.homeHero4,
+      siteImages.homeHero5,
+      siteImages.homeHero6,
+      siteImages.homeHero7,
+    ],
   },
 ];
 
@@ -73,8 +82,8 @@ export const schoolMessage = {
   description:
     "Every learner is welcomed into a caring family of teachers, parents and peers.",
   action: {
-    label: "Read Principal Message",
-    href: routes.principalMessage,
+    label: "Read Mummy's Message",
+    href: routes.mummyMessage,
   },
 } satisfies {
   readonly title: string;
@@ -90,7 +99,7 @@ export const homePathways = [
       "Discover a clear path into a supportive school community built for learning and growth.",
     href: routes.admissions,
     icon: "graduation-cap",
-    image: siteImages.graduation,
+    image: siteImages.homePathwayStudent,
   },
   {
     title: "A Parent",
@@ -99,7 +108,7 @@ export const homePathways = [
       "Find school information, family resources and access to the parent portal.",
     href: routes.portal,
     icon: "users",
-    image: siteImages.aboutCommunity,
+    image: siteImages.homePathwayParent,
   },
   {
     title: "A Staff Member",
@@ -108,6 +117,6 @@ export const homePathways = [
       "Access staff resources and the tools that support teaching and school operations.",
     href: routes.portal,
     icon: "briefcase",
-    image: siteImages.leadershipGroup,
+    image: siteImages.homePathwayStaff,
   },
 ] satisfies readonly HomePathway[];

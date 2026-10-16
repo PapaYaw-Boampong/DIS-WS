@@ -3,11 +3,12 @@ import { OverlayCard } from "@/components/ui/OverlayCard";
 import { PatternSection } from "@/components/ui/PatternSection";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { academicLevels } from "@/data/academics";
+import { siteImages } from "@/lib/images";
 import { routes } from "@/lib/routes";
 
 export function AcademicLevelsGrid() {
   return (
-    <PatternSection>
+    <PatternSection backgroundImage={siteImages.backdropAcademicLevels}>
       <Container>
         <SectionHeader
           eyebrow="Academic Levels"

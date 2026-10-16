@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { StatusBadge } from "@/components/portal/StatusBadge";
+import { portalPreviewMode, previewText } from "@/lib/portal/preview";
 
 type DashboardHeaderProps = {
   readonly eyebrow: string;
@@ -17,6 +18,10 @@ export function DashboardHeader({
   badge = "Mock data",
   action,
 }: DashboardHeaderProps) {
+  // Badges label the preview build ("Mock LMS", "Manual status data"); outside
+  // the preview they are development noise, so only the action renders.
+  const copy = previewText(description);
+
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
@@ -26,14 +31,18 @@ export function DashboardHeader({
         <h1 className="portal-title-bounce mt-2 text-3xl font-extrabold tracking-[-0.04em] text-charcoal sm:text-4xl">
           {title}
         </h1>
-        <p className="mt-3 max-w-2xl leading-7 text-muted-grey">
-          {description}
-        </p>
+        {copy ? (
+          <p className="mt-3 max-w-2xl leading-7 text-muted-grey">{copy}</p>
+        ) : null}
       </div>
-      <div className="flex flex-wrap items-center gap-3">
-        {action}
-        <StatusBadge variant="info">{badge}</StatusBadge>
-      </div>
+      {action || portalPreviewMode ? (
+        <div className="flex flex-wrap items-center gap-3">
+          {action}
+          {portalPreviewMode ? (
+            <StatusBadge variant="info">{badge}</StatusBadge>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }

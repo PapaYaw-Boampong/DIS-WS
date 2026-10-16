@@ -4,7 +4,7 @@ import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { MetricCard } from "@/components/portal/MetricCard";
-import { MockClassForm } from "@/components/portal/MockClassForm";
+import { ClassSetupForm } from "@/components/portal/ClassSetupForm";
 import { listClasses } from "@/lib/portal/data/people";
 import { listStudents } from "@/lib/portal/data/students";
 
@@ -42,7 +42,7 @@ export async function AdminClassesView() {
           <DataTable caption="Admin class records" columns={["Class", "Level", "Enrolled", "Class teacher", "Sample roster"]} rows={rows} />
         </DashboardCard>
         <DashboardCard title="Create class" description="Preview class and teacher setup." className="h-fit">
-          <MockClassForm />
+          <ClassSetupForm />
         </DashboardCard>
       </div>
     </>

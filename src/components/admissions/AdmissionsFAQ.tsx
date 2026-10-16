@@ -3,10 +3,13 @@ import { ChevronDown } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { admissionFAQs } from "@/data/admissions";
+import { FadedBackdrop } from "@/components/ui/FadedBackdrop";
+import { siteImages } from "@/lib/images";
 
 export function AdmissionsFAQ() {
   return (
-    <section className="pattern-checker py-20 sm:py-24 lg:py-28">
+    <section className="relative isolate overflow-hidden bg-white py-20 sm:py-24 lg:py-28">
+      <FadedBackdrop image={siteImages.backdropAdmissionsFaq} />
       <Container>
         <SectionHeader
           eyebrow="Common Questions"

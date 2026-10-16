@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Download } from "lucide-react";
 
 import { DashboardCard } from "@/components/portal/DashboardCard";
 import { StatusBadge } from "@/components/portal/StatusBadge";
@@ -9,8 +10,9 @@ import {
   moduleItemIcons,
   moduleItemTypeLabels,
 } from "@/components/portal/course/ModuleItemBadge";
-import { listCourseModules } from "@/lib/portal/data/academics";
+import { listCourseModules, listResources } from "@/lib/portal/data/academics";
 import { resolveCourseAccess } from "@/lib/portal/course";
+import { formatPortalDate } from "@/lib/portal/format";
 import { portalRoutes } from "@/lib/portal/routes";
 
 export const metadata: Metadata = {
@@ -35,21 +37,78 @@ export default async function CourseModulesPage({
   }
 
   const { role } = access;
-  const modules = (await listCourseModules())
+  const [allModules, allResources] = await Promise.all([
+    listCourseModules(),
+    listResources(),
+  ]);
+  const modules = allModules
     .filter((module) => module.courseId === courseId)
     .slice()
     .sort((first, second) => first.position - second.position);
+  // Shared files live alongside the modules they support, rather than on the
+  // course home page.
+  const materials = allResources.filter(
+    (material) => material.courseId === courseId,
+  );
+
+  const materialsCard = (
+    <DashboardCard
+      title="Course materials"
+      description="Files shared with this class."
+    >
+      {materials.length ? (
+        <ul className="divide-y divide-border">
+          {materials.map((material) => (
+            <li
+              key={material.id}
+              className="flex items-center justify-between gap-4 py-4"
+            >
+              <span>
+                <span className="block font-bold text-charcoal">
+                  {material.title}
+                </span>
+                <span className="mt-1 block text-sm text-muted-grey">
+                  {material.fileName} · Shared{" "}
+                  {formatPortalDate(material.sharedAt)}
+                </span>
+              </span>
+              {material.objectKey ? (
+                <a
+                  href={portalRoutes.courseMaterialDownload(
+                    role,
+                    courseId,
+                    material.id,
+                  )}
+                  className="inline-flex min-h-10 items-center gap-2 rounded-full border border-curry-orange px-4 text-sm font-bold text-deep-orange transition-colors hover:bg-soft-cream"
+                >
+                  <Download aria-hidden="true" className="size-4" />
+                  Download
+                </a>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="py-4 text-sm text-muted-grey">
+          No materials have been shared for this course yet.
+        </p>
+      )}
+    </DashboardCard>
+  );
 
   if (!modules.length) {
     return (
-      <DashboardCard
-        title="Modules"
-        description="No modules are published for this course yet."
-      >
-        <p className="text-sm text-muted-grey">
-          Check back once the teacher publishes course content.
-        </p>
-      </DashboardCard>
+      <div className="space-y-6">
+        <DashboardCard
+          title="Modules"
+          description="No modules are published for this course yet."
+        >
+          <p className="text-sm text-muted-grey">
+            Check back once the teacher publishes course content.
+          </p>
+        </DashboardCard>
+        {materialsCard}
+      </div>
     );
   }
 
@@ -110,6 +169,8 @@ export default async function CourseModulesPage({
           )}
         </DashboardCard>
       ))}
+
+      {materialsCard}
     </div>
   );
 }

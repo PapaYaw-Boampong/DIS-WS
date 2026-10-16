@@ -51,6 +51,7 @@ export function formatPaymentMethod(value: string) {
     momo: "Mobile Money",
     bank: "Bank Deposit",
     cash: "Cash",
+    paystack: "Online (Paystack)",
     // Legacy values kept for backward-compatible display.
     card: "Card",
     bank_transfer: "Bank Deposit",

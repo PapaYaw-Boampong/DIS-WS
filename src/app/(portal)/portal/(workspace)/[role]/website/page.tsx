@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, CalendarDays, Megaphone, Newspaper } from "lucide-react";
+import {
+  ArrowRight,
+  CalendarDays,
+  Megaphone,
+  Newspaper,
+  Users,
+} from "lucide-react";
 
 import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
@@ -9,6 +15,7 @@ import { MetricCard } from "@/components/portal/MetricCard";
 import {
   listCmsCalendar,
   listCmsEvents,
+  listCmsLeadership,
   listCmsNews,
 } from "@/lib/portal/data/cms";
 import { getMockRoleSession } from "@/lib/portal/mock-role";
@@ -21,11 +28,13 @@ export default async function WebsiteContentPage() {
     notFound();
   }
 
-  const [news, events, terms] = await Promise.all([
+  const [news, events, terms, staff] = await Promise.all([
     listCmsNews(),
     listCmsEvents(),
     listCmsCalendar(),
+    listCmsLeadership(),
   ]);
+  const leaders = staff.filter((member) => member.showOnWebsite);
 
   const published = (items: readonly { status: string }[]) =>
     items.filter((item) => item.status === "published").length;
@@ -57,6 +66,15 @@ export default async function WebsiteContentPage() {
       total: terms.length,
       live: published(terms),
     },
+    {
+      title: "Leadership",
+      description:
+        "Staff profiles shown on the public Leadership & Management page.",
+      href: portalRoutes.adminWebsiteLeadership,
+      icon: <Users aria-hidden="true" className="size-5" />,
+      total: leaders.length,
+      live: leaders.filter((leader) => leader.status === "active").length,
+    },
   ];
 
   return (
@@ -64,11 +82,11 @@ export default async function WebsiteContentPage() {
       <DashboardHeader
         eyebrow="Administration"
         title="Website content"
-        description="Manage the public website's news, events and school calendar. Published changes appear on the live site."
+        description="Manage the public website's news, events, school calendar and leadership profiles. Published changes appear on the live site."
         badge="Live content"
       />
 
-      <div className="mt-8 grid gap-5 sm:grid-cols-3">
+      <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {sections.map((section) => (
           <MetricCard
             key={section.title}
@@ -80,7 +98,7 @@ export default async function WebsiteContentPage() {
         ))}
       </div>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-3">
+      <div className="mt-8 grid gap-6 sm:grid-cols-2">
         {sections.map((section) => (
           <DashboardCard
             key={section.title}

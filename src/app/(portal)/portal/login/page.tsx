@@ -10,7 +10,10 @@ import {
 } from "@/app/(portal)/portal/actions";
 import { mockPortalUsers } from "@/data/portal/users";
 import { school } from "@/data/school";
-import { useRealPortalAuth } from "@/lib/portal/auth-config";
+import {
+  portalAuthUnavailable,
+  useRealPortalAuth,
+} from "@/lib/portal/auth-config";
 import { getMockPortalSession } from "@/lib/portal/mock-session";
 import {
   isPortalRole,
@@ -27,6 +30,7 @@ type PortalLoginPageProps = {
   readonly searchParams: Promise<{
     role?: string;
     error?: string;
+    minutes?: string;
   }>;
 };
 
@@ -34,6 +38,9 @@ const loginErrors: Record<string, string> = {
   "invalid-role": "Choose a valid portal role to continue.",
   "account-unavailable": "The selected mock account is not available.",
   "invalid-credentials": "Incorrect email or password. Please try again.",
+  "challenge-expired":
+    "That sign-in took too long to confirm. Please enter your password again.",
+  unavailable: "Portal sign-in is not available on this site.",
 };
 
 export default async function PortalLoginPage({
@@ -48,7 +55,15 @@ export default async function PortalLoginPage({
   const query = await searchParams;
   const selectedRole: PortalRole =
     query.role && isPortalRole(query.role) ? query.role : "student";
-  const errorMessage = query.error ? loginErrors[query.error] : undefined;
+  // Too many failed attempts is its own message: repeating "incorrect
+  // password" to someone who is locked out sends them round the same loop.
+  const lockoutMinutes = Number(query.minutes);
+  const errorMessage =
+    query.error === "too-many-attempts"
+      ? `Too many failed sign-in attempts. Please wait ${Number.isFinite(lockoutMinutes) && lockoutMinutes > 0 ? lockoutMinutes : 15} minute${lockoutMinutes === 1 ? "" : "s"} and try again, or contact the school office.`
+      : query.error
+        ? loginErrors[query.error]
+        : undefined;
 
   return (
     <main className="min-h-screen bg-soft-white lg:grid lg:grid-cols-[minmax(0,0.9fr)_minmax(34rem,1.1fr)]">
@@ -122,15 +137,23 @@ export default async function PortalLoginPage({
               <ShieldCheck aria-hidden="true" className="size-6" />
             </div>
             <p className="mt-6 text-sm font-bold tracking-[0.14em] text-curry-orange uppercase">
-              {useRealPortalAuth ? "Portal sign in" : "Mock authentication"}
+              {useRealPortalAuth || portalAuthUnavailable
+                ? "Portal sign in"
+                : "Mock authentication"}
             </p>
             <h2 className="mt-3 text-3xl font-extrabold tracking-[-0.03em] text-charcoal">
-              {useRealPortalAuth ? "Sign in to the portal" : "Choose a portal role"}
+              {portalAuthUnavailable
+                ? "Portal sign-in is unavailable"
+                : useRealPortalAuth
+                  ? "Sign in to the portal"
+                  : "Choose a portal role"}
             </h2>
             <p className="mt-3 leading-7 text-muted-grey">
-              {useRealPortalAuth
-                ? "Enter the email and password for your school-issued account."
-                : "Select a demo account to enter the protected portal shell. No password, live account or backend request is used."}
+              {portalAuthUnavailable
+                ? "The portal is not connected on this site. Please contact the school office."
+                : useRealPortalAuth
+                  ? "Enter the email and password for your school-issued account."
+                  : "Select a demo account to enter the protected portal shell. No password, live account or backend request is used."}
             </p>
             <p className="mt-4 rounded-2xl border border-curry-orange/25 bg-soft-cream p-4 text-sm font-semibold leading-6 text-charcoal">
               Public sign-up is not part of the portal. In production, school
@@ -147,7 +170,7 @@ export default async function PortalLoginPage({
               </p>
             ) : null}
 
-            {useRealPortalAuth ? (
+            {portalAuthUnavailable ? null : useRealPortalAuth ? (
               <form action={loginWithCredentials} className="mt-7">
                 <label
                   htmlFor="portal-email"

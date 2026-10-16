@@ -3,7 +3,13 @@ import type { ReactNode } from "react";
 
 import { PortalLayout } from "@/components/portal/PortalLayout";
 import { getPortalNotifications } from "@/lib/portal/data/documents";
+import {
+  filterNavigationByCapabilities,
+  portalNavigation,
+} from "@/lib/portal/navigation";
 import { getMockPortalSession } from "@/lib/portal/mock-session";
+import { getRoleCapabilities } from "@/lib/portal/permissions";
+import { portalPreviewMode } from "@/lib/portal/preview";
 import { portalLoginForRole, portalRoutes } from "@/lib/portal/routes";
 import type { PortalRole } from "@/types/portal";
 
@@ -29,10 +35,25 @@ export async function RoleGuard({ children, role }: RoleGuardProps) {
     redirect(portalRoutes.changePassword);
   }
 
-  const notifications = await getPortalNotifications();
+  const [notifications, capabilities] = await Promise.all([
+    getPortalNotifications(),
+    getRoleCapabilities(role),
+  ]);
+  // The sidebar reflects what this role may currently do, so revoking a
+  // capability in the developer portal also hides its pages.
+  const navigation = filterNavigationByCapabilities(
+    portalNavigation[role],
+    capabilities,
+  );
 
   return (
-    <PortalLayout role={role} session={session} notifications={notifications}>
+    <PortalLayout
+      role={role}
+      session={session}
+      notifications={notifications}
+      navigation={navigation}
+      preview={portalPreviewMode}
+    >
       {children}
     </PortalLayout>
   );

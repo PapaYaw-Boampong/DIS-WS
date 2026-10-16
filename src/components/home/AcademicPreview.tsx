@@ -3,11 +3,12 @@ import { OverlayCard } from "@/components/ui/OverlayCard";
 import { PatternSection } from "@/components/ui/PatternSection";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { academicLevels } from "@/data/academics";
+import { siteImages } from "@/lib/images";
 import { routes } from "@/lib/routes";
 
 export function AcademicPreview() {
   return (
-    <PatternSection>
+    <PatternSection backgroundImage={siteImages.backdropHomeAcademics}>
       <Container>
         <SectionHeader eyebrow="Academics" title="Academic Levels" />
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

@@ -7,12 +7,12 @@ import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { InquiriesManager } from "@/components/portal/InquiriesManager";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { listInquiries } from "@/lib/portal/data/forms";
-import { getMockRoleSession } from "@/lib/portal/mock-role";
+import { getAdminAreaSession } from "@/lib/portal/mock-role";
 
 export const metadata: Metadata = { title: "Inquiries" };
 
 export default async function InquiriesPage() {
-  if (!(await getMockRoleSession("admin"))) {
+  if (!(await getAdminAreaSession("registry"))) {
     notFound();
   }
   const inquiries = await listInquiries();

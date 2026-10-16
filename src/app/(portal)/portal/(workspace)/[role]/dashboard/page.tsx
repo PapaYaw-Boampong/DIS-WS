@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 
 import { AccountsDashboard } from "@/components/portal/dashboards/AccountsDashboard";
 import { AdminDashboard } from "@/components/portal/dashboards/AdminDashboard";
+import { DeveloperDashboard } from "@/components/portal/dashboards/DeveloperDashboard";
 import { ParentDashboard } from "@/components/portal/dashboards/ParentDashboard";
+import { RegistryDashboard } from "@/components/portal/dashboards/RegistryDashboard";
 import { StaffDashboard } from "@/components/portal/dashboards/StaffDashboard";
 import { StudentDashboard } from "@/components/portal/dashboards/StudentDashboard";
 import { TransportOperationsDashboard } from "@/components/portal/dashboards/TransportOperationsDashboard";
@@ -37,6 +39,10 @@ export default async function PortalDashboardPage({
       return <StaffDashboard />;
     case "admin":
       return <AdminDashboard />;
+    case "registry":
+      return <RegistryDashboard />;
+    case "developer":
+      return <DeveloperDashboard />;
     case "accounts":
       return <AccountsDashboard />;
     case "transport":

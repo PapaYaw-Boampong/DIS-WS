@@ -3,11 +3,22 @@ export const portalRoles = [
   "parent",
   "staff",
   "admin",
+  "registry",
+  "developer",
   "accounts",
   "transport",
 ] as const;
 
 export type PortalRole = (typeof portalRoles)[number];
+
+// The administration portal is split by responsibility: `admin` runs the school
+// (classes, fees, website), `registry` owns people records and admissions, and
+// `developer` owns accounts and platform readiness. `admin` keeps access to
+// every administrative page so a single school administrator account still
+// works end to end.
+export const portalAdminRoles = ["admin", "registry", "developer"] as const;
+
+export type PortalAdminRole = (typeof portalAdminRoles)[number];
 
 export type PortalAccountStatus = "active" | "inactive" | "suspended";
 
@@ -99,9 +110,19 @@ export type Invoice = {
   readonly dueDate?: string;
 };
 
-export type PaymentMethod = "momo" | "bank" | "cash";
+export type PaymentMethod = "momo" | "bank" | "cash" | "paystack";
 
-export type PaymentStatus = "pending" | "verified" | "rejected";
+// `initiated` is a payment INTENT — an online checkout was opened but nothing
+// has been paid. It must never count towards a paid total or produce a receipt.
+// `failed`/`abandoned` are provider outcomes for a checkout that did not
+// complete; `rejected` remains the school's own decision on a submitted claim.
+export type PaymentStatus =
+  | "pending"
+  | "initiated"
+  | "verified"
+  | "rejected"
+  | "failed"
+  | "abandoned";
 
 export type Payment = {
   readonly id: string;
@@ -121,6 +142,12 @@ export type Payment = {
   readonly rejectionReason?: string;
   readonly verifiedAt?: string;
   readonly hasAttachment?: boolean;
+  // Set only for provider-confirmed payments. `provider` present means the
+  // machine verified it, not a person — which is why these rows are read-only
+  // in the accounts console (reversing one is a refund, not a status edit).
+  readonly provider?: string | null;
+  readonly providerChannel?: string | null;
+  readonly providerFee?: number | null;
 };
 
 export type FeedingBalance = {
@@ -188,6 +215,15 @@ export type TransportTrip = {
   readonly currentLocationLabel?: string;
   readonly currentLocationPoint?: TransportMapPoint;
   readonly nextStop?: string;
+  // Set only while the driver is sharing position from their phone. Absent
+  // means nobody is sharing, so only the route schedule is known.
+  readonly latitude?: number | null;
+  readonly longitude?: number | null;
+  readonly speedKph?: number | null;
+  // Reported accuracy radius in metres — a rough fix must not be shown as an
+  // exact spot on the road.
+  readonly accuracyM?: number | null;
+  readonly positionAt?: string | null;
 };
 
 export type TransportAssignment = {
@@ -224,12 +260,32 @@ export type PortalAnnouncement = {
   readonly priority: "normal" | "important";
 };
 
+export type PortalEventCategory =
+  | "academic"
+  | "community"
+  | "sports"
+  | "meeting";
+
+export type PortalEventProgrammeItem = {
+  readonly time: string;
+  readonly item: string;
+};
+
 export type PortalEvent = {
   readonly id: string;
   readonly title: string;
   readonly date: string;
   readonly time?: string;
   readonly audience: PortalAnnouncementAudience;
+  // Optional programme detail: present for school-authored events, absent for
+  // simple calendar entries.
+  readonly endTime?: string;
+  readonly category?: PortalEventCategory;
+  readonly location?: string;
+  readonly summary?: string;
+  readonly details?: readonly string[];
+  readonly programme?: readonly PortalEventProgrammeItem[];
+  readonly contact?: string;
 };
 
 export type TimetableEntry = {
@@ -296,6 +352,39 @@ export type ResultSummary = {
   readonly score: number;
   readonly total: number;
   readonly gradedAt: string;
+};
+
+export type ReportCardSubject = {
+  readonly subject: string;
+  // Ghanaian primary reporting: continuous assessment out of 50, end-of-term
+  // examination out of 50, totalled to 100.
+  readonly classScore: number;
+  readonly examScore: number;
+  readonly total: number;
+  readonly grade: string;
+  readonly position?: number;
+  readonly remark: string;
+};
+
+export type ReportCard = {
+  readonly id: string;
+  readonly studentId: string;
+  readonly academicYear: string;
+  readonly term: string;
+  readonly className: string;
+  readonly status: "draft" | "published";
+  readonly publishedAt?: string;
+  readonly overallTotal: number;
+  readonly overallPercentage: number;
+  readonly positionInClass?: number;
+  readonly classSize?: number;
+  readonly attendancePresent: number;
+  readonly attendanceTotal: number;
+  readonly subjects: readonly ReportCardSubject[];
+  readonly classTeacher: string;
+  readonly classTeacherRemark: string;
+  readonly headTeacherRemark: string;
+  readonly nextTermBegins?: string;
 };
 
 export type AttendanceSummary = {
@@ -390,6 +479,8 @@ export type PortalNavigationItem = {
   readonly icon: PortalNavigationIcon;
   readonly href?: string;
   readonly phase: number;
+  // When set, the item only appears for roles holding this capability.
+  readonly capability?: string;
   readonly children?: readonly PortalNavigationItem[];
 };
 

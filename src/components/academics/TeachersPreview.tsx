@@ -9,7 +9,7 @@ import { routes } from "@/lib/routes";
 export function TeachersPreview() {
   return (
     <section className="bg-white py-20 sm:py-24 lg:py-28">
-      <Container className="grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-20">
+      <Container className="grid items-center gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:gap-16">
         <ImagePlaceholder
           label="Divine teaching community"
           description="Placeholder for an approved photograph showing teachers at Divine International School."

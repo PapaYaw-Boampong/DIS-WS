@@ -15,6 +15,7 @@ import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { StatusBadge } from "@/components/portal/StatusBadge";
+import { getPaystackStatus } from "@/lib/portal/data/finance";
 import {
   portalPaymentFlowSteps,
   portalPaymentLedgerRules,
@@ -24,6 +25,7 @@ import {
   portalPaymentReconciliationControls,
   portalPaymentWebhookRules,
 } from "@/data/portal/payment-contract";
+import { formatPortalDate } from "@/lib/portal/format";
 import { isPortalRole } from "@/lib/portal/roles";
 
 export const metadata: Metadata = {
@@ -57,7 +59,10 @@ export default async function PaymentReadinessPage({
 }: PaymentReadinessPageProps) {
   const { role } = await params;
 
-  if (!isPortalRole(role) || (role !== "admin" && role !== "accounts")) {
+  if (
+    !isPortalRole(role) ||
+    (role !== "admin" && role !== "accounts" && role !== "developer")
+  ) {
     notFound();
   }
 
@@ -73,6 +78,10 @@ export default async function PaymentReadinessPage({
   const readyChecks = portalPaymentReadinessChecks.filter(
     (check) => check.status === "ready",
   );
+
+  // Live provider state, straight from the backend. The key itself is never
+  // returned — only which mode it is in.
+  const paystack = await getPaystackStatus();
 
   const providerRows: readonly DataTableRow[] = portalPaymentProviders.map(
     (provider) => ({
@@ -162,9 +171,71 @@ export default async function PaymentReadinessPage({
       <DashboardHeader
         eyebrow="Phase 11"
         title="Payment readiness"
-        description="Review provider candidates, payment flow, webhook verification, ledger rules, receipts, and reconciliation controls before any live payment integration."
-        badge="Provider not connected"
+        description="Review provider candidates, payment flow, webhook verification, ledger rules, receipts, and reconciliation controls."
+        badge={paystack.enabled ? "Paystack connected" : "Provider not connected"}
       />
+
+      <DashboardCard
+        title="Paystack"
+        description="The optional online lane. Mobile Money reference submission and bank deposits keep working whether this is on or off."
+        className="mt-8"
+      >
+        <dl className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+          <div>
+            <dt className="text-sm font-bold text-muted-grey">Lane</dt>
+            <dd className="mt-2">
+              {paystack.enabled ? (
+                <StatusBadge variant="success">Open to parents</StatusBadge>
+              ) : (
+                <StatusBadge>Off</StatusBadge>
+              )}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-sm font-bold text-muted-grey">Key mode</dt>
+            <dd className="mt-2">
+              {paystack.keyMode === "live" ? (
+                <StatusBadge variant="success">Live key</StatusBadge>
+              ) : paystack.keyMode === "test" ? (
+                <StatusBadge variant="warning">Test key</StatusBadge>
+              ) : (
+                <StatusBadge>No key set</StatusBadge>
+              )}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-sm font-bold text-muted-grey">
+              Stuck awaiting payment
+            </dt>
+            <dd className="mt-2">
+              {paystack.stuckInitiated > 0 ? (
+                <StatusBadge variant="danger">
+                  {`${paystack.stuckInitiated} over an hour old`}
+                </StatusBadge>
+              ) : (
+                <StatusBadge variant="success">None</StatusBadge>
+              )}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-sm font-bold text-muted-grey">
+              Last confirmed payment
+            </dt>
+            <dd className="mt-2 text-sm font-semibold text-charcoal">
+              {paystack.lastConfirmedAt
+                ? formatPortalDate(paystack.lastConfirmedAt.slice(0, 10))
+                : "None yet"}
+            </dd>
+          </div>
+        </dl>
+
+        <p className="mt-5 rounded-2xl border border-border bg-soft-white p-4 text-sm leading-6 text-muted-grey">
+          A rising &ldquo;stuck awaiting payment&rdquo; count is the early
+          warning that Paystack webhooks have stopped arriving: parents are
+          opening checkouts that never get confirmed. Check the webhook URL in
+          the Paystack dashboard before assuming the payments failed.
+        </p>
+      </DashboardCard>
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard

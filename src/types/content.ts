@@ -14,6 +14,11 @@ export type SiteImage = {
 };
 
 export type ImageAlbumId =
+  | "campus"
+  | "classrooms"
+  | "library"
+  | "digital-learning"
+  | "dining"
   | "learning"
   | "history"
   | "career-day"
@@ -98,6 +103,8 @@ export type HeroSlide = {
   readonly primaryAction: LinkAction;
   readonly secondaryAction: LinkAction;
   readonly image?: SiteImage;
+  // When set, the hero cross-fades through these instead of `image`.
+  readonly images?: readonly SiteImage[];
 };
 
 export type HomeStat = {
@@ -140,6 +147,9 @@ export type LeaderProfile = {
   readonly icon: ContentIcon;
   readonly imageDescription: string;
   readonly image?: SiteImage;
+  // Admin-uploaded portrait (portal CMS), served via the same-origin proxy.
+  readonly imageUrl?: string;
+  readonly imageAlt?: string;
 };
 
 export type FacilityItem = {
@@ -204,6 +214,8 @@ export type AcademicLevelDetail = {
   readonly imageLabel: string;
   readonly imageDescription: string;
   readonly image?: SiteImage;
+  // Faded photograph behind the "Learning Areas" section.
+  readonly backdropImage?: SiteImage;
   readonly subjects: readonly AcademicCardItem[];
   readonly developmentFocus: readonly AcademicCardItem[];
   readonly assessmentTitle: string;
@@ -320,6 +332,21 @@ export type AcademicTerm = {
   readonly period: string;
   readonly description: string;
   readonly highlights: readonly string[];
+};
+
+// A shared photo album hosted outside the site (Google Photos today). The
+// school publishes albums there already; the site links to them rather than
+// duplicating the photographs.
+export type PhotoAlbumItem = {
+  readonly id: string;
+  readonly title: string;
+  readonly description: string;
+  readonly occasionLabel: string;
+  readonly albumUrl: string;
+  readonly provider: string;
+  readonly imageUrl?: string;
+  readonly image?: SiteImage;
+  readonly imageAlt?: string;
 };
 
 export type EventItem = {

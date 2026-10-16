@@ -152,7 +152,7 @@ export const portalApiEndpoints = [
     path: "/v1/classes",
     summary: "Return class summaries, teachers, rosters, and assigned subjects.",
     roles: ["staff", "admin"],
-    frontendRoutes: ["/portal/staff/classes", "/portal/admin/classes"],
+    frontendRoutes: ["/portal/staff/courses", "/portal/admin/classes"],
     status: "contracted",
     auditRequired: false,
   },

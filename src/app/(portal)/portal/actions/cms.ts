@@ -24,6 +24,7 @@ function revalidatePublicContent(slug?: string): void {
   revalidatePath("/news");
   revalidatePath("/calendar");
   revalidatePath("/academics");
+  revalidatePath("/about/leadership");
   revalidatePath("/sitemap.xml");
   if (slug) revalidatePath(`/news/${slug}`);
 }
@@ -160,6 +161,105 @@ export async function deleteEvent(id: string): Promise<CmsActionResult> {
   const result = await portalApiSend("DELETE", `/cms/events/${encodeURIComponent(id)}`);
   if (result.ok) revalidatePublicContent();
   return { ok: result.ok, mode: "real", error: result.ok ? undefined : "delete_failed" };
+}
+
+// --- Photo albums ----------------------------------------------------------
+// Links to albums the school already publishes (Google Photos). The backend
+// enforces https and a host allowlist, so a rejection here names the reason
+// rather than a generic failure — a mistyped link is the likely cause.
+
+export type PhotoAlbumInput = ImageSelection & {
+  readonly title: string;
+  readonly description: string;
+  readonly occasionLabel: string;
+  readonly albumUrl: string;
+  readonly status: "draft" | "published";
+  readonly position: number;
+};
+
+function albumError(error: string | undefined): string {
+  if (error === "host_not_allowed") {
+    return "That link is not a Google Photos album. Paste the share link from Google Photos.";
+  }
+  if (error === "insecure_url") {
+    return "That link is not secure (https). Copy the share link again from Google Photos.";
+  }
+  if (error === "invalid_url") {
+    return "That does not look like a web address.";
+  }
+  return "The album could not be saved. Please try again.";
+}
+
+export async function createPhotoAlbum(
+  input: PhotoAlbumInput,
+): Promise<CmsActionResult> {
+  if (!useRealPortalAuth) return mockResult;
+  const result = await portalApiPost<{ album?: { id: string }; error?: string }>(
+    "/cms/photo-albums",
+    input,
+  );
+  if (result.ok) revalidatePublicContent();
+  return {
+    ok: result.ok,
+    mode: "real",
+    error: result.ok ? undefined : albumError(result.data?.error),
+    id: result.data?.album?.id,
+  };
+}
+
+export async function updatePhotoAlbum(
+  id: string,
+  input: Partial<PhotoAlbumInput>,
+): Promise<CmsActionResult> {
+  if (!useRealPortalAuth) return mockResult;
+  const result = await portalApiSend<{ error?: string }>(
+    "PATCH",
+    `/cms/photo-albums/${encodeURIComponent(id)}`,
+    input,
+  );
+  if (result.ok) revalidatePublicContent();
+  return {
+    ok: result.ok,
+    mode: "real",
+    error: result.ok ? undefined : albumError(result.data?.error),
+  };
+}
+
+export async function deletePhotoAlbum(id: string): Promise<CmsActionResult> {
+  if (!useRealPortalAuth) return mockResult;
+  const result = await portalApiSend(
+    "DELETE",
+    `/cms/photo-albums/${encodeURIComponent(id)}`,
+  );
+  if (result.ok) revalidatePublicContent();
+  return { ok: result.ok, mode: "real", error: result.ok ? undefined : "delete_failed" };
+}
+
+// --- Leadership ------------------------------------------------------------
+// Edits only the public profile of an existing registry Staff record; people
+// are added or renamed in the registry.
+
+export type LeaderProfileInput = ImageSelection & {
+  readonly showOnWebsite: boolean;
+  readonly websitePosition: number;
+  readonly publicTitle: string;
+  readonly publicRole: string;
+  readonly publicBio: string;
+  readonly publicIcon: string;
+};
+
+export async function updateLeaderProfile(
+  staffRecordId: string,
+  input: Partial<LeaderProfileInput>,
+): Promise<CmsActionResult> {
+  if (!useRealPortalAuth) return mockResult;
+  const result = await portalApiSend(
+    "PATCH",
+    `/cms/leadership/${encodeURIComponent(staffRecordId)}`,
+    input,
+  );
+  if (result.ok) revalidatePublicContent();
+  return { ok: result.ok, mode: "real", error: result.ok ? undefined : "save_failed" };
 }
 
 // --- Calendar terms --------------------------------------------------------

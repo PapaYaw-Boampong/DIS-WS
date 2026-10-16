@@ -17,7 +17,7 @@ export const studentLifeMetadata = createPageMetadata({
 export const studentLifeHero = {
   title: "Student Life",
   description:
-    "A nurturing school community committed to academic excellence, discipline and character development.",
+    "Friendships, reading corners, the Edu Lab, lunchtime chatter, stage performances and graduation day — life at Divine is full, joyful and well looked after.",
   primaryAction: {
     label: "Apply Now",
     href: routes.admissions,
@@ -28,7 +28,9 @@ export const studentLifeHero = {
   },
   image: siteImages.studentLifeHero,
   images: [
-    imageById["events-graduation-group-early-learners-walk-up"],
+    siteImages.studentLifeHero,
+    siteImages.studentLifeHero2,
+    siteImages.studentLifeHero3,
     imageById["events-graduation-dance-dance2"],
     imageById["events-graduation-play-p4"],
     imageById["events-competitions-group3"],
@@ -45,7 +47,7 @@ export const experienceSlides = [
       "A safe and supportive learning environment where children grow academically, socially, morally and creatively.",
     imageLabel: "Supportive school experience",
     imageDescription:
-      "Placeholder for an approved photograph showing pupils participating in a supportive Divine International School environment.",
+      "A Divine graduating class celebrating together.",
     icon: "heart",
     image: siteImages.graduation,
   },
@@ -57,7 +59,7 @@ export const experienceSlides = [
       "Classroom routines, school activities and shared responsibilities help pupils practise communication, teamwork and self-belief.",
     imageLabel: "Confident participation",
     imageDescription:
-      "Placeholder for an approved photograph of pupils confidently participating in a school activity.",
+      "A pupil speaking confidently at a school ceremony.",
     icon: "sparkles",
     image: siteImages.studentConfidence,
   },
@@ -69,48 +71,68 @@ export const experienceSlides = [
       "Student life supports friendships, discipline, creativity and the character habits children need beyond the classroom.",
     imageLabel: "Whole-child growth",
     imageDescription:
-      "Placeholder for an approved photograph representing whole-child growth at Divine International School.",
+      "A pupil receiving an award at graduation.",
     icon: "shield-check",
     image: siteImages.achievement,
   },
 ] satisfies readonly StudentLifeSlide[];
 
+// "A Day at Divine": the school day in order, from arrival to lunch.
 export const campusSlides = [
   {
-    id: "classroom-spaces",
-    eyebrow: "Campus",
-    title: "Purposeful classroom spaces",
+    id: "arrival",
+    eyebrow: "Morning",
+    title: "Safe arrival",
     description:
-      "Learning spaces are organised to support clear instruction, group work, practice and daily routines.",
-    imageLabel: "Classroom and learning spaces",
-    imageDescription:
-      "Placeholder for an approved photograph of classroom and learning spaces on the Divine International School campus.",
+      "School buses bring pupils in from across a wide catchment, and the day begins with a warm welcome and settled routines.",
+    imageLabel: "School bus arrival",
+    imageDescription: "A Divine International School bus parked on campus.",
+    icon: "bus",
+    image: siteImages.dayArrival,
+  },
+  {
+    id: "lessons",
+    eyebrow: "Lessons",
+    title: "Focused learning in bright classrooms",
+    description:
+      "Clear teaching, guided practice and independent work keep every learner engaged and moving forward.",
+    imageLabel: "Classroom lesson",
+    imageDescription: "Pupils at work during a classroom lesson.",
     icon: "school",
-    image: siteImages.earlyLearningGallery,
+    image: siteImages.dayLessons,
   },
   {
-    id: "community-spaces",
-    eyebrow: "Campus",
-    title: "Spaces for school community",
+    id: "library",
+    eyebrow: "Reading",
+    title: "Time in the library",
     description:
-      "Shared campus areas give pupils places to gather, celebrate, collaborate and take part in supervised school life.",
-    imageLabel: "Campus community spaces",
-    imageDescription:
-      "Placeholder for an approved photograph of pupils using a shared campus area at Divine International School.",
-    icon: "users",
-    image: siteImages.graduation,
+      "Quiet reading, research and shared stories build vocabulary, curiosity and a lasting love of books.",
+    imageLabel: "Library reading",
+    imageDescription: "A smiling pupil reading in the school library.",
+    icon: "library",
+    image: siteImages.dayLibrary,
   },
   {
-    id: "activity-spaces",
-    eyebrow: "Campus",
-    title: "Room for activity and discovery",
+    id: "edu-lab",
+    eyebrow: "Edu Lab",
+    title: "Digital skills, guided well",
     description:
-      "Indoor and outdoor experiences help pupils connect learning with movement, creativity and exploration.",
-    imageLabel: "Activity and discovery spaces",
-    imageDescription:
-      "Placeholder for an approved photograph of an activity space at Divine International School.",
-    icon: "compass",
-    image: siteImages.scienceGallery,
+      "Computer lessons and the interactive digital board help pupils practise, create and solve problems with confidence.",
+    imageLabel: "Edu Lab lesson",
+    imageDescription: "Pupils working together at computers in the Edu Lab.",
+    icon: "monitor",
+    image: siteImages.dayEduLab,
+  },
+  {
+    id: "lunch",
+    eyebrow: "Lunch",
+    title: "Meals and friendship",
+    description:
+      "Freshly prepared meals in a supervised dining space — and plenty of conversation with friends.",
+    imageLabel: "Lunchtime",
+    imageDescription: "Young pupils sharing lunch together.",
+    icon: "utensils",
+    image: siteImages.dayLunch,
   },
 ] satisfies readonly StudentLifeSlide[];
 
@@ -123,7 +145,7 @@ export const activitySlides = [
       "Structured clubs give pupils time to discover interests, practise skills and enjoy learning with peers.",
     imageLabel: "Clubs and interests",
     imageDescription:
-      "Placeholder for an approved photograph of pupils taking part in a supervised school club.",
+      "Pupils in a creative presentation on stage.",
     icon: "puzzle",
     image: siteImages.creativeConfidence,
   },
@@ -135,7 +157,7 @@ export const activitySlides = [
       "Movement, teamwork and healthy competition support discipline, confidence and physical wellbeing.",
     imageLabel: "Sports and wellbeing",
     imageDescription:
-      "Placeholder for an approved photograph of pupils participating in a school sport or movement activity.",
+      "Pupils performing a dance at a school celebration.",
     icon: "trophy",
     image: siteImages.dance,
   },
@@ -147,7 +169,7 @@ export const activitySlides = [
       "Creative opportunities in art, music and performance help pupils express ideas and collaborate.",
     imageLabel: "Arts and culture",
     imageDescription:
-      "Placeholder for an approved photograph of pupils participating in creative arts or cultural activity.",
+      "Pupils performing a cultural play.",
     icon: "palette",
     image: siteImages.culturalPlay,
   },
@@ -159,7 +181,7 @@ export const activitySlides = [
       "Age-appropriate roles and service experiences encourage responsibility, empathy and contribution.",
     imageLabel: "Leadership and service",
     imageDescription:
-      "Placeholder for an approved photograph of pupils taking part in a leadership or service activity.",
+      "A pupil reciting on stage at a school ceremony.",
     icon: "handshake",
     image: siteImages.recital,
   },
@@ -196,9 +218,9 @@ export const studentVoices = [
       "Communication between school and home helps families understand routines, expectations and learner progress.",
     imageLabel: "Family partnership",
     imageDescription:
-      "Placeholder for an approved photograph representing family partnership at Divine International School.",
+      "Parents and their daughter receiving an award at the Divine graduation ceremony.",
     icon: "users",
-    image: siteImages.awardGallery,
+    image: siteImages.voiceParents,
   },
   {
     id: "learner-confidence",
@@ -209,9 +231,9 @@ export const studentVoices = [
       "Learners are encouraged to ask questions, join activities and recognise progress through consistent effort.",
     imageLabel: "Learner confidence",
     imageDescription:
-      "Placeholder for an approved photograph representing learner confidence and participation.",
+      "A confident Junior High student smiling in class.",
     icon: "sparkles",
-    image: siteImages.studentConfidence,
+    image: siteImages.juniorHighLeadership,
   },
   {
     id: "community-belonging",
@@ -222,8 +244,8 @@ export const studentVoices = [
       "Daily routines, celebrations and shared responsibilities help pupils feel connected to the school community.",
     imageLabel: "School belonging",
     imageDescription:
-      "Placeholder for an approved photograph representing belonging within the Divine school community.",
+      "A happy pupil reading in the Divine school library.",
     icon: "heart",
-    image: siteImages.graduation,
+    image: siteImages.studentBelonging,
   },
 ] satisfies readonly StudentVoice[];

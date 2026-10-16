@@ -10,6 +10,7 @@ import {
 } from "@/data/academics";
 import { createPageMetadata } from "@/lib/metadata";
 import { routes } from "@/lib/routes";
+import { siteImages } from "@/lib/images";
 
 type AcademicLevelPageProps = {
   params: Promise<{ level: string }>;
@@ -62,6 +63,7 @@ export default async function AcademicLevelPage({
       />
       <AcademicLevelContent level={detail} />
       <CTASection
+        backgroundImage={siteImages.ctaCorridor}
         title={`Explore admission to ${detail.title}`}
         description="Contact our team to discuss placement, school expectations and the next steps for joining Divine International School."
         primaryLabel="Apply Now"

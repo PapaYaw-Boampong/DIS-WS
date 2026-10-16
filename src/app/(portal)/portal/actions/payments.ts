@@ -106,6 +106,44 @@ export async function submitBankPayment(
   };
 }
 
+export type PaystackInitResult = {
+  readonly ok: boolean;
+  readonly mode: "mock" | "real";
+  readonly authorizationUrl?: string;
+  readonly reference?: string;
+  readonly error?: string;
+};
+
+// Parent: open a Paystack checkout. Returns the hosted-checkout URL for the
+// browser to navigate to — Paystack's redirect flow rather than the Inline JS
+// widget, so no third-party script runs on the portal origin and no card data
+// ever touches it.
+export async function initializePaystackPayment(input: {
+  readonly studentId: string;
+  readonly invoiceId?: string;
+  readonly category: string;
+  readonly amount: number;
+  readonly note?: string;
+}): Promise<PaystackInitResult> {
+  if (!useRealPortalAuth) {
+    return { ok: false, mode: "mock", error: "paystack_disabled" };
+  }
+
+  const result = await portalApiPost<{
+    authorizationUrl?: string;
+    reference?: string;
+    error?: string;
+  }>("/me/payments/paystack/initialize", input);
+
+  return {
+    ok: result.ok,
+    mode: "real",
+    authorizationUrl: result.data?.authorizationUrl,
+    reference: result.data?.reference,
+    error: result.ok ? undefined : (result.data?.error ?? "initialize_failed"),
+  };
+}
+
 export type CashPaymentInput = {
   readonly studentId: string;
   readonly invoiceId?: string;

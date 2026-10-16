@@ -46,10 +46,21 @@ function toPortalUser(value: unknown): PortalUser | null {
   };
 }
 
+export type LoginOutcome =
+  | { ok: true; token: string; user: PortalUser }
+  // Password accepted, second factor outstanding. Nothing is signed in yet —
+  // the challenge token only authorises submitting a code.
+  | { ok: false; reason: "mfa_required"; challengeToken: string }
+  | { ok: false; reason: "invalid_credentials" }
+  // Too many failed attempts for this account or from this address. Told apart
+  // from bad credentials so the sign-in page can explain the wait instead of
+  // sending someone round the "check your password" loop forever.
+  | { ok: false; reason: "throttled"; retryAfterSeconds: number };
+
 export async function apiLogin(
   email: string,
   password: string,
-): Promise<{ token: string; user: PortalUser } | null> {
+): Promise<LoginOutcome> {
   try {
     const response = await fetch(`${portalApiUrl}/auth/login`, {
       method: "POST",
@@ -58,20 +69,73 @@ export async function apiLogin(
       cache: "no-store",
     });
 
+    if (response.status === 429) {
+      const data = (await response
+        .json()
+        .catch(() => ({}))) as { retryAfterSeconds?: number };
+      return {
+        ok: false,
+        reason: "throttled",
+        retryAfterSeconds: data.retryAfterSeconds ?? 900,
+      };
+    }
+
     if (!response.ok) {
-      return null;
+      return { ok: false, reason: "invalid_credentials" };
+    }
+
+    const data = (await response.json()) as Partial<LoginResponse> & {
+      mfaRequired?: boolean;
+      challengeToken?: string;
+    };
+
+    if (data.mfaRequired && typeof data.challengeToken === "string") {
+      return {
+        ok: false,
+        reason: "mfa_required",
+        challengeToken: data.challengeToken,
+      };
+    }
+
+    const user = toPortalUser(data.user);
+
+    if (typeof data.token !== "string" || !user) {
+      return { ok: false, reason: "invalid_credentials" };
+    }
+
+    return { ok: true, token: data.token, user };
+  } catch {
+    return { ok: false, reason: "invalid_credentials" };
+  }
+}
+
+// Redeem an MFA challenge for a real session.
+export async function apiVerifyMfa(
+  challengeToken: string,
+  code: string,
+): Promise<LoginOutcome> {
+  try {
+    const response = await fetch(`${portalApiUrl}/auth/mfa/verify`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ challengeToken, code }),
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      return { ok: false, reason: "invalid_credentials" };
     }
 
     const data = (await response.json()) as Partial<LoginResponse>;
     const user = toPortalUser(data.user);
 
     if (typeof data.token !== "string" || !user) {
-      return null;
+      return { ok: false, reason: "invalid_credentials" };
     }
 
-    return { token: data.token, user };
+    return { ok: true, token: data.token, user };
   } catch {
-    return null;
+    return { ok: false, reason: "invalid_credentials" };
   }
 }
 

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { leadershipProfiles } from "@/data/about";
 import { calendarEvents, featuredEvents } from "@/data/events";
 import { featuredNews, newsArticles } from "@/data/news";
 import { academicTerms } from "@/data/academics";
@@ -9,7 +10,9 @@ import { routes } from "@/lib/routes";
 import type {
   AcademicTerm,
   EventItem,
+  LeaderProfile,
   NewsArticle,
+  PhotoAlbumItem,
   SiteImage,
 } from "@/types/content";
 
@@ -162,4 +165,80 @@ export async function getPublishedCalendarTerms(): Promise<
     description: term.description,
     highlights: term.highlights,
   }));
+}
+
+type BackendLeader = BackendImageFields & {
+  readonly fullName: string;
+  readonly title: string;
+  readonly publicTitle: string;
+  readonly publicRole: string;
+  readonly publicBio: string;
+  readonly publicIcon: string;
+};
+
+/**
+ * Leadership & Management profiles, sourced from registry Staff records that
+ * an admin has put on the website. Falls back to the static list when the
+ * backend is unreachable OR nobody is published yet, so the page is never
+ * empty while the school moves its leaders into the registry.
+ */
+export async function getPublishedLeadership(): Promise<
+  readonly LeaderProfile[]
+> {
+  const data = await fetchPublic<{ leaders: BackendLeader[] }>(
+    "/public/leadership",
+  );
+  if (!data || data.leaders.length === 0) return leadershipProfiles;
+
+  return data.leaders.map((leader) => {
+    const title = leader.publicTitle || leader.title;
+    return {
+      name: leader.fullName,
+      title,
+      role: leader.publicRole,
+      description: leader.publicBio,
+      icon: toContentIcon(leader.publicIcon, "user-round"),
+      imageDescription: `Portrait of ${leader.fullName}, ${title}.`,
+      ...resolveImage(leader),
+    };
+  });
+}
+
+type BackendAlbum = BackendImageFields & {
+  readonly id: string;
+  readonly title: string;
+  readonly description: string;
+  readonly occasionLabel: string;
+  readonly albumUrl: string;
+  readonly provider: string;
+};
+
+/**
+ * Shared photo albums. Unlike news and events there is NO static fallback:
+ * an album is a link the school actively published, so inventing one when the
+ * backend is unreachable would send families to a page that does not exist.
+ * With no backend the section simply does not render.
+ */
+export async function getPublishedPhotoAlbums(): Promise<
+  readonly PhotoAlbumItem[]
+> {
+  const data = await fetchPublic<{ albums: BackendAlbum[] }>(
+    "/public/photo-albums",
+  );
+  if (!data) return [];
+
+  return data.albums.map((album) => {
+    const resolved = resolveImage(album);
+    return {
+      id: album.id,
+      title: album.title,
+      description: album.description,
+      occasionLabel: album.occasionLabel,
+      albumUrl: album.albumUrl,
+      provider: album.provider,
+      imageUrl: resolved.imageUrl,
+      image: resolved.image,
+      imageAlt: album.imageAlt ?? undefined,
+    };
+  });
 }

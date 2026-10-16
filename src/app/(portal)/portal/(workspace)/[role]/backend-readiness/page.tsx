@@ -65,7 +65,7 @@ export default async function BackendReadinessPage({
 }: BackendReadinessPageProps) {
   const { role } = await params;
 
-  if (!isPortalRole(role) || role !== "admin") {
+  if (!isPortalRole(role) || (role !== "admin" && role !== "developer")) {
     notFound();
   }
 

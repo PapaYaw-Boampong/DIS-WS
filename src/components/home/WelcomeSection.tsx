@@ -7,7 +7,7 @@ import { welcomeContent } from "@/data/home";
 export function WelcomeSection() {
   return (
     <section className="bg-white py-20 sm:py-24 lg:py-28">
-      <Container className="grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20">
+      <Container className="grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
         <div>
           <SectionHeader
             eyebrow={welcomeContent.eyebrow}

@@ -9,6 +9,7 @@ import { ProgressMeter } from "@/components/portal/ProgressMeter";
 import { StatusBadge } from "@/components/portal/StatusBadge";
 import { listAssignments, listTimetable } from "@/lib/portal/data/academics";
 import { listAnnouncements } from "@/lib/portal/data/communication";
+import { getStaffWorkload } from "@/lib/portal/data/dashboard";
 import { formatPortalDate, formatPortalTime } from "@/lib/portal/format";
 import { getMockStaffPortalContext } from "@/lib/portal/mock-staff";
 
@@ -22,11 +23,16 @@ export async function StaffDashboard() {
   const { staff, session } = context;
   const userName = session.user.name;
   const assignedClasses = context.classes;
-  const [allTimetable, allAssignments, allAnnouncements] = await Promise.all([
-    listTimetable(),
-    listAssignments(),
-    listAnnouncements(),
-  ]);
+  const [allTimetable, allAssignments, allAnnouncements, workload] =
+    await Promise.all([
+      listTimetable(),
+      listAssignments(),
+      listAnnouncements(),
+      getStaffWorkload(),
+    ]);
+
+  const share = (part: number, whole: number) =>
+    whole > 0 ? Math.round((part / whole) * 100) : 0;
   const studentCount = assignedClasses.reduce(
     (total, item) => total + item.studentCount,
     0,
@@ -132,24 +138,28 @@ export async function StaffDashboard() {
 
           <DashboardCard
             title="Weekly workload"
-            description="Illustrative preparation status only."
+            description={
+              workload.isLive
+                ? "Where your marking and register-taking stands right now."
+                : "Illustrative preparation status only."
+            }
           >
             <div className="space-y-5">
               <ProgressMeter
-                label="Attendance records"
-                value={75}
-                detail="Three of four mock class registers prepared."
+                label="Today's registers"
+                value={share(workload.registersTaken, workload.registersExpected)}
+                detail={`${workload.registersTaken} of ${workload.registersExpected} class register${workload.registersExpected === 1 ? "" : "s"} taken today.`}
                 tone="green"
               />
               <ProgressMeter
-                label="Assessment entries"
-                value={60}
-                detail="Continuous assessment entries remain incomplete."
+                label="Assignments fully submitted"
+                value={share(workload.assignmentsGraded, workload.assignmentsTotal)}
+                detail={`${workload.assignmentsGraded} of ${workload.assignmentsTotal} assignment${workload.assignmentsTotal === 1 ? "" : "s"} have every submission in.`}
               />
               <ProgressMeter
-                label="Course materials"
-                value={85}
-                detail="Most planned weekly course materials are prepared."
+                label="Course materials shared"
+                value={Math.min(workload.materialsShared * 10, 100)}
+                detail={`${workload.materialsShared} material${workload.materialsShared === 1 ? "" : "s"} shared across your classes.`}
                 tone="blue"
               />
             </div>

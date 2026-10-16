@@ -1,3 +1,4 @@
+import { previewText } from "@/lib/portal/preview";
 import { cn } from "@/lib/utils";
 
 type ProgressMeterProps = {
@@ -20,6 +21,7 @@ export function ProgressMeter({
   tone = "orange",
 }: ProgressMeterProps) {
   const safeValue = Math.min(100, Math.max(0, value));
+  const copy = previewText(detail);
 
   return (
     <div>
@@ -40,8 +42,8 @@ export function ProgressMeter({
           style={{ width: `${safeValue}%` }}
         />
       </div>
-      {detail ? (
-        <p className="mt-2 text-xs leading-5 text-muted-grey">{detail}</p>
+      {copy ? (
+        <p className="mt-2 text-xs leading-5 text-muted-grey">{copy}</p>
       ) : null}
     </div>
   );

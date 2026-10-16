@@ -15,7 +15,7 @@ export function ActivitiesSection() {
         <SectionHeader
           eyebrow="Activities"
           title="Clubs, Sports and Culture"
-          description="Large activity moments rotate one at a time, while the pillars below describe the habits these experiences help form."
+          description="Performances, competitions, clubs and celebrations give every pupil a chance to discover a talent and grow in confidence."
         />
         <FeatureCarousel
           label="Clubs sports and culture carousel"

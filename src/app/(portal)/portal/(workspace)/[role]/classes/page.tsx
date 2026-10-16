@@ -1,117 +1,29 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { School } from "lucide-react";
 
-import { DashboardCard } from "@/components/portal/DashboardCard";
-import { DashboardHeader } from "@/components/portal/DashboardHeader";
-import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
-import { StatusBadge } from "@/components/portal/StatusBadge";
 import { AdminClassesView } from "@/components/portal/dashboards/AdminClassesView";
-import { getMockRoleSession } from "@/lib/portal/mock-role";
-import { getMockStaffPortalContext } from "@/lib/portal/mock-staff";
+import { getAdminAreaSession } from "@/lib/portal/mock-role";
 
 export const metadata: Metadata = {
-  title: "My Classes",
+  title: "Classes",
 };
 
 type ClassesPageProps = {
   readonly params: Promise<{ role: string }>;
 };
 
+// Class administration only. Teachers work from their courses instead of a
+// separate class roster view.
 export default async function ClassesPage({ params }: ClassesPageProps) {
   const { role } = await params;
 
-  if (role === "admin") {
-    if (!(await getMockRoleSession("admin"))) {
-      notFound();
-    }
-
-    return <AdminClassesView />;
-  }
-
-  const context = await getMockStaffPortalContext();
-
-  if (!context) {
+  if (role !== "admin" && role !== "registry") {
     notFound();
   }
 
-  const rosterRows: readonly DataTableRow[] = context.students.map(
-    (student) => ({
-      id: student.id,
-      cells: [
-        student.fullName,
-        student.studentId,
-        student.className,
-        student.level,
-        <StatusBadge key={student.id} variant="success">
-          Active
-        </StatusBadge>,
-      ],
-    }),
-  );
+  if (!(await getAdminAreaSession("registry"))) {
+    notFound();
+  }
 
-  return (
-    <>
-      <DashboardHeader
-        eyebrow={`${context.staff.fullName} · ${context.staff.staffId}`}
-        title="My classes"
-        description="Review assigned classes and fictional student rosters. Student profile editing remains outside this staff operations phase."
-        badge="Mock class records"
-      />
-
-      <div className="mt-8 space-y-8">
-        <DashboardCard
-          title="Assigned class cards"
-          description="Class totals use the wider fictional school dataset; roster rows below are a focused preview."
-        >
-          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-            {context.classes.map((classItem) => (
-              <article
-                key={classItem.id}
-                className="rounded-2xl border border-border bg-soft-white p-5"
-              >
-                <div className="flex size-11 items-center justify-center rounded-2xl bg-white text-curry-orange shadow-sm">
-                  <School aria-hidden="true" className="size-5" />
-                </div>
-                <h2 className="mt-5 text-xl font-extrabold text-charcoal">
-                  {classItem.name}
-                </h2>
-                <p className="mt-1 text-sm text-muted-grey">
-                  {classItem.level}
-                </p>
-                <p className="mt-5 text-3xl font-extrabold text-charcoal">
-                  {classItem.studentCount}
-                </p>
-                <p className="text-sm text-muted-grey">Enrolled students</p>
-                <div className="mt-4">
-                  <StatusBadge
-                    variant={
-                      classItem.classTeacher === context.staff.fullName
-                        ? "success"
-                        : "neutral"
-                    }
-                  >
-                    {classItem.classTeacher === context.staff.fullName
-                      ? "Class teacher"
-                      : "Subject teacher"}
-                  </StatusBadge>
-                </div>
-              </article>
-            ))}
-          </div>
-        </DashboardCard>
-
-        <DashboardCard
-          title="Student roster preview"
-          description="Only fictional sample students are displayed."
-        >
-          <DataTable
-            caption="Staff student roster"
-            columns={["Student", "Student ID", "Class", "Level", "Status"]}
-            rows={rosterRows}
-          />
-        </DashboardCard>
-      </div>
-    </>
-  );
+  return <AdminClassesView />;
 }

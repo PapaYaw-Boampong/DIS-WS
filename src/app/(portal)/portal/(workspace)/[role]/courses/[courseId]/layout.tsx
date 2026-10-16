@@ -43,7 +43,7 @@ export default async function CourseLayout({
             ? portalRoutes.staffCourses
             : portalRoutes.studentCourses
         }
-        className="mb-4 inline-flex items-center gap-2 text-sm font-bold text-deep-orange transition-colors hover:text-curry-orange"
+        className="mb-3 inline-flex items-center gap-2 text-sm font-bold text-deep-orange transition-colors hover:text-curry-orange"
       >
         <ArrowLeft aria-hidden="true" className="size-4" />
         All courses
@@ -52,11 +52,11 @@ export default async function CourseLayout({
       <DashboardHeader
         eyebrow={`${course.courseCode} · ${course.teacher}`}
         title={course.title}
-        description={`${course.term} · Canvas-inspired course workspace with modules, assignments, grades and people in one place.`}
+        description={`${course.term} · Modules, assignments, grades and people for this course in one place.`}
         badge="Mock LMS"
       />
 
-      <div className="mt-8 grid gap-6 xl:grid-cols-[14rem_minmax(0,1fr)]">
+      <div className="mt-5 grid gap-5 xl:grid-cols-[13rem_minmax(0,1fr)]">
         <CourseNav role={access.role} courseId={courseId} />
         <div className="min-w-0">{children}</div>
       </div>

@@ -107,7 +107,7 @@ export const portalRouteAccessPolicies = [
     status: "designed",
   },
   {
-    routePattern: "/portal/staff/classes",
+    routePattern: "/portal/staff/courses",
     owner: "staff",
     allowedRoles: ["staff"],
     ownershipRule:

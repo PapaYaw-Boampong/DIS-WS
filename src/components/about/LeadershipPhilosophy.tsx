@@ -2,10 +2,13 @@ import { ContentIcon } from "@/components/ui/ContentIcon";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { leadershipPhilosophy } from "@/data/about";
+import { FadedBackdrop } from "@/components/ui/FadedBackdrop";
+import { siteImages } from "@/lib/images";
 
 export function LeadershipPhilosophy() {
   return (
-    <section className="pattern-checker py-20 sm:py-24 lg:py-28">
+    <section className="relative isolate overflow-hidden bg-white py-20 sm:py-24 lg:py-28">
+      <FadedBackdrop image={siteImages.backdropLeadership} />
       <Container>
         <SectionHeader
           eyebrow="How We Lead"

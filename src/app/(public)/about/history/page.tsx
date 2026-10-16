@@ -7,6 +7,7 @@ import { CTASection } from "@/components/ui/CTASection";
 import { PageHero } from "@/components/ui/PageHero";
 import { aboutMetadata, historyHero } from "@/data/about";
 import { routes } from "@/lib/routes";
+import { siteImages } from "@/lib/images";
 
 export const metadata: Metadata = aboutMetadata.history;
 
@@ -25,6 +26,7 @@ export default function HistoryPage() {
       <HistoryLegacy />
       <RelatedAboutLinks excludeHref={routes.history} />
       <CTASection
+        backgroundImage={siteImages.ctaCorridor}
         title="Become part of the next chapter"
         description="Learn more about Divine or begin an admissions conversation with our school team."
         primaryLabel="Apply Now"

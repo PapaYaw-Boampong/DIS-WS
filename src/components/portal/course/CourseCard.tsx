@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
 
-import { ProgressMeter } from "@/components/portal/ProgressMeter";
 import { portalRoutes } from "@/lib/portal/routes";
 import type { CourseSummary, PortalRole } from "@/types/portal";
 
@@ -37,14 +36,7 @@ export function CourseCards({ courses, role }: CourseCardsProps) {
           <p className="mt-4 text-sm font-semibold text-charcoal">
             Teacher: {course.teacher}
           </p>
-          <div className="mt-5">
-            <ProgressMeter
-              label="Course progress"
-              value={course.progress}
-              detail={course.term}
-              tone={course.progress >= 65 ? "green" : "orange"}
-            />
-          </div>
+          <p className="mt-1 text-sm text-muted-grey">{course.term}</p>
           <Link
             href={portalRoutes.course(role, course.id)}
             className="mt-5 inline-flex min-h-10 w-fit items-center rounded-full border border-curry-orange px-4 text-sm font-bold text-deep-orange transition-colors hover:bg-soft-cream"

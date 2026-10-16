@@ -4,7 +4,7 @@ import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { MetricCard } from "@/components/portal/MetricCard";
-import { MockFeeItemForm } from "@/components/portal/MockFeeItemForm";
+import { FeeItemForm } from "@/components/portal/FeeItemForm";
 import { listFeeItems } from "@/lib/portal/data/finance";
 import {
   formatFeeCategory,
@@ -41,7 +41,7 @@ export async function AdminFeesView() {
           <DataTable caption="Admin fee item records" columns={["Fee", "Category", "Term", "Year", "Amount", "Due"]} rows={rows} />
         </DashboardCard>
         <DashboardCard title="Create fee item" description="Preview category, amount, term, and due date." className="h-fit">
-          <MockFeeItemForm />
+          <FeeItemForm />
         </DashboardCard>
       </div>
     </>

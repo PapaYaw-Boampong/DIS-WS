@@ -8,6 +8,8 @@ import {
   getPublishedCalendarTerms,
   getPublishedEvents,
 } from "@/lib/public-content";
+import { FadedBackdrop } from "@/components/ui/FadedBackdrop";
+import { siteImages } from "@/lib/images";
 
 // The academic term structure (accordion). Shown on the calendar page when no
 // school-calendar PDF has been published; the flipbook replaces it otherwise.
@@ -70,7 +72,8 @@ export async function CalendarEventsSection() {
   const calendarEvents = await getPublishedEvents();
 
   return (
-    <section className="pattern-checker py-20 sm:py-24 lg:py-28">
+    <section className="relative isolate overflow-hidden bg-white py-20 sm:py-24 lg:py-28">
+      <FadedBackdrop image={siteImages.backdropCalendar} />
       <Container>
         <SectionHeader
           eyebrow="School Community"

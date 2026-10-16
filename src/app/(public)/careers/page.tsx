@@ -10,6 +10,7 @@ import { PageHero } from "@/components/ui/PageHero";
 import { careersHero, careersMetadata } from "@/data/careers";
 import { school } from "@/data/school";
 import { routes } from "@/lib/routes";
+import { siteImages } from "@/lib/images";
 
 export const metadata: Metadata = careersMetadata;
 
@@ -26,6 +27,7 @@ export default function CareersPage() {
       <HowToApply />
       <CareerBenefits />
       <CTASection
+        backgroundImage={siteImages.ctaCorridor}
         title="Ready to apply?"
         description="Send your application, CV and a passport photograph to our hiring team. We look forward to hearing from you."
         primaryLabel="Email Your Application"

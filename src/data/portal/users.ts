@@ -30,6 +30,20 @@ export const mockPortalUsers = [
     status: "active",
   },
   {
+    id: "user-registry-001",
+    name: "Efua Adjei",
+    email: "registry.demo@divineschool.edu.gh",
+    role: "registry",
+    status: "active",
+  },
+  {
+    id: "user-developer-001",
+    name: "Kofi Ansah",
+    email: "developer.demo@divineschool.edu.gh",
+    role: "developer",
+    status: "active",
+  },
+  {
     id: "user-accounts-001",
     name: "Michael Addo",
     email: "accounts.demo@divineschool.edu.gh",

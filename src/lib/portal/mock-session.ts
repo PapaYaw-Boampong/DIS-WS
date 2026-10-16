@@ -3,7 +3,10 @@ import "server-only";
 import { cookies } from "next/headers";
 
 import { mockPortalUsers } from "@/data/portal/users";
-import { useRealPortalAuth } from "@/lib/portal/auth-config";
+import {
+  mockPortalAuthAllowed,
+  useRealPortalAuth,
+} from "@/lib/portal/auth-config";
 import { getRealPortalSession } from "@/lib/portal/real-session";
 import type { MockPortalSession } from "@/types/portal";
 
@@ -15,6 +18,13 @@ export const MOCK_PORTAL_SESSION_COOKIE = "dis_mock_portal_session";
 export async function getMockPortalSession(): Promise<MockPortalSession | null> {
   if (useRealPortalAuth) {
     return getRealPortalSession();
+  }
+
+  // The demo cookie carries no credential, so it must not be honoured on a
+  // production deployment even if one was set earlier or forged by hand.
+  // Blocking only the login form would leave the cookie itself as a way in.
+  if (!mockPortalAuthAllowed) {
+    return null;
   }
 
   const cookieStore = await cookies();

@@ -7,11 +7,15 @@ import { RelatedAboutLinks } from "@/components/about/RelatedAboutLinks";
 import { CTASection } from "@/components/ui/CTASection";
 import { PageHero } from "@/components/ui/PageHero";
 import { aboutMetadata } from "@/data/about";
+import { getPublishedLeadership } from "@/lib/public-content";
 import { routes } from "@/lib/routes";
+import { siteImages } from "@/lib/images";
 
 export const metadata: Metadata = aboutMetadata.leadership;
 
-export default function LeadershipPage() {
+export default async function LeadershipPage() {
+  const profiles = await getPublishedLeadership();
+
   return (
     <>
       <PageHero
@@ -21,10 +25,11 @@ export default function LeadershipPage() {
         variant="orange"
       />
       <LeadershipIntroduction />
-      <LeadershipGrid />
+      <LeadershipGrid profiles={profiles} />
       <LeadershipPhilosophy />
       <RelatedAboutLinks excludeHref={routes.leadership} />
       <CTASection
+        backgroundImage={siteImages.ctaEntrance}
         title="Start a conversation with Divine"
         description="Our school team is available to answer questions about learning, admissions and family support."
         primaryLabel="Contact Us"

@@ -5,6 +5,7 @@ import {
   FileSpreadsheet,
   Image as ImageIcon,
   ReceiptText,
+  ShieldCheck,
   TriangleAlert,
 } from "lucide-react";
 
@@ -36,6 +37,9 @@ const statusTabs: readonly { value: string; label: string }[] = [
   { value: "pending", label: "Pending" },
   { value: "verified", label: "Verified" },
   { value: "rejected", label: "Rejected" },
+  // Online checkouts that never completed. Kept visible so a parent asking
+  // "I paid and nothing happened" can be answered from this screen.
+  { value: "failed", label: "Not completed" },
 ];
 
 export async function AccountsPaymentsView({
@@ -55,7 +59,14 @@ export async function AccountsPaymentsView({
   const visiblePayments =
     activeStatus === "all"
       ? mockPayments
-      : mockPayments.filter((payment) => payment.status === activeStatus);
+      : activeStatus === "failed"
+        ? mockPayments.filter(
+            (payment) =>
+              payment.status === "failed" ||
+              payment.status === "abandoned" ||
+              payment.status === "initiated",
+          )
+        : mockPayments.filter((payment) => payment.status === activeStatus);
 
   const rows: readonly DataTableRow[] = visiblePayments
     .toSorted((a, b) => b.paidAt.localeCompare(a.paidAt))
@@ -73,8 +84,30 @@ export async function AccountsPaymentsView({
           formatPaymentMethod(payment.method),
           formatPortalDate(payment.paidAt.slice(0, 10)),
           formatPortalCurrency(payment.amount),
+          payment.provider ? (
+            <span
+              key={payment.id}
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-charcoal"
+            >
+              <ShieldCheck aria-hidden="true" className="size-3.5 text-emerald-600" />
+              {payment.provider === "paystack" ? "Paystack" : payment.provider}
+              {payment.providerChannel
+                ? ` · ${payment.providerChannel.replace(/_/g, " ")}`
+                : ""}
+            </span>
+          ) : (
+            <span key={payment.id} className="text-xs text-muted-grey">
+              Office
+            </span>
+          ),
           <FinancialStatusBadge key={payment.id} status={payment.status} />,
-          payment.status === "pending" ? (
+          // Provider-confirmed rows are read-only: reversing one is a refund
+          // through the provider, not a status edit in this table.
+          payment.provider ? (
+            <span key={payment.id} className="text-xs text-muted-grey">
+              Provider confirmed
+            </span>
+          ) : payment.status === "pending" ? (
             <PaymentRowActions key={payment.id} paymentId={payment.id} />
           ) : payment.status === "rejected" ? (
             <span key={payment.id} className="text-xs text-muted-grey">
@@ -132,7 +165,7 @@ export async function AccountsPaymentsView({
         <MetricCard label="Rejected" value={String(mockPayments.filter((item) => item.status === "rejected").length)} detail="Needs follow-up" icon={<TriangleAlert aria-hidden="true" className="size-5" />} />
       </div>
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(22rem,0.65fr)]">
-        <DashboardCard title="Payment transactions" description="MoMo and bank rows are matched via statement reconciliation; cash is verified instantly.">
+        <DashboardCard title="Payment transactions" description="Online payments are confirmed by the provider automatically; MoMo and bank rows are matched via statement reconciliation; cash is verified instantly.">
           <div className="mb-5 flex flex-wrap gap-2">
             {statusTabs.map((tab) => (
               <Link
@@ -154,7 +187,7 @@ export async function AccountsPaymentsView({
           </div>
           <DataTable
             caption="Accounts payment records"
-            columns={["Reference", "Student", "Category", "Method", "Date", "Amount", "Status", "Actions", "Attachment"]}
+            columns={["Reference", "Student", "Category", "Method", "Date", "Amount", "Source", "Status", "Actions", "Attachment"]}
             rows={rows}
           />
         </DashboardCard>

@@ -6,7 +6,7 @@ import { campusOverview } from "@/data/facilities";
 export function FacilitiesOverview() {
   return (
     <section className="bg-white py-20 sm:py-24 lg:py-28">
-      <Container className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+      <Container className="grid items-center gap-12 lg:grid-cols-[0.92fr_1.08fr] lg:gap-14">
         <div>
           <SectionHeader
             eyebrow={campusOverview.eyebrow}
@@ -22,9 +22,10 @@ export function FacilitiesOverview() {
         </div>
         <ImagePlaceholder
           label="Divine International School campus"
-          description="Placeholder for an approved photograph of the Divine International School campus."
+          description="The front entrance of the Divine International School campus."
           icon="school"
           aspect="landscape"
+          image={campusOverview.image}
         />
       </Container>
     </section>

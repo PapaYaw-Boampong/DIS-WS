@@ -13,7 +13,7 @@ export const mainNavigation = [
     children: [
       { label: "About Divine", href: routes.about },
       { label: "History", href: routes.history },
-      { label: "Principal's Message", href: routes.principalMessage },
+      { label: "A Message from Mummy", href: routes.mummyMessage },
       { label: "Leadership & Management", href: routes.leadership },
       { label: "Campus & Facilities", href: routes.facilities },
       { label: "Careers", href: routes.careers },

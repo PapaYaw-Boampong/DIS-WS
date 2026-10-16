@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   BarChart3,
   Bell,
@@ -39,6 +39,7 @@ type PortalSidebarProps = {
   readonly pathname: string;
   readonly roleLabel: string;
   readonly mobileOpen: boolean;
+  readonly preview: boolean;
   readonly onClose: () => void;
 };
 
@@ -62,6 +63,10 @@ const navigationIcons: Record<PortalNavigationIcon, LucideIcon> = {
 
 const COLLAPSE_KEY = "dis-portal-sidebar-collapsed";
 
+// The expanded rail folds itself back once it has been left alone this long —
+// no pointer movement, focus or key press inside the sidebar.
+const IDLE_COLLAPSE_MS = 15_000;
+
 function isNavigationItemActive(
   item: PortalNavigationItem,
   pathname: string,
@@ -73,14 +78,38 @@ function isNavigationItemActive(
   );
 }
 
+// Planned entries (no href) are a preview-build signpost. Outside the preview
+// the navigation only lists pages that actually open.
+function visibleItems(
+  items: readonly PortalNavigationItem[],
+  preview: boolean,
+): readonly PortalNavigationItem[] {
+  if (preview) {
+    return items;
+  }
+
+  return items
+    .map((item) => ({
+      ...item,
+      children: item.children?.filter((child) => Boolean(child.href)),
+    }))
+    .filter((item) => Boolean(item.href) || Boolean(item.children?.length));
+}
+
 export function PortalSidebar({
   items,
   pathname,
   roleLabel,
   mobileOpen,
+  preview,
   onClose,
 }: PortalSidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
+  // Groups the user has opened or closed by hand. Anything absent falls back to
+  // "open when it holds the current page".
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+  const railRef = useRef<HTMLElement>(null);
+  const navigationItems = visibleItems(items, preview);
 
   useEffect(() => {
     // Reading a persisted UI preference needs an effect (no localStorage in SSR).
@@ -88,12 +117,67 @@ export function PortalSidebar({
     setCollapsed(window.localStorage.getItem(COLLAPSE_KEY) === "true");
   }, []);
 
+  // Fold the desktop rail back to icons when it is left idle, giving the page
+  // its width back. Any interaction inside the sidebar restarts the countdown.
+  useEffect(() => {
+    const rail = railRef.current;
+
+    if (
+      collapsed ||
+      !rail ||
+      !window.matchMedia("(min-width: 1024px)").matches
+    ) {
+      return;
+    }
+
+    let timer = 0;
+
+    function collapseRail() {
+      window.localStorage.setItem(COLLAPSE_KEY, "true");
+      setCollapsed(true);
+    }
+
+    function restart() {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(collapseRail, IDLE_COLLAPSE_MS);
+    }
+
+    const events = [
+      "pointerenter",
+      "pointermove",
+      "pointerdown",
+      "focusin",
+      "keydown",
+    ] as const;
+
+    restart();
+    events.forEach((event) => rail.addEventListener(event, restart));
+
+    return () => {
+      window.clearTimeout(timer);
+      events.forEach((event) => rail.removeEventListener(event, restart));
+    };
+  }, [collapsed, pathname]);
+
+  function applyCollapsed(next: boolean) {
+    window.localStorage.setItem(COLLAPSE_KEY, String(next));
+    setCollapsed(next);
+  }
+
   function toggleCollapsed() {
-    setCollapsed((prev) => {
-      const next = !prev;
-      window.localStorage.setItem(COLLAPSE_KEY, String(next));
-      return next;
-    });
+    applyCollapsed(!collapsed);
+  }
+
+  // From the collapsed rail a group icon does both jobs at once: the rail slides
+  // open and that group is already unfolded when it lands, so the children are
+  // one continuous motion rather than an expand-then-hunt.
+  function openGroupFromRail(label: string) {
+    applyCollapsed(false);
+    setOpenGroups((prev) => ({ ...prev, [label]: true }));
+  }
+
+  function toggleGroup(label: string, currentlyOpen: boolean) {
+    setOpenGroups((prev) => ({ ...prev, [label]: !currentlyOpen }));
   }
 
   // `compact` collapses the desktop rail to icons only; the mobile drawer is
@@ -142,19 +226,26 @@ export function PortalSidebar({
             <p className="text-xs font-bold tracking-[0.16em] text-curry-orange uppercase">
               {roleLabel} Portal
             </p>
-            <p className="mt-2 text-sm text-white/55">Mock foundation preview</p>
+            {preview ? (
+              <p className="mt-2 text-sm text-white/55">
+                Mock foundation preview
+              </p>
+            ) : null}
           </div>
         )}
 
         <nav
+          // Remounting on the compact flip re-runs the reveal, so labels ease in
+          // with the widening rail instead of snapping into place.
+          key={compact ? "rail-compact" : "rail-full"}
           className={cn(
-            "scrollbar-none flex-1 overflow-y-auto pb-6",
+            "scrollbar-none portal-rail-reveal flex-1 overflow-y-auto pb-6",
             compact ? "mt-4 px-2" : "mt-6 px-3",
           )}
           aria-label="Portal"
         >
           <ul className="space-y-1.5">
-            {items.map((item) => {
+            {navigationItems.map((item) => {
               const Icon = navigationIcons[item.icon];
               const active = isNavigationItemActive(item, pathname);
 
@@ -187,7 +278,7 @@ export function PortalSidebar({
                     <li key={item.label}>
                       <button
                         type="button"
-                        onClick={() => setCollapsed(false)}
+                        onClick={() => openGroupFromRail(item.label)}
                         title={item.label}
                         aria-label={`${item.label} (expand menu)`}
                         className={cn(
@@ -214,13 +305,22 @@ export function PortalSidebar({
                 );
               }
 
+              const groupOpen = openGroups[item.label] ?? active;
+              const groupId = `portal-nav-group-${item.label
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")}`;
+
               return (
                 <li key={item.label}>
                   {item.children?.length ? (
-                    <details open={active} className="group">
-                      <summary
+                    <div>
+                      <button
+                        type="button"
+                        aria-expanded={groupOpen}
+                        aria-controls={groupId}
+                        onClick={() => toggleGroup(item.label, groupOpen)}
                         className={cn(
-                          "flex min-h-12 cursor-pointer list-none items-center gap-3 rounded-2xl px-4 text-sm font-semibold transition-colors [&::-webkit-details-marker]:hidden",
+                          "flex min-h-12 w-full cursor-pointer items-center gap-3 rounded-2xl px-4 text-left text-sm font-semibold transition-colors",
                           active
                             ? "bg-white/10 text-white"
                             : "text-white/75 hover:bg-white/10 hover:text-white",
@@ -230,51 +330,71 @@ export function PortalSidebar({
                         <span className="flex-1">{item.label}</span>
                         <ChevronDown
                           aria-hidden="true"
-                          className="size-4 shrink-0 transition-transform group-open:rotate-180"
+                          className={cn(
+                            "size-4 shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+                            groupOpen && "rotate-180",
+                          )}
                         />
-                      </summary>
-                      <ul className="mt-1 space-y-1 pl-8">
-                        {item.children.map((child) => {
-                          const ChildIcon = navigationIcons[child.icon];
-                          const childActive = child.href === pathname;
+                      </button>
+                      {/* 0fr → 1fr grid rows give the child list a real height
+                          transition, which `details` cannot do. */}
+                      <div
+                        id={groupId}
+                        inert={!groupOpen}
+                        className={cn(
+                          "grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+                          groupOpen
+                            ? "grid-rows-[1fr] opacity-100"
+                            : "grid-rows-[0fr] opacity-0",
+                        )}
+                      >
+                        <ul className="space-y-1 overflow-hidden pt-1 pl-8">
+                          {item.children.map((child) => {
+                            const ChildIcon = navigationIcons[child.icon];
+                            const childActive = child.href === pathname;
 
-                          return (
-                            <li key={child.label}>
-                              {child.href ? (
-                                <Link
-                                  href={child.href}
-                                  onClick={onClose}
-                                  aria-current={childActive ? "page" : undefined}
-                                  className={cn(
-                                    "flex min-h-10 items-center gap-2 rounded-xl px-3 text-xs font-bold transition-colors",
-                                    childActive
-                                      ? "bg-curry-orange text-white"
-                                      : "text-white/60 hover:bg-white/10 hover:text-white",
-                                  )}
-                                >
-                                  <ChildIcon
-                                    aria-hidden="true"
-                                    className="size-4 shrink-0"
-                                  />
-                                  {child.label}
-                                </Link>
-                              ) : (
-                                <span
-                                  className="flex min-h-10 items-center gap-2 rounded-xl px-3 text-xs font-medium text-white/35"
-                                  title={`Planned for portal Phase ${child.phase}`}
-                                >
-                                  <ChildIcon
-                                    aria-hidden="true"
-                                    className="size-4 shrink-0"
-                                  />
-                                  <span className="flex-1">{child.label}</span>
-                                </span>
-                              )}
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </details>
+                            return (
+                              <li key={child.label}>
+                                {child.href ? (
+                                  <Link
+                                    href={child.href}
+                                    onClick={onClose}
+                                    aria-current={
+                                      childActive ? "page" : undefined
+                                    }
+                                    className={cn(
+                                      "flex min-h-10 items-center gap-2 rounded-xl px-3 text-xs font-bold transition-colors",
+                                      childActive
+                                        ? "bg-curry-orange text-white"
+                                        : "text-white/60 hover:bg-white/10 hover:text-white",
+                                    )}
+                                  >
+                                    <ChildIcon
+                                      aria-hidden="true"
+                                      className="size-4 shrink-0"
+                                    />
+                                    {child.label}
+                                  </Link>
+                                ) : (
+                                  <span
+                                    className="flex min-h-10 items-center gap-2 rounded-xl px-3 text-xs font-medium text-white/35"
+                                    title={`Planned for portal Phase ${child.phase}`}
+                                  >
+                                    <ChildIcon
+                                      aria-hidden="true"
+                                      className="size-4 shrink-0"
+                                    />
+                                    <span className="flex-1">
+                                      {child.label}
+                                    </span>
+                                  </span>
+                                )}
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    </div>
                   ) : item.href ? (
                     <Link
                       href={item.href}
@@ -322,7 +442,9 @@ export function PortalSidebar({
             title={compact ? "Expand sidebar" : "Collapse sidebar"}
             className={cn(
               "hidden min-h-11 items-center gap-2 rounded-2xl border border-white/15 text-sm font-semibold text-white/80 transition-colors hover:bg-white/10 hover:text-white lg:flex",
-              compact ? "w-full justify-center px-0" : "w-full justify-center px-4",
+              compact
+                ? "w-full justify-center px-0"
+                : "w-full justify-center px-4",
             )}
           >
             {compact ? (
@@ -356,8 +478,9 @@ export function PortalSidebar({
   return (
     <>
       <aside
+        ref={railRef}
         className={cn(
-          "hidden h-screen shrink-0 bg-slate-900 transition-[width] duration-200 lg:sticky lg:top-0 lg:block",
+          "hidden h-screen shrink-0 overflow-hidden bg-slate-900 transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none lg:sticky lg:top-0 lg:block",
           collapsed ? "w-20" : "w-72",
         )}
       >

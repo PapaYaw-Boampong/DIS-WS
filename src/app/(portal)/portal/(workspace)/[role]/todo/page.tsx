@@ -15,6 +15,7 @@ import { MetricCard } from "@/components/portal/MetricCard";
 import { StatusBadge } from "@/components/portal/StatusBadge";
 import { formatPortalDate } from "@/lib/portal/format";
 import { getMockStudentPortalContext } from "@/lib/portal/mock-student";
+import { portalPreviewMode } from "@/lib/portal/preview";
 import { isPortalRole } from "@/lib/portal/roles";
 import { portalRoutes } from "@/lib/portal/routes";
 import type { AssignmentSummary } from "@/types/portal";
@@ -133,9 +134,9 @@ export default async function StudentTodoPage({
           icon={<CheckCircle2 aria-hidden="true" className="size-5" />}
         />
         <MetricCard
-          label="Mode"
-          value="Preview"
-          detail="No submissions are saved"
+          label="Courses"
+          value={String(context.courses.length)}
+          detail="Enrolled this term"
           icon={<ClipboardCheck aria-hidden="true" className="size-5" />}
         />
       </div>
@@ -193,16 +194,18 @@ export default async function StudentTodoPage({
             </Link>
           </DashboardCard>
 
-          <DashboardCard
-            title="Preview boundary"
-            description="The To Do list is display-only in this frontend phase."
-          >
-            <p className="text-sm leading-6 text-muted-grey">
-              Marking items complete, uploading submissions and sending
-              messages will require the later backend, storage and notification
-              services.
-            </p>
-          </DashboardCard>
+          {portalPreviewMode ? (
+            <DashboardCard
+              title="Preview boundary"
+              description="The To Do list is display-only in this frontend phase."
+            >
+              <p className="text-sm leading-6 text-muted-grey">
+                Marking items complete, uploading submissions and sending
+                messages will require the later backend, storage and
+                notification services.
+              </p>
+            </DashboardCard>
+          ) : null}
         </div>
       </div>
     </>

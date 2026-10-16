@@ -6,7 +6,7 @@ import { academicOverview } from "@/data/academics";
 export function AcademicOverview() {
   return (
     <section className="bg-white py-20 sm:py-24 lg:py-28">
-      <Container className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
+      <Container className="grid items-center gap-12 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16">
         <div>
           <SectionHeader
             eyebrow={academicOverview.eyebrow}

@@ -2,7 +2,7 @@ export const routes = {
   home: "/",
   about: "/about",
   history: "/about/history",
-  principalMessage: "/about/principal-message",
+  mummyMessage: "/about/message-from-mummy",
   leadership: "/about/leadership",
   academics: "/academics",
   academicLevel: (level: string) => `/academics/${level}`,

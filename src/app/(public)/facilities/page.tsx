@@ -10,6 +10,7 @@ import {
   facilitiesMetadata,
 } from "@/data/facilities";
 import { routes } from "@/lib/routes";
+import { siteImages } from "@/lib/images";
 
 export const metadata: Metadata = facilitiesMetadata;
 
@@ -20,6 +21,8 @@ export default function FacilitiesPage() {
         eyebrow={facilitiesHero.eyebrow}
         title={facilitiesHero.title}
         description={facilitiesHero.description}
+        images={facilitiesHero.images}
+        preloadImage
         variant="orange"
       />
       <FacilitiesOverview />
@@ -41,6 +44,7 @@ export default function FacilitiesPage() {
       />
       */}
       <CTASection
+        backgroundImage={siteImages.ctaCourtyard}
         title="Come and see Divine for yourself"
         description="Arrange a visit or speak with our team to learn more about our campus, facilities and daily school life."
         primaryLabel="Apply to Divine"

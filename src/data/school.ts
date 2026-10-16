@@ -7,7 +7,10 @@ export const school = {
   phoneDisplay: "+233 0540597042",
   phoneHref: "tel:+2330540597042",
   whatsappNumber: "233540597042",
-  email: "info@divineschool.edu.gh",
+  // General enquiries; finance and admissions have their own inboxes.
+  email: "info@dism.edu.gh",
+  financeEmail: "finance@dism.edu.gh",
+  admissionsEmail: "admissions@dism.edu.gh",
   location: "Accra, Ghana",
   hours: "Monday - Friday: 8:00am - 4:00pm",
 } as const;

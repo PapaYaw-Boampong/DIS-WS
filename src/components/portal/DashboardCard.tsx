@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { previewText } from "@/lib/portal/preview";
 import { cn } from "@/lib/utils";
 
 type DashboardCardProps = {
@@ -17,6 +18,8 @@ export function DashboardCard({
   className,
   action,
 }: DashboardCardProps) {
+  const copy = previewText(description);
+
   return (
     <section
       className={cn(
@@ -27,10 +30,8 @@ export function DashboardCard({
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-charcoal">{title}</h2>
-          {description ? (
-            <p className="mt-2 text-sm leading-6 text-muted-grey">
-              {description}
-            </p>
+          {copy ? (
+            <p className="mt-2 text-sm leading-6 text-muted-grey">{copy}</p>
           ) : null}
         </div>
         {action ? <div className="shrink-0">{action}</div> : null}

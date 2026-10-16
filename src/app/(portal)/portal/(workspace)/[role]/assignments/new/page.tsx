@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
-import { MockAssignmentForm } from "@/components/portal/MockAssignmentForm";
+import { AssignmentForm } from "@/components/portal/AssignmentForm";
 import { getMockStaffPortalContext } from "@/lib/portal/mock-staff";
 import { portalRoutes } from "@/lib/portal/routes";
 
@@ -33,8 +33,8 @@ export default async function NewAssignmentPage() {
       <DashboardHeader
         eyebrow="Class work"
         title="Create assignment"
-        description="Prepare a new assignment for one of your classes. This is a preview and does not publish work to students."
-        badge="Preview only"
+        description="Prepare a new assignment for one of your classes. Once created, it appears in the students' To Do list and on the course page."
+        badge="Class work"
       />
 
       <div className="mt-8 max-w-2xl">
@@ -42,7 +42,7 @@ export default async function NewAssignmentPage() {
           title="New assignment"
           description="Set the title, class, subject, instructions and due date."
         >
-          <MockAssignmentForm classes={context.classes} />
+          <AssignmentForm classes={context.classes} />
         </DashboardCard>
       </div>
     </>

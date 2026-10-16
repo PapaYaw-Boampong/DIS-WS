@@ -6,7 +6,7 @@ import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { FinancialStatusBadge } from "@/components/portal/FinancialStatusBadge";
-import { MockPaymentForm } from "@/components/portal/MockPaymentForm";
+import { WalletTopUpLink } from "@/components/portal/WalletTopUpLink";
 import { WardFilterSelect } from "@/components/portal/WardFilterSelect";
 import { listFeeItems } from "@/lib/portal/data/finance";
 import {
@@ -192,7 +192,7 @@ export default async function TransportWalletPage({
 
           <DashboardCard
             title="Transport wallet activity"
-            description="Top-ups and deductions are illustrative placeholders for future transport records."
+            description="Top-ups appear here once the payment is verified; deductions come from the transport fee schedule."
           >
             <DataTable
               caption="Transport wallet activity"
@@ -203,20 +203,16 @@ export default async function TransportWalletPage({
         </div>
 
         <DashboardCard
-          title="Advance transport payment"
-          description="Prepare a transport top-up. Charging and reconciliation still require the backend payment API."
+          title="Top up the transport wallet"
+          description="A transport top-up is paid the same way as any school payment."
           className="h-fit"
         >
-          <MockPaymentForm
-            students={selectedStudents.map((student) => ({
-              id: student.id,
-              name: student.fullName,
-            }))}
-            categories={[{ value: "transport", label: "Transport Advance" }]}
-            defaultCategory="transport"
-            title="Transport top-up"
-            notice="Transport top-up checkout is backend-gated. No transport wallet or invoice balance changes until a future provider callback is verified by the Render API."
-            submitLabel="Start transport payment"
+          <WalletTopUpLink
+            role="parent"
+            category="transport"
+            studentId={selectedStudents[0]?.id}
+            label="Top up transport wallet"
+            description="Pay by Mobile Money, bank deposit or card. The transport balance and its activity list update automatically once the payment is verified."
           />
           <div className="mt-6 rounded-2xl border border-border bg-soft-white p-4 text-sm leading-6 text-muted-grey">
             <Bus

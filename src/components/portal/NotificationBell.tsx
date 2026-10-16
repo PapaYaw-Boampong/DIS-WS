@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { Bell } from "lucide-react";
 
+import { setNotificationRead } from "@/app/(portal)/portal/actions/notifications";
 import { formatPortalDate } from "@/lib/portal/format";
 import { portalRoutes } from "@/lib/portal/routes";
 import type { PortalNotification, PortalRole } from "@/types/portal";
@@ -15,9 +16,29 @@ type NotificationBellProps = {
 
 export function NotificationBell({ role, notifications }: NotificationBellProps) {
   const [open, setOpen] = useState(false);
+  const [readIds, setReadIds] = useState<ReadonlySet<string>>(
+    () =>
+      new Set(notifications.filter((item) => item.read).map((item) => item.id)),
+  );
+  const [, startTransition] = useTransition();
   const containerRef = useRef<HTMLDivElement>(null);
-  const unread = notifications.filter((item) => !item.read).length;
+  const unread = notifications.filter((item) => !readIds.has(item.id)).length;
   const recent = notifications.slice(0, 4);
+
+  // Opening an announcement from the bell marks it read, matching the
+  // announcements page.
+  function openAnnouncement(id: string) {
+    setOpen(false);
+
+    if (readIds.has(id)) {
+      return;
+    }
+
+    setReadIds((prev) => new Set(prev).add(id));
+    startTransition(() => {
+      void setNotificationRead(id, true);
+    });
+  }
 
   useEffect(() => {
     if (!open) {
@@ -56,12 +77,12 @@ export function NotificationBell({ role, notifications }: NotificationBellProps)
         aria-haspopup="true"
         aria-expanded={open}
         aria-label={
-          unread > 0 ? `${unread} unread notifications` : "Notifications"
+          unread > 0 ? `${unread} unread announcements` : "Announcements"
         }
         className="relative inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-soft-cream px-3 text-sm font-semibold text-deep-orange transition-colors hover:bg-white sm:px-4"
       >
         <Bell aria-hidden="true" className="size-4" />
-        <span className="hidden sm:inline">Notifications</span>
+        <span className="hidden sm:inline">Announcements</span>
         {unread > 0 ? (
           <span className="absolute -top-1 -right-1 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-curry-orange px-1.5 text-[0.65rem] font-extrabold text-white ring-2 ring-white">
             {unread}
@@ -75,38 +96,41 @@ export function NotificationBell({ role, notifications }: NotificationBellProps)
           className="absolute right-0 z-40 mt-2 w-80 max-w-[calc(100vw-2rem)] rounded-2xl border border-border bg-white p-3 shadow-card"
         >
           <p className="px-2 py-1 text-xs font-bold tracking-[0.12em] text-muted-grey uppercase">
-            Notifications
+            Announcements
           </p>
           {recent.length > 0 ? (
             <ul className="mt-1 space-y-1">
               {recent.map((item) => (
-                <li
-                  key={item.id}
-                  className={
-                    item.read
-                      ? "rounded-xl px-2 py-2"
-                      : "rounded-xl bg-soft-cream px-2 py-2"
-                  }
-                >
-                  <p className="text-sm font-bold text-charcoal">
-                    {item.title}
-                  </p>
-                  <p className="mt-0.5 line-clamp-2 text-xs leading-5 text-muted-grey">
-                    {item.body}
-                  </p>
-                  <p className="mt-1 text-[0.7rem] font-semibold text-muted-grey">
-                    {formatPortalDate(item.createdAt.slice(0, 10))}
-                  </p>
+                <li key={item.id}>
+                  <Link
+                    href={portalRoutes.announcements(role)}
+                    onClick={() => openAnnouncement(item.id)}
+                    className={
+                      readIds.has(item.id)
+                        ? "block rounded-xl px-2 py-2 transition-colors hover:bg-soft-white"
+                        : "block rounded-xl bg-soft-cream px-2 py-2 transition-colors hover:bg-soft-white"
+                    }
+                  >
+                    <p className="text-sm font-bold text-charcoal">
+                      {item.title}
+                    </p>
+                    <p className="mt-0.5 line-clamp-2 text-xs leading-5 text-muted-grey">
+                      {item.body}
+                    </p>
+                    <p className="mt-1 text-[0.7rem] font-semibold text-muted-grey">
+                      {formatPortalDate(item.createdAt.slice(0, 10))}
+                    </p>
+                  </Link>
                 </li>
               ))}
             </ul>
           ) : (
             <p className="px-2 py-4 text-sm text-muted-grey">
-              No notifications yet.
+              No announcements yet.
             </p>
           )}
           <Link
-            href={portalRoutes.notifications(role)}
+            href={portalRoutes.announcements(role)}
             onClick={() => setOpen(false)}
             className="mt-2 block rounded-xl bg-curry-orange px-3 py-2 text-center text-sm font-bold text-white transition-colors hover:bg-deep-orange"
           >

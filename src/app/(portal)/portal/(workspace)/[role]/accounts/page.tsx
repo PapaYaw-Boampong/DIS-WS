@@ -7,12 +7,12 @@ import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { MetricCard } from "@/components/portal/MetricCard";
 import { listUserAccounts } from "@/lib/portal/data/accounts";
-import { getMockRoleSession } from "@/lib/portal/mock-role";
+import { getAdminAreaSession } from "@/lib/portal/mock-role";
 
 export const metadata: Metadata = { title: "User Accounts" };
 
 export default async function AccountsPage() {
-  const session = await getMockRoleSession("admin");
+  const session = await getAdminAreaSession("developer");
   if (!session) {
     notFound();
   }

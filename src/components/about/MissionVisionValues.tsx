@@ -4,10 +4,12 @@ import { useState } from "react";
 
 import { ContentIcon } from "@/components/ui/ContentIcon";
 import { Container } from "@/components/ui/Container";
+import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { aboutValues, coreValues } from "@/data/about";
 import { siteImages } from "@/lib/images";
 import { cn } from "@/lib/utils";
+import type { SiteImage } from "@/types/content";
 
 const tabs = [
   {
@@ -15,14 +17,14 @@ const tabs = [
     label: "Our Mission",
     icon: aboutValues[0].icon,
     description: aboutValues[0].description,
-    backgroundImage: aboutValues[0].image,
+    image: aboutValues[0].image,
   },
   {
     id: "vision",
     label: "Our Vision",
     icon: aboutValues[1].icon,
     description: aboutValues[1].description,
-    backgroundImage: aboutValues[1].image,
+    image: aboutValues[1].image,
   },
   {
     id: "values",
@@ -30,9 +32,15 @@ const tabs = [
     icon: "heart",
     description:
       "Faith, integrity, respect, excellence, responsibility and service shape how our community learns, works and treats one another every day.",
-    backgroundImage: siteImages.aboutCommunity,
+    image: siteImages.mvvValues,
   },
-] as const;
+] as const satisfies readonly {
+  id: string;
+  label: string;
+  icon: string;
+  description: string;
+  image: SiteImage;
+}[];
 
 export function MissionVisionValues() {
   const [activeId, setActiveId] = useState<(typeof tabs)[number]["id"]>(
@@ -41,32 +49,14 @@ export function MissionVisionValues() {
   const active = tabs.find((tab) => tab.id === activeId) ?? tabs[0];
 
   return (
-    <section className="relative overflow-hidden py-20 sm:py-24 lg:py-28">
-      {/* The selected principle's photo IS the section background; it cross-fades
-          as the selection changes. No checker is merged over it, and the content
-          card carries only text + infographic (never a duplicate of the photo). */}
-      <div aria-hidden="true" className="absolute inset-0">
-        {tabs.map((tab) => (
-          <div
-            key={tab.id}
-            className={cn(
-              "absolute inset-0 bg-cover bg-center transition-opacity duration-700 ease-out motion-reduce:transition-none",
-              tab.id === activeId ? "opacity-100" : "opacity-0",
-            )}
-            style={{ backgroundImage: `url(${tab.backgroundImage.src.src})` }}
-          />
-        ))}
-        {/* Light wash for legibility of the header and cards over the photo. */}
-        <div className="absolute inset-0 bg-white/55" />
-      </div>
-
-      <Container className="relative">
+    <section className="bg-soft-cream py-20 sm:py-24 lg:py-28">
+      <Container>
         <SectionHeader
           eyebrow="Our Foundation"
           title="Mission, vision and values"
         />
 
-        <div className="mt-12 grid gap-6 lg:grid-cols-[0.42fr_0.58fr] lg:gap-10">
+        <div className="mt-12 grid gap-6 lg:grid-cols-[0.38fr_0.62fr] lg:gap-10">
           <div
             role="tablist"
             aria-orientation="vertical"
@@ -85,30 +75,33 @@ export function MissionVisionValues() {
                   aria-selected={isActive}
                   aria-controls={`mvv-panel-${tab.id}`}
                   className={cn(
-                    "flex items-center gap-4 rounded-card border p-5 text-left transition-all duration-200",
+                    "flex items-center gap-4 rounded-card border bg-white p-3 pr-5 text-left transition-all duration-200",
                     isActive
-                      ? "-translate-y-0.5 border-curry-orange bg-white shadow-card-strong"
-                      : "mvv-breath border-border bg-white/85 backdrop-blur-sm hover:border-curry-orange/60 hover:bg-white hover:shadow-card",
+                      ? "-translate-y-0.5 border-curry-orange shadow-card-strong"
+                      : "mvv-breath border-border hover:border-curry-orange/60 hover:shadow-card",
                   )}
                   onClick={() => setActiveId(tab.id)}
                 >
                   <span
                     className={cn(
-                      "flex size-11 shrink-0 items-center justify-center rounded-full text-sm font-extrabold transition-colors",
-                      isActive
-                        ? "bg-curry-orange text-white"
-                        : "bg-soft-cream text-curry-orange",
+                      "relative size-20 shrink-0 overflow-hidden rounded-2xl transition-[box-shadow] duration-200",
+                      isActive && "ring-4 ring-curry-orange/25",
                     )}
                   >
-                    {String(index + 1).padStart(2, "0")}
+                    <ResponsiveImage image={tab.image} sizes="80px" />
                   </span>
-                  <span className="flex items-center gap-2">
-                    <ContentIcon
-                      name={tab.icon}
-                      className="size-5 text-curry-orange"
-                    />
-                    <span className="text-lg font-bold text-charcoal">
-                      {tab.label}
+                  <span className="min-w-0">
+                    <span className="block text-xs font-extrabold tracking-[0.16em] text-curry-orange">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span className="mt-1 flex items-center gap-2">
+                      <ContentIcon
+                        name={tab.icon}
+                        className="size-5 shrink-0 text-curry-orange"
+                      />
+                      <span className="text-lg font-bold text-charcoal">
+                        {tab.label}
+                      </span>
                     </span>
                   </span>
                 </button>
@@ -116,33 +109,67 @@ export function MissionVisionValues() {
             })}
           </div>
 
-          <div
+          <article
             role="tabpanel"
             id={`mvv-panel-${active.id}`}
             aria-labelledby={`mvv-tab-${active.id}`}
-            className="rounded-card border border-border bg-white p-6 shadow-card sm:p-8"
+            className="overflow-hidden rounded-card border border-border bg-white shadow-card-strong"
           >
-            <h3 className="font-display text-2xl font-semibold text-charcoal sm:text-3xl">
-              {active.label}
-            </h3>
-            <p className="mt-4 text-lg leading-8 text-muted-grey">
-              {active.description}
-            </p>
-            {active.id === "values" ? (
-              <ul className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3">
-                {coreValues.map((value) => (
-                  <li key={value.label} className="flex items-center gap-3">
-                    <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-soft-cream text-curry-orange">
-                      <ContentIcon name={value.icon} className="size-6" />
-                    </span>
-                    <span className="font-bold text-charcoal">
-                      {value.label}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-          </div>
+            <div className="relative aspect-[16/9] overflow-hidden bg-soft-cream">
+              {/* All three photos stay mounted so switching cross-fades. */}
+              {tabs.map((tab) => (
+                <div
+                  key={tab.id}
+                  aria-hidden={tab.id !== activeId || undefined}
+                  className={cn(
+                    "absolute inset-0 transition-opacity duration-700 ease-out motion-reduce:transition-none",
+                    tab.id === activeId ? "opacity-100" : "opacity-0",
+                  )}
+                >
+                  <ResponsiveImage
+                    image={tab.image}
+                    sizes="(min-width: 1024px) 60vw, 100vw"
+                  />
+                </div>
+              ))}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 bg-gradient-to-t from-charcoal/85 via-charcoal/20 to-transparent"
+              />
+              <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 p-6 sm:p-8">
+                <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-curry-orange text-white">
+                  <ContentIcon name={active.icon} className="size-6" />
+                </span>
+                <h3 className="font-display text-3xl font-semibold text-white sm:text-4xl">
+                  {active.label}
+                </h3>
+              </div>
+            </div>
+
+            <div className="p-6 sm:p-8">
+              <p className="border-l-4 border-curry-orange pl-5 text-lg leading-8 text-charcoal sm:text-xl sm:leading-9">
+                {active.description}
+              </p>
+              {active.id === "values" ? (
+                <ul className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3">
+                  {coreValues.map((value) => (
+                    <li
+                      key={value.label}
+                      className="flex items-center gap-3 rounded-2xl bg-soft-cream px-4 py-3"
+                    >
+                      <ContentIcon
+                        name={value.icon}
+                        className="size-5 shrink-0 text-curry-orange"
+                      />
+                      <span className="font-bold text-charcoal">
+                        {value.label}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+          </article>
         </div>
       </Container>
     </section>

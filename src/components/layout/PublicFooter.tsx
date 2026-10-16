@@ -69,18 +69,22 @@ export function PublicFooter() {
                 {school.location}
               </Link>
             </li>
-            <li>
-              <a
-                href={`mailto:${school.email}`}
-                className="flex items-start gap-2 transition-colors hover:text-curry-orange"
-              >
-                <Mail
-                  aria-hidden="true"
-                  className="mt-0.5 size-4 shrink-0 text-curry-orange"
-                />
-                <span className="break-all">{school.email}</span>
-              </a>
-            </li>
+            {[school.email, school.admissionsEmail, school.financeEmail].map(
+              (email) => (
+                <li key={email}>
+                  <a
+                    href={`mailto:${email}`}
+                    className="flex items-start gap-2 transition-colors hover:text-curry-orange"
+                  >
+                    <Mail
+                      aria-hidden="true"
+                      className="mt-0.5 size-4 shrink-0 text-curry-orange"
+                    />
+                    <span className="break-all">{email}</span>
+                  </a>
+                </li>
+              ),
+            )}
             <li>
               <a
                 href={school.phoneHref}

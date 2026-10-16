@@ -7,6 +7,7 @@ import { CTASection } from "@/components/ui/CTASection";
 import { PageHero } from "@/components/ui/PageHero";
 import { aboutHero, aboutMetadata } from "@/data/about";
 import { routes } from "@/lib/routes";
+import { siteImages } from "@/lib/images";
 
 export const metadata: Metadata = aboutMetadata.overview;
 
@@ -25,6 +26,7 @@ export default function AboutPage() {
       <MissionVisionValues />
       <CultureSection />
       <CTASection
+        backgroundImage={siteImages.ctaClassroomBlock}
         title="Discover a school community built around your child"
         description="Speak with our team about admissions, learning and what families can expect from the Divine experience."
         primaryLabel="Apply to Divine"

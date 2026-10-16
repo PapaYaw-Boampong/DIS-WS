@@ -74,6 +74,49 @@ export async function listCmsEvents(): Promise<readonly CmsEventPost[]> {
   ).events ?? [];
 }
 
+export type CmsPhotoAlbum = {
+  readonly id: string;
+  readonly title: string;
+  readonly description: string;
+  readonly occasionLabel: string;
+  readonly albumUrl: string;
+  readonly provider: string;
+  readonly imageId?: string | null;
+  readonly imageObjectKey?: string | null;
+  readonly imageAlt?: string | null;
+  readonly status: "draft" | "published";
+  readonly position: number;
+};
+
+export async function listCmsPhotoAlbums(): Promise<readonly CmsPhotoAlbum[]> {
+  return (
+    await portalApiGet<{ albums?: CmsPhotoAlbum[] }>("/cms/photo-albums", {})
+  ).albums ?? [];
+}
+
+// A registry Staff record with its public-website profile. Name, staff ID and
+// status come from the registry and are read-only here.
+export type CmsLeader = CmsImageFields & {
+  readonly id: string;
+  readonly fullName: string;
+  readonly staffId: string;
+  readonly title: string;
+  readonly status: string;
+  readonly department: string;
+  readonly showOnWebsite: boolean;
+  readonly websitePosition: number;
+  readonly publicTitle: string;
+  readonly publicRole: string;
+  readonly publicBio: string;
+  readonly publicIcon: string;
+};
+
+export async function listCmsLeadership(): Promise<readonly CmsLeader[]> {
+  return (
+    await portalApiGet<{ staff?: CmsLeader[] }>("/cms/leadership", {})
+  ).staff ?? [];
+}
+
 export async function listCmsCalendar(): Promise<readonly CmsCalendarTerm[]> {
   return (
     await portalApiGet<{ terms?: CmsCalendarTerm[] }>("/cms/calendar", {})

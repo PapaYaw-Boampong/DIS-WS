@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { AcademicPreview } from "@/components/home/AcademicPreview";
 import { EventsPreview } from "@/components/home/EventsPreview";
+import { FacilitiesPreview } from "@/components/home/FacilitiesPreview";
 import { HomeHero } from "@/components/home/HomeHero";
 import { JoinPathways } from "@/components/home/JoinPathways";
 import { NewsPreview } from "@/components/home/NewsPreview";
@@ -26,6 +27,7 @@ export default function HomePage() {
       {/* <SchoolMessage /> */}
       <JoinPathways />
       <AcademicPreview />
+      <FacilitiesPreview />
       <EventsPreview />
       <NewsPreview />
     </>

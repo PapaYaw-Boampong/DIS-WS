@@ -12,14 +12,17 @@ export type ImagePlaceholderProps = {
   icon?: ContentIconName;
   aspect?: "landscape" | "portrait" | "square";
   image?: SiteImage;
+  // An admin-uploaded image (portal CMS); used only when `image` is absent.
+  imageUrl?: string;
+  imageAlt?: string;
   sizes?: string;
   preload?: boolean;
   className?: string;
 };
 
 const aspectClasses = {
-  landscape: "min-h-[320px] sm:min-h-[360px]",
-  portrait: "min-h-[420px] sm:min-h-[520px]",
+  landscape: "min-h-[340px] sm:min-h-[440px] lg:min-h-[520px]",
+  portrait: "min-h-[460px] sm:min-h-[580px]",
   square: "aspect-square",
 } as const;
 
@@ -29,14 +32,17 @@ export function ImagePlaceholder({
   icon = "school",
   aspect = "landscape",
   image,
+  imageUrl,
+  imageAlt,
   sizes = "(min-width: 1024px) 50vw, 100vw",
   preload = false,
   className,
 }: ImagePlaceholderProps) {
+  const hasImage = Boolean(image || imageUrl);
   return (
     <div
-      role={image ? undefined : "img"}
-      aria-label={image ? undefined : description}
+      role={hasImage ? undefined : "img"}
+      aria-label={hasImage ? undefined : description}
       className={cn(
         "pattern-checker relative flex items-center justify-center overflow-hidden rounded-[1.75rem] border border-curry-orange/10",
         aspectClasses[aspect],
@@ -48,6 +54,13 @@ export function ImagePlaceholder({
           image={image}
           sizes={sizes}
           preload={preload}
+        />
+      ) : imageUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={imageUrl}
+          alt={imageAlt ?? description}
+          className="absolute inset-0 size-full object-cover"
         />
       ) : (
         <>

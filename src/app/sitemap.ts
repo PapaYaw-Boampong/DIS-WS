@@ -9,7 +9,7 @@ const staticRoutes = [
   routes.home,
   routes.about,
   routes.history,
-  routes.principalMessage,
+  routes.mummyMessage,
   routes.leadership,
   routes.academics,
   routes.teachers,

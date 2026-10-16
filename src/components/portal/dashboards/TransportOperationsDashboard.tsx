@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   AlertTriangle,
   Bus,
@@ -8,9 +9,8 @@ import {
 
 import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
-import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { MetricCard } from "@/components/portal/MetricCard";
-import { MockTripStatusForm } from "@/components/portal/MockTripStatusForm";
+import { TripStatusForm } from "@/components/portal/TripStatusForm";
 import { TransportStatusBadge } from "@/components/portal/TransportStatusBadge";
 import { listTransportNotices } from "@/lib/portal/data/communication";
 import {
@@ -23,6 +23,7 @@ import {
   formatPortalTime,
 } from "@/lib/portal/format";
 import { getMockPortalSession } from "@/lib/portal/mock-session";
+import { portalRoutes } from "@/lib/portal/routes";
 
 type TransportOperationsDashboardProps = {
   readonly mode: "admin" | "transport";
@@ -46,42 +47,13 @@ export async function TransportOperationsDashboard({
   ]);
   const activeTrips = mockTransportTrips.filter(
     (trip) => trip.status === "on_route" || trip.status === "delayed",
-  ).length;
+  );
   const arrivedTrips = mockTransportTrips.filter(
     (trip) => trip.status === "arrived",
   ).length;
   const delayedTrips = mockTransportTrips.filter(
     (trip) => trip.status === "delayed",
   ).length;
-
-  const routeRows: readonly DataTableRow[] = mockTransportRoutes.map(
-    (route) => {
-      const trip = mockTransportTrips.find(
-        (item) => item.routeId === route.id,
-      );
-      const assignedStudents = mockTransportAssignments.filter(
-        (item) => item.routeId === route.id,
-      ).length;
-
-      return {
-        id: route.id,
-        cells: [
-          `${route.busName} · ${route.vehicleRegistration}`,
-          route.routeName,
-          route.driverName ?? "Unassigned",
-          `${assignedStudents}/${route.capacity}`,
-          trip ? (
-            <TransportStatusBadge key={trip.id} status={trip.status} />
-          ) : (
-            "No trip"
-          ),
-          trip
-            ? `${formatPortalTime(trip.lastUpdated.slice(11, 16))} · ${trip.currentLocationLabel ?? "No location"}`
-            : "Not updated",
-        ],
-      };
-    },
-  );
 
   return (
     <>
@@ -94,7 +66,7 @@ export async function TransportOperationsDashboard({
             ? "Transport overview"
             : `Welcome back, ${userName.split(" ")[0]}`
         }
-        description="Monitor mock routes, assigned buses and manually updated trip status. No GPS or notification service is connected."
+        description="Today's picture at a glance. The full route register and trip log have their own pages."
         badge="Manual status data"
       />
 
@@ -102,12 +74,12 @@ export async function TransportOperationsDashboard({
         <MetricCard
           label="Routes"
           value={String(mockTransportRoutes.length)}
-          detail="Configured mock routes"
+          detail={`${mockTransportAssignments.length} learners assigned`}
           icon={<Route aria-hidden="true" className="size-5" />}
         />
         <MetricCard
           label="Active trips"
-          value={String(activeTrips)}
+          value={String(activeTrips.length)}
           detail="On route or delayed"
           icon={<Bus aria-hidden="true" className="size-5" />}
         />
@@ -128,74 +100,86 @@ export async function TransportOperationsDashboard({
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.65fr)]">
         <div className="space-y-8">
           <DashboardCard
-            title="Route and trip overview"
-            description="Current values are fictional manually updated records."
+            title="On the road now"
+            description="Runs that have not yet reached their destination."
+            action={
+              <Link
+                href={portalRoutes.transportTrips(
+                  mode === "admin" ? "admin" : "transport",
+                )}
+                className="inline-flex min-h-10 items-center rounded-full border border-curry-orange px-4 text-sm font-bold text-deep-orange transition-colors hover:bg-soft-cream"
+              >
+                Open trips
+              </Link>
+            }
           >
-            <DataTable
-              caption="Transport route overview"
-              columns={[
-                "Bus",
-                "Route",
-                "Driver",
-                "Assigned / capacity",
-                "Status",
-                "Last update",
-              ]}
-              rows={routeRows}
-            />
+            {activeTrips.length ? (
+              <ul className="space-y-3">
+                {activeTrips.map((trip) => {
+                  const route = mockTransportRoutes.find(
+                    (item) => item.id === trip.routeId,
+                  );
+
+                  return (
+                    <li
+                      key={trip.id}
+                      className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-soft-white p-4"
+                    >
+                      <div>
+                        <p className="font-bold text-charcoal">
+                          {route?.busName ?? "Bus"} ·{" "}
+                          {route?.routeName ?? trip.routeId}
+                        </p>
+                        <p className="mt-1 text-sm text-muted-grey">
+                          {trip.currentLocationLabel ?? "No location"} · next{" "}
+                          {trip.nextStop ?? "stop not set"} ·{" "}
+                          {formatPortalTime(trip.lastUpdated.slice(11, 16))}
+                        </p>
+                      </div>
+                      <TransportStatusBadge status={trip.status} />
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <p className="text-sm text-muted-grey">
+                No bus is currently on the road.
+              </p>
+            )}
           </DashboardCard>
 
           <DashboardCard
-            title="Route cards"
-            description="Operational details for each mock bus."
+            title="Transport office"
+            description="Where the day-to-day records live."
           >
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {mockTransportRoutes.map((route) => {
-                const trip = mockTransportTrips.find(
-                  (item) => item.routeId === route.id,
-                );
-
-                return (
-                  <article
-                    key={route.id}
-                    className="rounded-2xl border border-border bg-soft-white p-5"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="font-bold text-charcoal">
-                          {route.busName}
-                        </p>
-                        <p className="mt-1 text-sm text-muted-grey">
-                          {route.routeName}
-                        </p>
-                      </div>
-                      {trip ? (
-                        <TransportStatusBadge status={trip.status} />
-                      ) : null}
-                    </div>
-                    <dl className="mt-5 space-y-3 text-sm">
-                      <div className="flex justify-between gap-4">
-                        <dt className="text-muted-grey">Registration</dt>
-                        <dd className="font-semibold text-charcoal">
-                          {route.vehicleRegistration}
-                        </dd>
-                      </div>
-                      <div className="flex justify-between gap-4">
-                        <dt className="text-muted-grey">Driver</dt>
-                        <dd className="text-right font-semibold text-charcoal">
-                          {route.driverName}
-                        </dd>
-                      </div>
-                      <div className="flex justify-between gap-4">
-                        <dt className="text-muted-grey">Stops</dt>
-                        <dd className="font-semibold text-charcoal">
-                          {route.stops.length}
-                        </dd>
-                      </div>
-                    </dl>
-                  </article>
-                );
-              })}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Link
+                href={portalRoutes.transportRoutes(
+                  mode === "admin" ? "admin" : "transport",
+                )}
+                className="rounded-2xl border border-border bg-soft-white p-5 transition-colors hover:border-curry-orange/40"
+              >
+                <Route
+                  aria-hidden="true"
+                  className="size-5 text-curry-orange"
+                />
+                <p className="mt-3 font-bold text-charcoal">Routes</p>
+                <p className="mt-1 text-sm text-muted-grey">
+                  Buses, drivers, stops and assigned learners.
+                </p>
+              </Link>
+              <Link
+                href={portalRoutes.transportTrips(
+                  mode === "admin" ? "admin" : "transport",
+                )}
+                className="rounded-2xl border border-border bg-soft-white p-5 transition-colors hover:border-curry-orange/40"
+              >
+                <Bus aria-hidden="true" className="size-5 text-curry-orange" />
+                <p className="mt-3 font-bold text-charcoal">Trips</p>
+                <p className="mt-1 text-sm text-muted-grey">
+                  The full trip log and status updates.
+                </p>
+              </Link>
             </div>
           </DashboardCard>
         </div>
@@ -203,9 +187,9 @@ export async function TransportOperationsDashboard({
         <div className="space-y-8">
           <DashboardCard
             title="Manual trip update"
-            description="Preview the control planned for a backend-connected transport workflow."
+            description="Record a status confirmed by the driver."
           >
-            <MockTripStatusForm routes={mockTransportRoutes} />
+            <TripStatusForm routes={mockTransportRoutes} />
           </DashboardCard>
 
           <DashboardCard title="Transport notices">
@@ -233,11 +217,11 @@ export async function TransportOperationsDashboard({
                 <Users aria-hidden="true" className="size-6" />
               </div>
               <div>
-                <p className="text-2xl font-extrabold text-charcoal">
+                <p className="text-2xl font-extrabold text-charcoal tabular-nums">
                   {mockTransportAssignments.length}
                 </p>
                 <p className="text-sm text-muted-grey">
-                  Mock student route assignment
+                  Learners assigned to a route
                 </p>
               </div>
             </div>

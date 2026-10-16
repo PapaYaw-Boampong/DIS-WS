@@ -153,7 +153,7 @@ export default async function DocumentsPage({ params }: DocumentsPageProps) {
   if (!isPortalRole(role)) {
     notFound();
   }
-  if (role === "admin") {
+  if (role === "admin" || role === "registry") {
     return <AdminDocumentsView role={role} />;
   }
   if (role === "parent" || role === "staff") {

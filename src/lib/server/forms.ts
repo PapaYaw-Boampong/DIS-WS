@@ -26,7 +26,7 @@ function getResendApiKey() {
 function getFormsToEmail() {
   return (
     process.env.FORMS_TO_EMAIL?.trim() ??
-    "info@divineschool.edu.gh"
+    "info@dism.edu.gh"
   );
 }
 

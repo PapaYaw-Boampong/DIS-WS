@@ -26,12 +26,28 @@ export const contactDetails = [
     icon: "phone",
   },
   {
-    title: "Email",
+    title: "General Enquiries",
     value: school.email,
     href: `mailto:${school.email}`,
     description:
-      "Send general questions, admissions enquiries or support requests by email.",
+      "Send general questions, portal support requests or anything else by email.",
     icon: "mail",
+  },
+  {
+    title: "Admissions",
+    value: school.admissionsEmail,
+    href: `mailto:${school.admissionsEmail}`,
+    description:
+      "Ask about applications, required documents, assessments and school visits.",
+    icon: "clipboard-check",
+  },
+  {
+    title: "Finance",
+    value: school.financeEmail,
+    href: `mailto:${school.financeEmail}`,
+    description:
+      "Request fee schedules or ask about invoices, payments and receipts.",
+    icon: "landmark",
   },
   {
     title: "Visit",

@@ -6,7 +6,7 @@ import { historyOrigin } from "@/data/about";
 export function HistoryOrigin() {
   return (
     <section className="bg-white py-20 sm:py-24 lg:py-28">
-      <Container className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+      <Container className="grid items-center gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:gap-16">
         <AboutImagePlaceholder
           label={historyOrigin.imageLabel}
           description={historyOrigin.imageDescription}

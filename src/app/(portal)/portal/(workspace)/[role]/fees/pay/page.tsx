@@ -8,7 +8,9 @@ import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { MomoPaymentForm } from "@/components/portal/MomoPaymentForm";
 import { PaymentMethodTabs } from "@/components/portal/PaymentMethodTabs";
+import { PaystackPaymentForm } from "@/components/portal/PaystackPaymentForm";
 import { WardFilterSelect } from "@/components/portal/WardFilterSelect";
+import { getPaymentMethods } from "@/lib/portal/data/finance";
 import { getParentInvoices } from "@/lib/portal/data/parent";
 import {
   formatPortalCurrency,
@@ -21,8 +23,23 @@ export const metadata: Metadata = {
 };
 
 type PayNowPageProps = {
-  readonly searchParams?: Promise<{ ward?: string }>;
+  // `category` and `student` are set by the wallet top-up links, so a parent
+  // arriving from the feeding or transport wallet lands with the right lane
+  // preselected instead of starting from scratch.
+  readonly searchParams?: Promise<{
+    ward?: string;
+    category?: string;
+    student?: string;
+  }>;
 };
+
+const paymentCategories = [
+  { value: "school_fees", label: "School Fees" },
+  { value: "feeding", label: "Feeding" },
+  { value: "transport", label: "Transport" },
+  { value: "admission", label: "Admission" },
+  { value: "miscellaneous", label: "Miscellaneous" },
+] as const;
 
 export default async function PayNowPage({ searchParams }: PayNowPageProps) {
   const context = await getMockParentPortalContext();
@@ -42,9 +59,23 @@ export default async function PayNowPage({ searchParams }: PayNowPageProps) {
   const selectedStudents = context.students.filter((student) =>
     selectedStudentIds.includes(student.id),
   );
-  const invoices = (await getParentInvoices()).filter((invoice) =>
+  const [allInvoices, methods] = await Promise.all([
+    getParentInvoices(),
+    getPaymentMethods(),
+  ]);
+  const invoices = allInvoices.filter((invoice) =>
     selectedStudentIds.includes(invoice.studentId),
   );
+
+  const requestedCategory = paymentCategories.some(
+    (item) => item.value === query?.category,
+  )
+    ? query?.category
+    : undefined;
+  const requestedStudent =
+    query?.student && selectedStudentIds.includes(query.student)
+      ? query.student
+      : undefined;
   const outstanding = invoices.reduce(
     (total, invoice) => total + invoice.balance,
     0,
@@ -54,7 +85,11 @@ export default async function PayNowPage({ searchParams }: PayNowPageProps) {
       <DashboardHeader
         eyebrow="Parent finances"
         title="Pay now"
-        description="Pay by Mobile Money or bank deposit, then submit the details below. The school verifies each payment against the MoMo or bank statement before it counts toward a balance."
+        description={
+          methods.paystack
+            ? "Pay online by card or Mobile Money and your balance updates automatically. You can also pay by Mobile Money transfer or bank deposit and submit the details for the school to verify."
+            : "Pay by Mobile Money or bank deposit, then submit the details below. The school verifies each payment against the MoMo or bank statement before it counts toward a balance."
+        }
         badge="Verification required"
         action={
           <WardFilterSelect
@@ -75,6 +110,24 @@ export default async function PayNowPage({ searchParams }: PayNowPageProps) {
             description="Choose how you paid, then submit the transaction details for the school to verify. Nothing is marked paid until verified."
           >
             <PaymentMethodTabs
+              paystackPanel={
+                methods.paystack ? (
+                  <PaystackPaymentForm
+                    students={selectedStudents.map((student) => ({
+                      id: student.id,
+                      name: student.fullName,
+                    }))}
+                    invoices={invoices.map((invoice) => ({
+                      id: invoice.id,
+                      studentId: invoice.studentId,
+                      balance: invoice.balance,
+                    }))}
+                    categories={paymentCategories}
+                    defaultStudentId={requestedStudent}
+                    defaultCategory={requestedCategory}
+                  />
+                ) : undefined
+              }
               momoPanel={
                 <MomoPaymentForm
                   students={selectedStudents.map((student) => ({
@@ -86,13 +139,7 @@ export default async function PayNowPage({ searchParams }: PayNowPageProps) {
                     studentId: invoice.studentId,
                     balance: invoice.balance,
                   }))}
-                  categories={[
-                    { value: "school_fees", label: "School Fees" },
-                    { value: "feeding", label: "Feeding" },
-                    { value: "transport", label: "Transport" },
-                    { value: "admission", label: "Admission" },
-                    { value: "miscellaneous", label: "Miscellaneous" },
-                  ]}
+                  categories={paymentCategories}
                 />
               }
               bankPanel={
@@ -106,13 +153,7 @@ export default async function PayNowPage({ searchParams }: PayNowPageProps) {
                     studentId: invoice.studentId,
                     balance: invoice.balance,
                   }))}
-                  categories={[
-                    { value: "school_fees", label: "School Fees" },
-                    { value: "feeding", label: "Feeding" },
-                    { value: "transport", label: "Transport" },
-                    { value: "admission", label: "Admission" },
-                    { value: "miscellaneous", label: "Miscellaneous" },
-                  ]}
+                  categories={paymentCategories}
                 />
               }
             />

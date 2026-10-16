@@ -4,9 +4,16 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { mockPortalUsers } from "@/data/portal/users";
-import { apiChangePassword, apiLogin, apiLogout } from "@/lib/portal/api";
+import {
+  apiChangePassword,
+  apiLogin,
+  apiLogout,
+  apiVerifyMfa,
+} from "@/lib/portal/api";
 import {
   PORTAL_SESSION_MAX_AGE,
+  MFA_CHALLENGE_COOKIE,
+  mockPortalAuthAllowed,
   REAL_PORTAL_SESSION_COOKIE,
   useRealPortalAuth,
 } from "@/lib/portal/auth-config";
@@ -17,6 +24,12 @@ import { portalRoutes } from "@/lib/portal/routes";
 // Mock login: pick a demo account by role, no password. Used when
 // USE_REAL_PORTAL_AUTH is off.
 export async function loginWithMockAccount(formData: FormData) {
+  // Defence in depth: the sign-in page already hides this form in production,
+  // but the server action is directly postable, so it refuses here too.
+  if (!mockPortalAuthAllowed) {
+    redirect(`${portalRoutes.login}?error=unavailable`);
+  }
+
   const roleValue = formData.get("role");
 
   if (typeof roleValue !== "string" || !isPortalRole(roleValue)) {
@@ -56,12 +69,65 @@ export async function loginWithCredentials(formData: FormData) {
 
   const result = await apiLogin(email, password);
 
-  if (!result) {
+  if (!result.ok) {
+    // Password was right but a second factor is outstanding. The challenge
+    // lives in a short-lived httpOnly cookie rather than the URL, so it never
+    // lands in browser history, logs or a shared link.
+    if (result.reason === "mfa_required") {
+      const jar = await cookies();
+      jar.set(MFA_CHALLENGE_COOKIE, result.challengeToken, {
+        httpOnly: true,
+        maxAge: 5 * 60,
+        path: "/",
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+      });
+      redirect(portalRoutes.verifyCode);
+    }
+    if (result.reason === "throttled") {
+      const minutes = Math.max(1, Math.ceil(result.retryAfterSeconds / 60));
+      redirect(`${portalRoutes.login}?error=too-many-attempts&minutes=${minutes}`);
+    }
     redirect(`${portalRoutes.login}?error=invalid-credentials`);
   }
 
   const cookieStore = await cookies();
   cookieStore.set(REAL_PORTAL_SESSION_COOKIE, result.token, {
+    httpOnly: true,
+    maxAge: PORTAL_SESSION_MAX_AGE,
+    path: "/",
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  });
+
+  if (result.user.mustChangePassword) {
+    redirect(portalRoutes.changePassword);
+  }
+  redirect(portalRoutes.dashboard(result.user.role));
+}
+
+// Second step of a two-factor sign-in: exchange the challenge for a session.
+export async function verifyMfaCode(formData: FormData) {
+  const code = String(formData.get("code") ?? "").trim();
+  const jar = await cookies();
+  const challengeToken = jar.get(MFA_CHALLENGE_COOKIE)?.value;
+
+  if (!challengeToken) {
+    redirect(`${portalRoutes.login}?error=challenge-expired`);
+  }
+  if (!code) {
+    redirect(`${portalRoutes.verifyCode}?error=invalid-code`);
+  }
+
+  const result = await apiVerifyMfa(challengeToken, code);
+
+  if (!result.ok) {
+    redirect(`${portalRoutes.verifyCode}?error=invalid-code`);
+  }
+
+  // One challenge buys one session; clear it either way.
+  jar.delete(MFA_CHALLENGE_COOKIE);
+  jar.set(REAL_PORTAL_SESSION_COOKIE, result.token, {
     httpOnly: true,
     maxAge: PORTAL_SESSION_MAX_AGE,
     path: "/",

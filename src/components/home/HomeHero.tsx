@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
+import { HeroImageRotator } from "@/components/ui/HeroImageRotator";
 import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
 import { homeHeroSlides } from "@/data/home";
 
@@ -8,7 +9,9 @@ export function HomeHero() {
 
   return (
     <section className="relative isolate overflow-hidden bg-curry-orange text-white">
-      {slide.image ? (
+      {slide.images && slide.images.length > 1 ? (
+        <HeroImageRotator images={slide.images} preload />
+      ) : slide.image ? (
         <ResponsiveImage
           image={slide.image}
           sizes="100vw"

@@ -6,11 +6,14 @@ import {
   portalAccessSteps,
   portalPrivacyNotes,
 } from "@/data/portals";
+import { FadedBackdrop } from "@/components/ui/FadedBackdrop";
+import { siteImages } from "@/lib/images";
 
 export function PortalAccessNotes() {
   return (
     <>
-      <section className="pattern-checker py-20 sm:py-24 lg:py-28">
+      <section className="relative isolate overflow-hidden bg-white py-20 sm:py-24 lg:py-28">
+        <FadedBackdrop image={siteImages.backdropPortal} />
         <Container>
           <SectionHeader
             eyebrow="Access"

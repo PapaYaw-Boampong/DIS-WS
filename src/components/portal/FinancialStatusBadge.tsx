@@ -26,8 +26,13 @@ const statusConfig: Record<
   paid: { label: "Paid", variant: "success" },
   overpaid: { label: "Overpaid", variant: "info" },
   pending: { label: "Pending", variant: "warning" },
+  // An online checkout that was opened but never paid. Deliberately neutral,
+  // not "pending" — there is nothing for the office to verify.
+  initiated: { label: "Awaiting payment", variant: "neutral" },
   verified: { label: "Verified", variant: "success" },
   rejected: { label: "Rejected", variant: "danger" },
+  failed: { label: "Not completed", variant: "danger" },
+  abandoned: { label: "Abandoned", variant: "neutral" },
   active: { label: "Active", variant: "success" },
   low_balance: { label: "Low balance", variant: "warning" },
   empty: { label: "Empty", variant: "danger" },

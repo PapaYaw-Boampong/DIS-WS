@@ -7,7 +7,7 @@ import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { FinancialStatusBadge } from "@/components/portal/FinancialStatusBadge";
 import { MetricCard } from "@/components/portal/MetricCard";
-import { MockInvoiceForm } from "@/components/portal/MockInvoiceForm";
+import { InvoiceForm } from "@/components/portal/InvoiceForm";
 import { listFeeItems, listInvoices } from "@/lib/portal/data/finance";
 import { listStudents } from "@/lib/portal/data/students";
 import {
@@ -45,7 +45,7 @@ export default async function AccountsInvoicesPage() {
 
   return (
     <>
-      <DashboardHeader eyebrow="Accounts control" title="Invoice management" description="Review fictional invoices and preview fee assignment without creating student balances." badge="Mock invoices" />
+      <DashboardHeader eyebrow="Accounts control" title="Invoice management" description="Review invoices and raise a new one for a learner from the fee catalogue." badge="Invoices" />
       <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Invoices" value={String(mockInvoices.length)} detail="Sample records" icon={<FileText aria-hidden="true" className="size-5" />} />
         <MetricCard label="Invoiced" value={formatPortalCurrency(mockInvoices.reduce((total, item) => total + item.totalAmount, 0))} detail="Combined value" icon={<WalletCards aria-hidden="true" className="size-5" />} />
@@ -53,11 +53,11 @@ export default async function AccountsInvoicesPage() {
         <MetricCard label="Outstanding" value={String(mockInvoices.filter((item) => item.balance > 0).length)} detail="Needs collection" icon={<TriangleAlert aria-hidden="true" className="size-5" />} />
       </div>
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(22rem,0.65fr)]">
-        <DashboardCard title="Invoice records" description="All invoice records are fictional.">
+        <DashboardCard title="Invoice records" description="Every invoice raised, with what has been paid against it.">
           <DataTable caption="Accounts invoice records" columns={["Invoice", "Student", "Due", "Total", "Paid", "Balance", "Status"]} rows={rows} />
         </DashboardCard>
-        <DashboardCard title="Assign invoice" description="Preview fee assignment to a student." className="h-fit">
-          <MockInvoiceForm students={mockStudents.map((student) => ({ id: student.id, name: student.fullName }))} fees={mockFeeItems.map((fee) => ({ id: fee.id, title: fee.title }))} />
+        <DashboardCard title="Raise invoice" description="Put one or more fee items on a learner's account. The total is calculated from the catalogue." className="h-fit">
+          <InvoiceForm students={mockStudents.map((student) => ({ id: student.id, name: student.fullName }))} fees={mockFeeItems.map((fee) => ({ id: fee.id, title: fee.title, amount: fee.amount }))} />
         </DashboardCard>
       </div>
     </>

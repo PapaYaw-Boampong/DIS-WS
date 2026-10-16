@@ -5,10 +5,10 @@ import { studentVoices } from "@/data/studentLife";
 
 export function VoicesSection() {
   return (
-    <section className="bg-white py-20 sm:py-24 lg:py-28">
+    <section className="bg-soft-cream py-20 sm:py-24 lg:py-28">
       <Container>
         <SectionHeader
-          eyebrow="Updates"
+          eyebrow="Voices"
           title="Parents and Student Voices"
         />
         <FeatureCarousel

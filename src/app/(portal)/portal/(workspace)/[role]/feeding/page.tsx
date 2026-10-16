@@ -5,7 +5,7 @@ import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { DataTable, type DataTableRow } from "@/components/portal/DataTable";
 import { FinancialStatusBadge } from "@/components/portal/FinancialStatusBadge";
-import { MockPaymentForm } from "@/components/portal/MockPaymentForm";
+import { WalletTopUpLink } from "@/components/portal/WalletTopUpLink";
 import { WardFilterSelect } from "@/components/portal/WardFilterSelect";
 import { AccountsFeedingView } from "@/components/portal/dashboards/AccountsFeedingView";
 import { getParentWallets } from "@/lib/portal/data/wallets";
@@ -159,7 +159,7 @@ export default async function FeedingPage({
 
           <DashboardCard
             title="Feeding wallet activity"
-            description="Usage deductions are illustrative placeholders for future school records."
+            description="Top-ups appear here once the payment is verified; usage deductions come from the daily feeding register."
           >
             <DataTable
               caption="Feeding wallet activity"
@@ -170,20 +170,16 @@ export default async function FeedingPage({
         </div>
 
         <DashboardCard
-          title="Advance feeding payment"
-          description="Prepare a feeding top-up. Charging and reconciliation still require the backend payment API."
+          title="Top up the feeding wallet"
+          description="A feeding top-up is paid the same way as any school payment."
           className="h-fit"
         >
-          <MockPaymentForm
-            students={selectedStudents.map((student) => ({
-              id: student.id,
-              name: student.fullName,
-            }))}
-            categories={[{ value: "feeding", label: "Feeding Advance" }]}
-            defaultCategory="feeding"
-            title="Feeding top-up"
-            notice="Feeding top-up checkout is backend-gated. No wallet balance changes until a future provider callback is verified by the Render API."
-            submitLabel="Start feeding payment"
+          <WalletTopUpLink
+            role={role}
+            category="feeding"
+            studentId={selectedStudents[0]?.id}
+            label="Top up feeding wallet"
+            description="Pay by Mobile Money, bank deposit or card. The feeding balance and its activity list update automatically once the payment is verified."
           />
         </DashboardCard>
       </div>

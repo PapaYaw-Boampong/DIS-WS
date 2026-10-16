@@ -15,6 +15,11 @@ export const facilitiesHero = {
   title: "Spaces designed for safe, active learning",
   description:
     "A purpose-built campus with well-equipped classrooms, specialist laboratories and caring everyday provision for every learner.",
+  images: [
+    siteImages.facilitiesHero,
+    siteImages.facilitiesHero2,
+    siteImages.facilitiesHero3,
+  ],
 } as const;
 
 export const campusOverview = {
@@ -24,6 +29,7 @@ export const campusOverview = {
     "Our campus is a purpose-built, two-storey compound arranged around bright, well-ventilated classrooms and dedicated offices for staff and support services.",
     "Learning spaces are equipped for modern, illustrative teaching, while shared facilities support science, reading, technology, healthy meals and reliable transport.",
   ],
+  image: siteImages.campusOverview,
 } as const;
 
 export const facilities = [
@@ -34,7 +40,14 @@ export const facilities = [
     icon: "monitor",
     detail:
       "Pupils build digital confidence through guided lessons, subject software and a large digital board for whole-class demonstrations.",
-    gallery: [siteImages.academicsOverview, siteImages.juniorHighHero],
+    image: siteImages.eduLab,
+    gallery: [
+      siteImages.eduLab,
+      siteImages.eduLabComputers,
+      siteImages.eduLabTeamwork,
+      siteImages.eduLabPupils,
+      siteImages.eduLabInstruction,
+    ],
   },
   {
     title: "Library",
@@ -43,6 +56,13 @@ export const facilities = [
     icon: "library",
     detail:
       "A calm space for reading, research and quiet study, with age-appropriate books that grow a lifelong love of learning.",
+    image: siteImages.library,
+    gallery: [
+      siteImages.library,
+      siteImages.libraryTables,
+      siteImages.libraryReader,
+      siteImages.libraryShelves,
+    ],
   },
   {
     title: "Science Lab",
@@ -51,11 +71,8 @@ export const facilities = [
     icon: "flask",
     detail:
       "Hands-on experiments bring biology, chemistry and physics to life in a safe, well-equipped setting.",
-    gallery: [
-      siteImages.scienceGallery,
-      siteImages.juniorHigh,
-      siteImages.academicsHero,
-    ],
+    image: siteImages.scienceGallery,
+    gallery: [siteImages.scienceGallery, siteImages.juniorHigh],
   },
   {
     title: "Well-equipped Classrooms",
@@ -64,7 +81,13 @@ export const facilities = [
     icon: "presentation",
     detail:
       "Bright, airy rooms with instructional monitors and projectors keep lessons clear, visual and engaging.",
-    gallery: [siteImages.academicsOverview, siteImages.earlyYears],
+    image: siteImages.classrooms,
+    gallery: [
+      siteImages.classrooms,
+      siteImages.campusClassrooms,
+      siteImages.kindergartenRoom,
+      siteImages.classroomBlock,
+    ],
   },
   {
     title: "Canteen",
@@ -73,6 +96,8 @@ export const facilities = [
     icon: "utensils",
     detail:
       "Freshly prepared meals and snacks are served in a supervised eating area that keeps pupils fuelled through the day.",
+    image: siteImages.canteen,
+    gallery: [siteImages.canteen, siteImages.canteenHall, siteImages.canteenOlder],
   },
   {
     title: "School Bus",
@@ -81,6 +106,8 @@ export const facilities = [
     icon: "bus",
     detail:
       "Reliable pick-up and drop-off across a wide catchment helps families get to and from school with ease.",
+    image: siteImages.schoolBus,
+    gallery: [siteImages.schoolBus, siteImages.schoolBuses],
   },
 ] satisfies readonly FacilityItem[];
 

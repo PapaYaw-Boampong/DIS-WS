@@ -2,7 +2,6 @@ import { ContentIcon } from "@/components/ui/ContentIcon";
 import { Container } from "@/components/ui/Container";
 import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { siteImages } from "@/lib/images";
 import { schoolCulturePoints } from "@/data/about";
 
 export function CultureSection() {
@@ -15,22 +14,30 @@ export function CultureSection() {
           description="A warm, structured environment helps children feel secure enough to participate, persevere and grow."
           className="[&_h2]:text-white [&_p:last-child]:text-soft-white/80"
         />
-        <div className="relative mt-12 aspect-[21/9] overflow-hidden rounded-card border border-white/10">
-          <ResponsiveImage
-            image={siteImages.studentConfidence}
-            sizes="(min-width: 1024px) 1100px, 100vw"
-          />
-        </div>
-        <div className="mt-12 grid gap-x-12 gap-y-2 sm:grid-cols-2">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {schoolCulturePoints.map((point, index) => (
-            <div
+            <article
               key={point.title}
-              className="flex gap-5 border-t border-white/10 py-7"
+              className="group flex flex-col overflow-hidden rounded-card border border-white/10 bg-white/[0.04]"
             >
-              <span className="font-display text-3xl font-semibold text-curry-orange">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <div>
+              {point.image ? (
+                <div className="relative aspect-[4/3] overflow-hidden">
+                  <div className="absolute inset-0 transition-transform duration-[600ms] ease-out group-hover:scale-[1.05] motion-reduce:transform-none">
+                    <ResponsiveImage
+                      image={point.image}
+                      sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
+                    />
+                  </div>
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/10 to-transparent"
+                  />
+                  <span className="absolute bottom-4 left-5 font-display text-4xl font-semibold text-curry-orange">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                </div>
+              ) : null}
+              <div className="flex-1 p-6">
                 <div className="flex items-center gap-2.5">
                   <ContentIcon
                     name={point.icon}
@@ -42,7 +49,7 @@ export function CultureSection() {
                   {point.description}
                 </p>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       </Container>

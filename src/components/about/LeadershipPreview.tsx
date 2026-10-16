@@ -4,8 +4,15 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { leadershipProfiles } from "@/data/about";
 import { routes } from "@/lib/routes";
+import type { LeaderProfile } from "@/types/content";
 
-export function LeadershipPreview() {
+type LeadershipPreviewProps = {
+  profiles?: readonly LeaderProfile[];
+};
+
+export function LeadershipPreview({
+  profiles = leadershipProfiles,
+}: LeadershipPreviewProps) {
   return (
     <section className="bg-soft-white py-20 sm:py-24 lg:py-28">
       <Container>
@@ -20,7 +27,7 @@ export function LeadershipPreview() {
           </Button>
         </div>
         <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {leadershipProfiles.slice(0, 3).map((profile) => (
+          {profiles.slice(0, 3).map((profile) => (
             <article
               key={profile.name ?? profile.title}
               className="rounded-card border border-border bg-white p-7 shadow-card"

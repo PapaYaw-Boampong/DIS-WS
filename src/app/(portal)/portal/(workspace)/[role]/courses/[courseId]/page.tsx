@@ -5,7 +5,6 @@ import {
   BookOpen,
   ChartNoAxesColumnIncreasing,
   ClipboardList,
-  Download,
   FilePenLine,
   FolderPlus,
   Users,
@@ -13,7 +12,6 @@ import {
 
 import { DashboardCard } from "@/components/portal/DashboardCard";
 import { MetricCard } from "@/components/portal/MetricCard";
-import { ProgressMeter } from "@/components/portal/ProgressMeter";
 import { StatusBadge } from "@/components/portal/StatusBadge";
 import {
   listAssignments,
@@ -50,9 +48,7 @@ function average(scores: readonly { score: number; total: number }[]) {
   return Math.round(total / scores.length);
 }
 
-export default async function CourseHomePage({
-  params,
-}: CourseHomePageProps) {
+export default async function CourseHomePage({ params }: CourseHomePageProps) {
   const { role: rawRole, courseId } = await params;
   const access = await resolveCourseAccess(rawRole, courseId);
 
@@ -74,12 +70,13 @@ export default async function CourseHomePage({
   const courseMaterials = materials.filter(
     (item) => item.courseId === course.id,
   );
-  const classSize = classes.find((item) => item.id === course.classId)
-    ?.studentCount;
+  const classSize = classes.find(
+    (item) => item.id === course.classId,
+  )?.studentCount;
   const upcoming = [...courseAssignments]
     .filter((item) => item.status !== "submitted")
     .sort((first, second) => first.dueDate.localeCompare(second.dueDate))
-    .slice(0, 3);
+    .slice(0, 4);
 
   let gradeValue = "No grades yet";
 
@@ -100,87 +97,101 @@ export default async function CourseHomePage({
   }
 
   return (
-    <div className="space-y-8">
-      <DashboardCard
-        title="Course syllabus"
-        description={`${course.term} overview for ${course.title}.`}
-      >
-        <p className="leading-7 text-muted-grey">{course.description}</p>
-        <div className="mt-5 max-w-sm">
-          <ProgressMeter
-            label="Course progress"
-            value={course.progress}
-            detail={`${courseModules.length} module${courseModules.length === 1 ? "" : "s"} in this course`}
-            tone={course.progress >= 65 ? "green" : "orange"}
-          />
-        </div>
-
-        {access.role === "staff" ? (
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link
-              href={`${portalRoutes.staffAssignmentNew}?courseId=${course.id}&classId=${course.classId}`}
-              className="inline-flex min-h-10 items-center gap-2 rounded-full bg-curry-orange px-4 text-sm font-bold text-white transition-colors hover:bg-deep-orange"
-            >
-              <FilePenLine aria-hidden="true" className="size-4" />
-              Create assignment
-            </Link>
-            <Link
-              href={portalRoutes.staffCourseMaterialNew(course.id)}
-              className="inline-flex min-h-10 items-center gap-2 rounded-full border border-curry-orange px-4 text-sm font-bold text-deep-orange transition-colors hover:bg-soft-cream"
-            >
-              <FolderPlus aria-hidden="true" className="size-4" />
-              Add material
-            </Link>
-          </div>
-        ) : null}
-      </DashboardCard>
-
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        <Link href={portalRoutes.courseModules(role, course.id)} className="block">
-          <MetricCard
-            label="Modules"
-            value={String(courseModules.length)}
-            detail="Lessons, tasks and files"
-            icon={<BookOpen aria-hidden="true" className="size-5" />}
-          />
-        </Link>
-        <Link
-          href={portalRoutes.courseAssignments(role, course.id)}
-          className="block"
+    // The syllabus, quick links and metrics take the main column; "Up next"
+    // runs down the right rail.
+    <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(17rem,0.3fr)]">
+      <div className="space-y-5">
+        <DashboardCard
+          title="Course syllabus"
+          description={`${course.term} overview for ${course.title}.`}
         >
-          <MetricCard
-            label="Assignments"
-            value={String(courseAssignments.length)}
-            detail={`${courseMaterials.length} material${courseMaterials.length === 1 ? "" : "s"} shared`}
-            icon={<ClipboardList aria-hidden="true" className="size-5" />}
-          />
-        </Link>
-        <Link href={portalRoutes.courseGrades(role, course.id)} className="block">
-          <MetricCard
-            label="Grades"
-            value={gradeValue}
-            detail={access.role === "student" ? "Your results" : "Class results"}
-            icon={
-              <ChartNoAxesColumnIncreasing
-                aria-hidden="true"
-                className="size-5"
-              />
-            }
-          />
-        </Link>
-        <Link href={portalRoutes.coursePeople(role, course.id)} className="block">
-          <MetricCard
-            label="People"
-            value={classSize ? String(classSize) : "—"}
-            detail={`Taught by ${course.teacher}`}
-            icon={<Users aria-hidden="true" className="size-5" />}
-          />
-        </Link>
+          <p className="leading-7 text-muted-grey">{course.description}</p>
+          <p className="mt-4 text-sm font-semibold text-charcoal">
+            {courseModules.length} module
+            {courseModules.length === 1 ? "" : "s"} · {courseMaterials.length}{" "}
+            material
+            {courseMaterials.length === 1 ? "" : "s"} shared
+          </p>
+
+          {access.role === "staff" ? (
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link
+                href={`${portalRoutes.staffAssignmentNew}?courseId=${course.id}&classId=${course.classId}`}
+                className="inline-flex min-h-10 items-center gap-2 rounded-full bg-curry-orange px-4 text-sm font-bold text-white transition-colors hover:bg-deep-orange"
+              >
+                <FilePenLine aria-hidden="true" className="size-4" />
+                Create assignment
+              </Link>
+              <Link
+                href={portalRoutes.staffCourseMaterialNew(course.id)}
+                className="inline-flex min-h-10 items-center gap-2 rounded-full border border-curry-orange px-4 text-sm font-bold text-deep-orange transition-colors hover:bg-soft-cream"
+              >
+                <FolderPlus aria-hidden="true" className="size-4" />
+                Add material
+              </Link>
+            </div>
+          ) : null}
+        </DashboardCard>
+
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+          <Link
+            href={portalRoutes.courseModules(role, course.id)}
+            className="block"
+          >
+            <MetricCard
+              label="Modules"
+              value={String(courseModules.length)}
+              detail="Lessons, tasks and files"
+              icon={<BookOpen aria-hidden="true" className="size-5" />}
+            />
+          </Link>
+          <Link
+            href={portalRoutes.courseAssignments(role, course.id)}
+            className="block"
+          >
+            <MetricCard
+              label="Assignments"
+              value={String(courseAssignments.length)}
+              detail={`${courseMaterials.length} material${courseMaterials.length === 1 ? "" : "s"} shared`}
+              icon={<ClipboardList aria-hidden="true" className="size-5" />}
+            />
+          </Link>
+          <Link
+            href={portalRoutes.courseGrades(role, course.id)}
+            className="block"
+          >
+            <MetricCard
+              label="Grades"
+              value={gradeValue}
+              detail={
+                access.role === "student" ? "Your results" : "Class results"
+              }
+              icon={
+                <ChartNoAxesColumnIncreasing
+                  aria-hidden="true"
+                  className="size-5"
+                />
+              }
+            />
+          </Link>
+          <Link
+            href={portalRoutes.coursePeople(role, course.id)}
+            className="block"
+          >
+            <MetricCard
+              label="People"
+              value={classSize ? String(classSize) : "—"}
+              detail={`Taught by ${course.teacher}`}
+              icon={<Users aria-hidden="true" className="size-5" />}
+            />
+          </Link>
+        </div>
       </div>
 
       <DashboardCard
         title="Up next"
         description="The soonest open work in this course."
+        className="xl:h-fit"
       >
         {upcoming.length ? (
           <ul className="divide-y divide-border">
@@ -192,7 +203,7 @@ export default async function CourseHomePage({
                     course.id,
                     assignment.id,
                   )}
-                  className="flex items-center justify-between gap-4 py-4 transition-colors hover:text-deep-orange"
+                  className="flex items-start justify-between gap-3 py-4 transition-colors hover:text-deep-orange"
                 >
                   <span>
                     <span className="block font-bold text-charcoal">
@@ -210,49 +221,6 @@ export default async function CourseHomePage({
         ) : (
           <p className="py-4 text-sm text-muted-grey">
             Nothing due soon in this course.
-          </p>
-        )}
-      </DashboardCard>
-
-      <DashboardCard
-        title="Course materials"
-        description="Files shared with this class."
-      >
-        {courseMaterials.length ? (
-          <ul className="divide-y divide-border">
-            {courseMaterials.map((material) => (
-              <li
-                key={material.id}
-                className="flex items-center justify-between gap-4 py-4"
-              >
-                <span>
-                  <span className="block font-bold text-charcoal">
-                    {material.title}
-                  </span>
-                  <span className="mt-1 block text-sm text-muted-grey">
-                    {material.fileName} · Shared{" "}
-                    {formatPortalDate(material.sharedAt)}
-                  </span>
-                </span>
-                {material.objectKey ? (
-                  <a
-                    href={portalRoutes.courseMaterialDownload(
-                      role,
-                      course.id,
-                      material.id,
-                    )}
-                    className="inline-flex min-h-10 items-center gap-2 rounded-full border border-curry-orange px-4 text-sm font-bold text-deep-orange transition-colors hover:bg-soft-cream"
-                  >
-                    <Download aria-hidden="true" className="size-4" />
-                    Download
-                  </a>
-                ) : null}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="py-4 text-sm text-muted-grey">
-            No materials have been shared for this course yet.
           </p>
         )}
       </DashboardCard>

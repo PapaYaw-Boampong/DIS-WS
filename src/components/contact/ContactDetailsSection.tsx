@@ -8,6 +8,8 @@ import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { contactDetails, contactReasons } from "@/data/contact";
 import { routes } from "@/lib/routes";
+import { FadedBackdrop } from "@/components/ui/FadedBackdrop";
+import { siteImages } from "@/lib/images";
 
 function DetailAction({
   href,
@@ -52,7 +54,7 @@ export function ContactDetailsSection() {
             description="Use the details below for admissions, school information, visit planning and future portal support."
             align="center"
           />
-          <div className="mt-12 grid gap-6 sm:grid-cols-2">
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {contactDetails.map((detail) => (
               <article
                 key={detail.title}
@@ -95,14 +97,17 @@ export function ContactDetailsSection() {
           </div>
           <ImagePlaceholder
             label="Map and location preview"
-            description="Placeholder preview linking to the Divine International School location page."
+            description="The front gate of Divine International School."
             icon="map-pin"
             aspect="landscape"
+            image={siteImages.backdropLocation}
           />
         </Container>
       </section>
 
-      <section className="pattern-checker py-20 sm:py-24 lg:py-28">
+      <section className="relative isolate overflow-hidden bg-white py-20 sm:py-24 lg:py-28">
+
+        <FadedBackdrop image={siteImages.backdropContact} />
         <Container>
           <SectionHeader
             eyebrow="How We Can Help"

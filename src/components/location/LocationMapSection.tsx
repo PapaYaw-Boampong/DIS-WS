@@ -8,6 +8,8 @@ import {
   mapEmbed,
   visitNotes,
 } from "@/data/location";
+import { FadedBackdrop } from "@/components/ui/FadedBackdrop";
+import { siteImages } from "@/lib/images";
 
 export function LocationMapSection() {
   return (
@@ -71,7 +73,9 @@ export function LocationMapSection() {
         </Container>
       </section>
 
-      <section className="pattern-checker py-20 sm:py-24 lg:py-28">
+      <section className="relative isolate overflow-hidden bg-white py-20 sm:py-24 lg:py-28">
+
+        <FadedBackdrop image={siteImages.backdropLocation} />
         <Container>
           <SectionHeader
             eyebrow="Visit Notes"

@@ -5,12 +5,12 @@ import { DashboardCard } from "@/components/portal/DashboardCard";
 import { DashboardHeader } from "@/components/portal/DashboardHeader";
 import { MailingListManager } from "@/components/portal/MailingListManager";
 import { listMailingSignups } from "@/lib/portal/data/forms";
-import { getMockRoleSession } from "@/lib/portal/mock-role";
+import { getAdminAreaSession } from "@/lib/portal/mock-role";
 
 export const metadata: Metadata = { title: "Mailing List" };
 
 export default async function MailingListPage() {
-  if (!(await getMockRoleSession("admin"))) {
+  if (!(await getAdminAreaSession("registry"))) {
     notFound();
   }
   const signups = await listMailingSignups();

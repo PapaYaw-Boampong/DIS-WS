@@ -55,7 +55,7 @@ export default async function AuthReadinessPage({
 }: AuthReadinessPageProps) {
   const { role } = await params;
 
-  if (!isPortalRole(role) || role !== "admin") {
+  if (!isPortalRole(role) || (role !== "admin" && role !== "developer")) {
     notFound();
   }
 

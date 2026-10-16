@@ -66,7 +66,7 @@ export default async function DatabaseReadinessPage({
 }: DatabaseReadinessPageProps) {
   const { role } = await params;
 
-  if (!isPortalRole(role) || role !== "admin") {
+  if (!isPortalRole(role) || (role !== "admin" && role !== "developer")) {
     notFound();
   }
 

@@ -5,6 +5,7 @@ import { CTASection } from "@/components/ui/CTASection";
 import { PageHero } from "@/components/ui/PageHero";
 import { academicMetadata } from "@/data/academics";
 import { routes } from "@/lib/routes";
+import { siteImages } from "@/lib/images";
 
 export const metadata: Metadata = academicMetadata.teachers;
 
@@ -19,6 +20,7 @@ export default function TeachersPage() {
       />
       <TeacherGrid />
       <CTASection
+        backgroundImage={siteImages.ctaCourtyard}
         title="Learn more about academics at Divine"
         description="Explore our academic levels or speak with the school about the learning pathway that fits your child."
         primaryLabel="Explore Academics"

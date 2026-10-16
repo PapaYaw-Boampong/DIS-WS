@@ -5,8 +5,8 @@ import { useState, type ReactNode } from "react";
 
 import { PortalSidebar } from "@/components/portal/PortalSidebar";
 import { PortalTopbar } from "@/components/portal/PortalTopbar";
-import { portalNavigation } from "@/lib/portal/navigation";
 import { portalRoleLabels } from "@/lib/portal/roles";
+import { cn } from "@/lib/utils";
 import type {
   MockPortalSession,
   PortalNavigationItem,
@@ -19,7 +19,14 @@ type PortalLayoutProps = {
   readonly role: PortalRole;
   readonly session: MockPortalSession;
   readonly notifications: readonly PortalNotification[];
+  // Already filtered to the capabilities this role holds.
+  readonly navigation: readonly PortalNavigationItem[];
+  readonly preview: boolean;
 };
+
+// A single course workspace carries its own nav column plus module, assignment
+// and grade content, so it runs wider and tighter than the dashboard pages.
+const courseWorkspacePattern = /^\/portal\/[^/]+\/courses\/[^/]+/;
 
 function findActiveNavigationItem(
   items: readonly PortalNavigationItem[],
@@ -47,12 +54,14 @@ export function PortalLayout({
   role,
   session,
   notifications,
+  navigation,
+  preview,
 }: PortalLayoutProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const navigation = portalNavigation[role];
   const activeItem = findActiveNavigationItem(navigation, pathname);
   const pageTitle = activeItem?.label ?? "Portal";
+  const wideWorkspace = courseWorkspacePattern.test(pathname);
 
   return (
     <div className="min-h-screen bg-soft-white lg:flex">
@@ -67,6 +76,7 @@ export function PortalLayout({
         pathname={pathname}
         roleLabel={portalRoleLabels[role]}
         mobileOpen={mobileOpen}
+        preview={preview}
         onClose={() => setMobileOpen(false)}
       />
       <div className="min-w-0 flex-1">
@@ -81,9 +91,18 @@ export function PortalLayout({
         <main
           id="portal-main-content"
           tabIndex={-1}
-          className="px-4 py-8 sm:px-6 lg:px-8 lg:py-10"
+          className={cn(
+            "px-4 sm:px-6 lg:px-8",
+            wideWorkspace ? "py-4 lg:py-5" : "py-8 lg:py-10",
+          )}
         >
-          <div key={pathname} className="portal-route-enter mx-auto max-w-[1180px]">
+          <div
+            key={pathname}
+            className={cn(
+              "portal-route-enter mx-auto",
+              wideWorkspace ? "max-w-[1700px]" : "max-w-[1180px]",
+            )}
+          >
             {children}
           </div>
         </main>

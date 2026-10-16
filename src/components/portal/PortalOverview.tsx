@@ -6,7 +6,7 @@ import { portalOverview } from "@/data/portals";
 export function PortalOverview() {
   return (
     <section className="bg-white py-20 sm:py-24 lg:py-28">
-      <Container className="grid gap-10 lg:grid-cols-2 lg:items-center">
+      <Container className="grid gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
         <SectionHeader
           eyebrow={portalOverview.eyebrow}
           title={portalOverview.title}

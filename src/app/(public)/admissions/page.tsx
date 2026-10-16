@@ -9,7 +9,8 @@ import { WhyChooseDivine } from "@/components/admissions/WhyChooseDivine";
 import { CTASection } from "@/components/ui/CTASection";
 import { PageHero } from "@/components/ui/PageHero";
 import { admissionsHero, admissionsMetadata } from "@/data/admissions";
-import { routes } from "@/lib/routes";
+import { school } from "@/data/school";
+import { siteImages } from "@/lib/images";
 
 export const metadata: Metadata = admissionsMetadata;
 
@@ -33,12 +34,13 @@ export default function AdmissionsPage() {
       
       <AdmissionsFAQ />
       <CTASection
+        backgroundImage={siteImages.ctaEntrance}
         title="Take the next step with Divine"
         description="Prepare your enquiry or contact Admissions for current application, document and fee information."
         primaryLabel="Apply Now"
         primaryHref="#application-enquiry"
         secondaryLabel="Contact Admissions"
-        secondaryHref={routes.contact}
+        secondaryHref={`mailto:${school.admissionsEmail}`}
       />
     </>
   );

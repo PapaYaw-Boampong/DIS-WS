@@ -38,9 +38,11 @@ export const academicsHero = {
     "Our academic programme combines strong foundations, purposeful teaching and opportunities for every learner to participate, practise and grow.",
   image: siteImages.academicsHero,
   images: [
-    imageById["academics-jhs-sci-2"],
-    imageById["academics-elearners-kids-arc-learning"],
-    imageById["academics-elearners-kids-signing"],
+    siteImages.academicsHero,
+    siteImages.academicsHero2,
+    siteImages.academicsHero3,
+    siteImages.academicsHero4,
+    siteImages.academicsHero5,
   ],
 } as const;
 
@@ -54,7 +56,7 @@ export const academicOverview = {
   ],
   imageLabel: "Teaching and learning at Divine",
   imageDescription:
-    "Placeholder for an approved photograph of pupils participating in a classroom learning activity at Divine International School.",
+    "Pupils at work in a bright Divine International School classroom.",
   image: siteImages.academicsOverview,
 } as const;
 
@@ -75,7 +77,7 @@ export const academicLevels = [
     description:
       "Basic 1 to 6 — strong foundations in literacy, numeracy, science, creativity and character.",
     icon: "book-open",
-    image: siteImages.academicsOverview,
+    image: siteImages.primaryLevel,
   },
   {
     title: "Junior High",
@@ -84,7 +86,7 @@ export const academicLevels = [
     description:
       "JHS 1 to 3 — preparing students for higher learning, independence and responsible leadership.",
     icon: "school",
-    image: siteImages.juniorHigh,
+    image: siteImages.juniorHighLevel,
   },
   // {
   //   title: "Co-curricular",
@@ -101,14 +103,14 @@ export const curriculumAreas = [
     description:
       "Reading, writing, speaking and listening experiences build clear communication and confident expression.",
     icon: "languages",
-    image: imageById["academics-elearners-kids-signing"],
+    image: siteImages.curriculumLiteracy,
   },
   {
     title: "Mathematics",
     description:
       "Learners develop number fluency, logical reasoning and practical problem-solving strategies.",
     icon: "calculator",
-    image: imageById["academics-elearners-kids-circle"],
+    image: siteImages.curriculumMaths,
   },
   {
     title: "Science & Discovery",
@@ -156,21 +158,21 @@ export const learningResources: readonly AcademicCardItem[] = [
     description:
       "Age-appropriate texts, practical materials and visual resources reinforce classroom instruction.",
     icon: "library",
-    image: siteImages.earlyLearningGallery,
+    image: siteImages.resourceMaterials,
   },
   {
     title: "Guided Technology",
     description:
       "Digital tools are introduced purposefully to support research, practice and creative work.",
     icon: "presentation",
-    image: siteImages.scienceGallery,
+    image: siteImages.resourceTechnology,
   },
   {
     title: "Teacher Collaboration",
     description:
       "Teachers plan together, review learner needs and align support across each academic stage.",
     icon: "users",
-    image: siteImages.juniorHigh,
+    image: siteImages.resourceTeachers,
   },
 ];
 
@@ -202,8 +204,10 @@ const levelDetails = [
     ],
     imageLabel: "Early Years learning environment",
     imageDescription:
-      "Placeholder for an approved photograph of young learners engaged in a supervised Early Years activity.",
+      "Early Years learners reading and playing in a Divine kindergarten room.",
+    heroImage: siteImages.earlyYearsHero,
     image: siteImages.earlyYears,
+    backdropImage: siteImages.backdropEarlyYears,
     subjects: [
       {
         title: "Language & Literacy",
@@ -248,18 +252,21 @@ const levelDetails = [
         description:
           "Children practise routines, choices and simple responsibilities with caring guidance.",
         icon: "sparkles",
+        image: siteImages.earlyYearsIndependence,
       },
       {
         title: "Relationships",
         description:
           "Shared play and group activities develop cooperation, empathy and respectful communication.",
         icon: "heart",
+        image: siteImages.earlyYearsRelationships,
       },
       {
         title: "Physical Confidence",
         description:
           "Movement and fine-motor activities support coordination, control and healthy participation.",
         icon: "shapes",
+        image: siteImages.schoolReopens,
       },
     ],
     assessmentTitle: "Observation-led assessment",
@@ -288,7 +295,10 @@ const levelDetails = [
     ],
     imageLabel: "Primary classroom learning",
     imageDescription:
-      "Placeholder for an approved photograph of Primary pupils participating in a classroom lesson.",
+      "Primary pupils working side by side during a classroom lesson.",
+    heroImage: siteImages.primaryHero,
+    image: siteImages.primaryOverview,
+    backdropImage: siteImages.backdropPrimary,
     subjects: [
       {
         title: "English Language",
@@ -363,18 +373,21 @@ const levelDetails = [
         description:
           "Pupils practise organisation, persistence and thoughtful participation.",
         icon: "clipboard-check",
+        image: siteImages.primaryHabits,
       },
       {
         title: "Communication",
         description:
           "Discussion and presentation build confidence in sharing ideas and listening to others.",
         icon: "presentation",
+        image: siteImages.primaryCommunication,
       },
       {
         title: "Character",
         description:
           "Daily expectations reinforce respect, responsibility, integrity and service.",
         icon: "shield-check",
+        image: siteImages.primaryCharacter,
       },
     ],
     assessmentTitle: "Balanced checks for understanding",
@@ -404,8 +417,9 @@ const levelDetails = [
     ],
     imageLabel: "Junior High academic learning",
     imageDescription:
-      "Placeholder for an approved photograph of Junior High students engaged in a subject lesson.",
-    image: siteImages.juniorHigh,
+      "A Junior High student engaged in independent study during a lesson.",
+    image: siteImages.juniorHighOverview,
+    backdropImage: siteImages.backdropJuniorHigh,
     subjects: [
       {
         title: "English Language",
@@ -480,18 +494,21 @@ const levelDetails = [
         description:
           "Students learn to plan tasks, use feedback and take greater responsibility for progress.",
         icon: "clipboard-check",
+        image: siteImages.juniorHighStudy,
       },
       {
         title: "Critical Thinking",
         description:
           "Lessons ask learners to compare evidence, explain reasoning and evaluate possible solutions.",
         icon: "puzzle",
+        image: siteImages.juniorHighThinking,
       },
       {
         title: "Leadership",
         description:
           "Roles and collaborative work develop accountability, initiative and service.",
         icon: "graduation-cap",
+        image: siteImages.juniorHighLeadership,
       },
     ],
     assessmentTitle: "Evidence of knowledge and application",
@@ -519,7 +536,10 @@ const levelDetails = [
     ],
     imageLabel: "Co-curricular activity",
     imageDescription:
-      "Placeholder for an approved photograph of pupils taking part in a supervised school club, sport or creative activity.",
+      "Pupils taking part in a school team competition.",
+    heroImage: siteImages.dance,
+    image: siteImages.competition,
+    backdropImage: siteImages.backdropCoCurricular,
     subjects: [
       {
         title: "Sport & Movement",
@@ -552,18 +572,21 @@ const levelDetails = [
         description:
           "Shared goals teach communication, reliability and respect for different strengths.",
         icon: "users",
+        image: siteImages.coCurricularTeamwork,
       },
       {
         title: "Confidence",
         description:
           "Practice and performance help pupils take healthy risks and recognise progress.",
         icon: "sparkles",
+        image: siteImages.studentConfidence,
       },
       {
         title: "Commitment",
         description:
           "Regular participation builds persistence, preparation and personal responsibility.",
         icon: "target",
+        image: siteImages.achievement,
       },
     ],
     assessmentTitle: "Growth through participation",

@@ -21,9 +21,11 @@ export const admissionsHero = {
     "A nurturing school community committed to academic excellence, discipline and character development.",
   image: siteImages.admissionsHero,
   images: [
-    imageById["events-graduation-group-early-learners-walk-up"],
-    imageById["events-career-day-docs-mixed"],
-    imageById["events-graduation-group-g1"],
+    siteImages.admissionsHero,
+    siteImages.admissionsHero2,
+    siteImages.admissionsHero3,
+    siteImages.admissionsHero4,
+    siteImages.studentLifeHero,
   ],
 } as const;
 
@@ -34,6 +36,7 @@ export const admissionsIntroduction = {
     "Choosing a school is an important family decision. Our admissions process is designed to help you understand the Divine learning community and identify the most suitable stage for your child.",
     "We encourage families to ask questions, speak with Admissions and learn about our academic approach before completing enrollment steps.",
   ],
+  image: siteImages.admissionsIntro,
 } as const;
 
 export const admissionBenefits = [
@@ -42,7 +45,7 @@ export const admissionBenefits = [
     description:
       "Clear teaching, guided practice and thoughtful feedback support progress at every academic stage.",
     icon: "book-open",
-    image: imageById["academics-elearners-kids-arc-learning"],
+    image: siteImages.benefitLearning,
   },
   {
     title: "Nurturing Community",
@@ -56,7 +59,7 @@ export const admissionBenefits = [
     description:
       "Respect, responsibility, discipline and service are reinforced throughout school life.",
     icon: "shield-check",
-    image: imageById["events-career-day-soldiers"],
+    image: siteImages.benefitCharacter,
   },
   {
     title: "Family Partnership",
@@ -138,7 +141,7 @@ export const admissionsFees = {
   eyebrow: "Fees and Payment",
   title: "Request the current fee schedule",
   description:
-    "Fee schedules and payment instructions can change between enrollment periods. Contact Admissions for the current approved information before making a payment.",
+    "Fee schedules and payment instructions can change between enrollment periods. Email our finance office at finance@dism.edu.gh for the current approved information before making a payment.",
 } as const;
 
 export const admissionFAQs = [
