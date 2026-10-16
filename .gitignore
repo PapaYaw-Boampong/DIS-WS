@@ -43,3 +43,8 @@ next-env.d.ts
 
 # crash artifacts (e.g. grep.exe on Windows Git Bash)
 *.stackdump
+
+# Original photography (masters). Kept out of git; only the processed
+# WebP output in src/assets/images/approved/ is committed. See the image
+# pipeline (scripts/image-pipeline.mjs) for how originals are handled.
+/pics/

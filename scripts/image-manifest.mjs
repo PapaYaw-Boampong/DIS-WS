@@ -1,6 +1,29 @@
-export const EXPECTED_IMAGE_COUNT = 99;
-
 export const imageAlbums = [
+  {
+    id: "campus",
+    title: "Our Campus",
+    description: "The school buildings, courtyard, kindergarten rooms and school buses.",
+  },
+  {
+    id: "classrooms",
+    title: "Classroom Life",
+    description: "Early Years, Primary and Junior High learners at work in class.",
+  },
+  {
+    id: "library",
+    title: "Library and Reading",
+    description: "Independent and shared reading in the school library.",
+  },
+  {
+    id: "digital-learning",
+    title: "Edu Lab and Digital Learning",
+    description: "Computer lessons and interactive digital-board teaching.",
+  },
+  {
+    id: "dining",
+    title: "Mealtimes",
+    description: "Pupils sharing nutritious meals through the school day.",
+  },
   {
     id: "learning",
     title: "Learning and Classroom Life",
@@ -65,12 +88,106 @@ export const imageAlbums = [
 
 const imageGroups = [
   {
+    album: "campus",
+    sources: [
+      "campus/building/front-gate-and-flags.jpg",
+      "campus/building/front-entrance.jpg",
+      "campus/building/courtyard.jpg",
+      "campus/building/main-block.jpg",
+      "campus/building/classroom-block.jpg",
+      "campus/building/corridor-walkway.jpg",
+      "campus/kindergarten/kindergarten-room.jpg",
+      "campus/kindergarten/learning-wall.jpg",
+      "campus/kindergarten/play-area.jpg",
+      "campus/buses/school-bus.jpg",
+      "campus/buses/school-buses.jpg",
+    ],
+  },
+  {
+    album: "classrooms",
+    sources: [
+      "classrooms/early-years/reading-time.jpg",
+      "classrooms/early-years/play-learning.jpg",
+      "classrooms/early-years/play-table.jpg",
+      "classrooms/primary/classroom-wide.jpg",
+      "classrooms/primary/classroom-in-session.jpg",
+      "classrooms/primary/young-writer.jpg",
+      "classrooms/primary/writing-lesson.jpg",
+      "classrooms/primary/thoughtful-learner.jpg",
+      "classrooms/primary/focused-writing.jpg",
+      "classrooms/primary/independent-work.jpg",
+      "classrooms/primary/classroom-pair.jpg",
+      "classrooms/primary/working-side-by-side.jpg",
+      "classrooms/primary/attentive-pupil.jpg",
+      "classrooms/primary/handwriting.jpg",
+      "classrooms/primary/close-up-writing.jpg",
+      "classrooms/primary/concentrating.jpg",
+      "classrooms/primary/careful-writing.jpg",
+      "classrooms/primary/listening-pupil.jpg",
+      "classrooms/primary/thinking-it-through.jpg",
+      "classrooms/primary/pencil-and-ideas.jpg",
+      "classrooms/jhs/smiling-students.jpg",
+      "classrooms/jhs/confident-student.jpg",
+      "classrooms/jhs/bright-smile.jpg",
+      "classrooms/jhs/focused-student.jpg",
+      "classrooms/jhs/engaged-learner.jpg",
+      "classrooms/jhs/classmates.jpg",
+      "classrooms/jhs/independent-study.jpg",
+      "classrooms/jhs/attentive-student.jpg",
+      "classrooms/jhs/thoughtful-student.jpg",
+      "classrooms/jhs/ict-lesson.jpg",
+    ],
+  },
+  {
+    album: "library",
+    sources: [
+      "campus/library/reading-group.jpg",
+      "campus/library/reading-tables.jpg",
+      "campus/library/bookshelves.jpg",
+      "campus/library/reading-together.jpg",
+      "campus/library/shared-reading.jpg",
+      "campus/library/smiling-reader.jpg",
+      "campus/library/happy-reader.jpg",
+      "campus/library/girl-reading.jpg",
+      "campus/library/boy-reading.jpg",
+      "campus/library/thesaurus-reader.jpg",
+      "campus/library/picture-book-reader.jpg",
+      "campus/library/animal-book-reader.jpg",
+    ],
+  },
+  {
+    album: "digital-learning",
+    sources: [
+      "campus/edu-lab/digital-board-maths.jpg",
+      "campus/edu-lab/digital-board-pupil.jpg",
+      "campus/edu-lab/computer-lab.jpg",
+      "campus/edu-lab/computer-lesson.jpg",
+      "campus/edu-lab/pupils-at-computers.jpg",
+      "campus/edu-lab/pair-at-computer.jpg",
+      "campus/edu-lab/lab-instruction.jpg",
+      "campus/edu-lab/teacher-support.jpg",
+      "campus/edu-lab/working-together.jpg",
+      "campus/edu-lab/focused-learners.jpg",
+      "campus/edu-lab/smiling-at-computers.jpg",
+    ],
+  },
+  {
+    album: "dining",
+    sources: [
+      "campus/dining/lunch-friends.jpg",
+      "campus/dining/dining-hall.jpg",
+      "campus/dining/older-pupil-lunch.jpg",
+    ],
+  },
+  {
     album: "learning",
     sources: [
       "academics/Elearners/kids arc learning.jpeg",
       "academics/Elearners/kids circle.jpeg",
       "academics/Elearners/kids playing 2.jpeg",
       "academics/Elearners/kids signing.jpeg",
+      "academics/Elearners/kids seated at table 1.jpeg",
+      "academics/Elearners/kids seated at table 2.jpeg",
       "academics/jhs/Sci 1.jpeg",
       "academics/jhs/Sci 2.jpeg",
       "academics/jhs/Sci 3.jpeg",
@@ -136,6 +253,9 @@ const imageGroups = [
       "events/graduation/group/g2.jpg",
       "events/graduation/group/kg walk up - close up.jpg",
       "events/graduation/group/younger student walk up- close up.jpg",
+      "events/graduation/group/cap-toss-1.jpg",
+      "events/graduation/group/cap-toss-kids.jpg",
+      "events/graduation/group/class-group.jpg",
     ],
   },
   {
@@ -151,6 +271,11 @@ const imageGroups = [
       "events/graduation/awards/a7.jpg",
       "events/graduation/awards/a8.jpg",
       "events/graduation/awards/a9.jpg",
+      "events/graduation/awards/class-award-1.jpg",
+      "events/graduation/awards/class-award-2.jpg",
+      "events/graduation/awards/class-award-3.jpg",
+      "events/graduation/awards/class-award-4.jpg",
+      "events/graduation/awards/class-award-5.jpg",
     ],
   },
   {
@@ -176,6 +301,7 @@ const imageGroups = [
       "events/graduation/models/m6.jpg",
       "events/graduation/models/m7.jpg",
       "events/graduation/models/m9.jpg",
+      "events/graduation/models/student-model.jpg",
     ],
   },
   {
@@ -207,29 +333,156 @@ const imageGroups = [
       "events/graduation/recital/stage close up.jpg",
       "events/graduation/recital/Student Speaking2.jpg",
       "events/graduation/recital/Student Speaking3.jpg",
+      "events/graduation/recital/pupil-speaking.jpg",
     ],
   },
   {
     album: "leadership-portraits",
     sources: [
       "events/graduation/adults/leadership-.jpg",
-      "events/graduation/adults/Principal.jpg",
-      "events/graduation/close ups/principal.jpg",
+      "events/graduation/adults/vivian-boampong-speaking.jpg",
+      "events/graduation/close ups/vivian-boampong.jpg",
       "events/graduation/close ups/student.jpg",
       "events/graduation/close ups/student2.jpg",
       "events/graduation/close ups/student3.jpg",
       "events/graduation/close ups/student4.jpg",
+      "events/graduation/adults/co-director-1.jpg",
+      "events/graduation/adults/co-director-2.jpg",
+      "events/graduation/adults/parent-and-teachers.jpg",
+      "events/graduation/adults/teachers.jpg",
+      "events/graduation/adults/teachers-2.jpg",
+      "events/graduation/adults/teachers-group.jpg",
+      "people/staff/teacher-marking.jpg",
     ],
   },
 ];
 
+// Named slots: the only way pages reference photos. Any slot whose name ends
+// in "Hero" (optionally numbered, e.g. academicsHero2) is processed at the
+// larger hero size; everything else at gallery size.
 export const siteImageAliases = {
-  homeHero: "events/graduation/group/g2.jpg",
-  homeWelcome: "academics/Elearners/kids circle.jpeg",
+  // Home hero rotation: school building, facilities and student close-ups.
+  homeHero: "campus/building/front-gate-and-flags.jpg",
+  homeHero2: "classrooms/primary/young-writer.jpg",
+  homeHero3: "campus/library/reading-group.jpg",
+  homeHero4: "classrooms/jhs/bright-smile.jpg",
+  homeHero5: "campus/building/courtyard.jpg",
+  homeHero6: "campus/edu-lab/digital-board-maths.jpg",
+  homeHero7: "classrooms/jhs/focused-student.jpg",
+  homeWelcome: "campus/library/reading-together.jpg",
+  homePathwayStudent: "classrooms/jhs/bright-smile.jpg",
+  homePathwayParent: "events/graduation/awards/a10.jpg",
+  homePathwayStaff: "events/graduation/adults/teachers.jpg",
+  // Intro screen panels beside the logo.
+  introLeft: "campus/building/front-gate-and-flags.jpg",
+  introRight: "classrooms/jhs/focused-student.jpg",
+  // About: school culture points, and mission / vision / values.
+  cultureKnown: "campus/edu-lab/teacher-support.jpg",
+  cultureCharacter: "events/graduation/awards/class-award-2.jpg",
+  culturePurpose: "campus/edu-lab/digital-board-pupil.jpg",
+  cultureSafe: "campus/building/corridor-walkway.jpg",
+  cultureFaith: "events/graduation/close ups/Student Speaking.jpg",
+  cultureFamilies: "events/graduation/awards/a1.jpg",
+  mvvMission: "campus/edu-lab/working-together.jpg",
+  mvvVision: "events/graduation/group/cap-toss-1.jpg",
+  mvvValues: "classrooms/jhs/classmates.jpg",
+  // Student Life: a day at Divine, voices and the social feed preview.
+  dayArrival: "campus/buses/school-bus.jpg",
+  dayLessons: "classrooms/primary/classroom-in-session.jpg",
+  dayLibrary: "campus/library/smiling-reader.jpg",
+  dayEduLab: "campus/edu-lab/pupils-at-computers.jpg",
+  dayLunch: "campus/dining/lunch-friends.jpg",
+  voiceParents: "events/graduation/awards/a8.jpg",
+  socialCapToss: "events/graduation/group/cap-toss-kids.jpg",
   aboutCommunity: "history/students/year group 2024.jpeg",
-  aboutHero: "events/graduation/group/g2.jpg",
-  academicsHero: "academics/jhs/Sci 2.jpeg",
-  admissionsHero: "events/graduation/group/early learners walk up.jpg",
+  aboutHero: "campus/building/main-block.jpg",
+  aboutHero2: "events/graduation/adults/teachers-group.jpg",
+  aboutHero3: "classrooms/jhs/smiling-students.jpg",
+  aboutHero4: "events/graduation/group/c1.jpg",
+  // Academics leads with the students themselves.
+  academicsHero: "classrooms/jhs/focused-student.jpg",
+  academicsHero2: "classrooms/primary/young-writer.jpg",
+  academicsHero3: "classrooms/jhs/bright-smile.jpg",
+  academicsHero4: "classrooms/primary/thinking-it-through.jpg",
+  academicsHero5: "classrooms/jhs/confident-student.jpg",
+  primaryLevel: "classrooms/primary/listening-pupil.jpg",
+  juniorHighLevel: "classrooms/jhs/engaged-learner.jpg",
+  juniorHighStudy: "classrooms/jhs/focused-student.jpg",
+  curriculumLiteracy: "campus/library/girl-reading.jpg",
+  curriculumMaths: "campus/edu-lab/digital-board-maths.jpg",
+  resourceMaterials: "campus/library/bookshelves.jpg",
+  resourceTechnology: "campus/edu-lab/computer-lab.jpg",
+  resourceTeachers: "campus/edu-lab/teacher-support.jpg",
+  earlyYearsHero: "classrooms/early-years/play-table.jpg",
+  earlyYearsIndependence: "classrooms/early-years/play-learning.jpg",
+  earlyYearsRelationships: "campus/dining/lunch-friends.jpg",
+  primaryHero: "classrooms/primary/close-up-writing.jpg",
+  primaryOverview: "classrooms/primary/working-side-by-side.jpg",
+  primaryHabits: "classrooms/primary/concentrating.jpg",
+  primaryCommunication: "classrooms/primary/classroom-pair.jpg",
+  primaryCharacter: "classrooms/primary/thoughtful-learner.jpg",
+  juniorHighOverview: "classrooms/jhs/independent-study.jpg",
+  juniorHighThinking: "classrooms/jhs/thoughtful-student.jpg",
+  juniorHighLeadership: "classrooms/jhs/confident-student.jpg",
+  coCurricularTeamwork: "campus/edu-lab/working-together.jpg",
+  admissionsHero: "classrooms/jhs/classmates.jpg",
+  admissionsHero2: "campus/building/front-gate-and-flags.jpg",
+  admissionsHero3: "classrooms/early-years/reading-time.jpg",
+  admissionsHero4: "classrooms/primary/pencil-and-ideas.jpg",
+  admissionsIntro: "campus/building/front-entrance.jpg",
+  benefitLearning: "classrooms/primary/independent-work.jpg",
+  benefitCharacter: "classrooms/jhs/engaged-learner.jpg",
+  studentLifeHero2: "campus/edu-lab/working-together.jpg",
+  studentLifeHero3: "campus/library/reading-group.jpg",
+  campusClassrooms: "classrooms/primary/classroom-wide.jpg",
+  studentBelonging: "campus/library/happy-reader.jpg",
+  facilitiesHero: "campus/building/front-gate-and-flags.jpg",
+  facilitiesHero2: "campus/building/courtyard.jpg",
+  facilitiesHero3: "campus/building/main-block.jpg",
+  campusOverview: "campus/building/front-entrance.jpg",
+  eduLab: "campus/edu-lab/digital-board-maths.jpg",
+  eduLabComputers: "campus/edu-lab/computer-lab.jpg",
+  eduLabTeamwork: "campus/edu-lab/working-together.jpg",
+  eduLabPupils: "campus/edu-lab/pupils-at-computers.jpg",
+  eduLabInstruction: "campus/edu-lab/lab-instruction.jpg",
+  library: "campus/library/reading-group.jpg",
+  libraryTables: "campus/library/reading-tables.jpg",
+  libraryShelves: "campus/library/bookshelves.jpg",
+  libraryReader: "campus/library/smiling-reader.jpg",
+  classrooms: "classrooms/primary/classroom-in-session.jpg",
+  kindergartenRoom: "campus/kindergarten/kindergarten-room.jpg",
+  classroomBlock: "campus/building/classroom-block.jpg",
+  canteen: "campus/dining/lunch-friends.jpg",
+  canteenHall: "campus/dining/dining-hall.jpg",
+  canteenOlder: "campus/dining/older-pupil-lunch.jpg",
+  schoolBus: "campus/buses/school-bus.jpg",
+  schoolBuses: "campus/buses/school-buses.jpg",
+  // Faded backgrounds behind the closing call-to-action band.
+  ctaCorridor: "campus/building/corridor-walkway.jpg",
+  ctaEntrance: "campus/building/front-entrance.jpg",
+  ctaLibrary: "campus/library/reading-tables.jpg",
+  ctaClassroomBlock: "campus/building/classroom-block.jpg",
+  ctaCourtyard: "campus/building/courtyard.jpg",
+  ctaDining: "campus/dining/dining-hall.jpg",
+  // Faded photographs behind the checked-pattern sections.
+  backdropHomeAcademics: "campus/library/reading-tables.jpg",
+  backdropAcademicLevels: "classrooms/primary/classroom-wide.jpg",
+  backdropEarlyYears: "campus/kindergarten/kindergarten-room.jpg",
+  backdropPrimary: "classrooms/primary/classroom-in-session.jpg",
+  backdropJuniorHigh: "classrooms/jhs/ict-lesson.jpg",
+  backdropCoCurricular: "events/competitions/group2.jpeg",
+  backdropWhyDivine: "campus/building/courtyard.jpg",
+  backdropAdmissionsFaq: "campus/building/front-entrance.jpg",
+  backdropHistory: "history/students/year group 3.jpeg",
+  backdropLeadership: "campus/building/main-block.jpg",
+  backdropTeachers: "events/graduation/adults/teachers-group.jpg",
+  backdropCalendar: "campus/building/corridor-walkway.jpg",
+  backdropLocation: "campus/building/front-gate-and-flags.jpg",
+  backdropContact: "campus/building/front-entrance.jpg",
+  backdropPortal: "campus/edu-lab/computer-lab.jpg",
+  coDirectorKwame: "events/graduation/adults/co-director-1.jpg",
+  mummyPortrait: "events/graduation/close ups/vivian-boampong.jpg",
+  coDirectorVivian: "events/graduation/adults/co-director-2.jpg",
   newsHero: "events/graduation/group/g1.jpg",
   historyHero: "history/students/year group 2022.jpeg",
   historyOrigin: "history/students/dis- start.jpeg",
@@ -239,10 +492,10 @@ export const siteImageAliases = {
   historyYearGroup6: "history/students/year group 6.jpeg",
   historyYearGroup7: "history/students/year group 7.jpeg",
   historyYearGroup8: "history/students/year group 8.jpeg",
-  academicsOverview: "academics/jhs/Sci 5.jpeg",
-  earlyYears: "academics/Elearners/kids arc learning.jpeg",
+  academicsOverview: "classrooms/primary/classroom-wide.jpg",
+  earlyYears: "classrooms/early-years/reading-time.jpg",
   juniorHigh: "academics/jhs/Sci 1.jpeg",
-  juniorHighHero: "academics/jhs/Sci 4.jpeg",
+  juniorHighHero: "classrooms/jhs/smiling-students.jpg",
   scienceGallery: "academics/jhs/Sci 3.jpeg",
   studentLifeHero: "events/graduation/group/early learners walk up.jpg",
   studentConfidence: "events/graduation/close ups/Student Speaking.jpg",
@@ -266,8 +519,6 @@ export const siteImageAliases = {
   galleryCulturalPlay: "events/graduation/play/p4.jpg",
   galleryAward: "events/graduation/awards/a13.jpg",
   galleryGraduate: "events/graduation/close ups/student.jpg",
-  principalPortrait: "events/graduation/adults/Principal.jpg",
-  principalCloseUp: "events/graduation/close ups/principal.jpg",
   leadershipGroup: "events/graduation/adults/leadership-.jpg",
   careerDay: "events/career day/lawyers & Pilots.jpeg",
   colourDay: "events/color day/group pic.jpeg",
@@ -276,6 +527,11 @@ export const siteImageAliases = {
 };
 
 export const highlightSources = [
+  "campus/building/front-gate-and-flags.jpg",
+  "classrooms/jhs/smiling-students.jpg",
+  "campus/library/reading-group.jpg",
+  "campus/edu-lab/digital-board-maths.jpg",
+  "classrooms/primary/young-writer.jpg",
   "academics/Elearners/kids circle.jpeg",
   "academics/jhs/Sci 2.jpeg",
   "history/students/year group 2024.jpeg",
@@ -290,7 +546,50 @@ export const highlightSources = [
   "events/graduation/recital/stage 8.jpg",
 ];
 
+// Crop focus (CSS object-position) for photos whose subject is off-centre,
+// so narrow or portrait crops keep the people in frame. Default: "center".
+const positionOverrides = {
+  a1: "35% center",
+  a8: "45% center",
+  a10: "38% center",
+  "teacher-support": "40% center",
+  "focused-student": "55% center",
+};
+
+// Full alt text for photos of named people, whose names must keep their
+// capitals (generated alt text is lower-cased after the album prefix).
+const altOverrides = {
+  "co-director-1": "Kwame Wireko Boampong, Co-Director of Divine International School.",
+  "co-director-2": "Vivian Agbeme Boampong, Co-Director of Divine International School.",
+  "vivian-boampong":
+    "Vivian Agbeme Boampong, Co-Director of Divine International School, at a school celebration.",
+  "vivian-boampong-speaking":
+    "Vivian Agbeme Boampong, Co-Director of Divine International School, addressing a school celebration.",
+};
+
 const titleOverrides = {
+  "co-director-1": "Co-Director Kwame Wireko Boampong",
+  "co-director-2": "Co-Director Vivian Agbeme Boampong",
+  "vivian-boampong": "Co-Director Vivian Agbeme Boampong",
+  "vivian-boampong-speaking": "Co-Director Vivian Agbeme Boampong speaking",
+  "teacher-marking": "A teacher preparing lessons",
+  "ict-lesson": "ICT lesson",
+  "parent-and-teachers": "A parent with our teachers",
+  teachers: "Our teaching team",
+  "teachers-2": "Teachers at graduation",
+  "teachers-group": "The staff team together",
+  "class-award-1": "Receiving a class award",
+  "class-award-2": "Celebrating an award",
+  "class-award-3": "An award for effort",
+  "class-award-4": "Award presentation",
+  "class-award-5": "A proud award moment",
+  "cap-toss-1": "The graduation cap toss",
+  "cap-toss-kids": "Our youngest graduates celebrate",
+  "class-group": "The graduating class",
+  "pupil-speaking": "A pupil addresses the school",
+  "student-model": "Creative presentation",
+  "kids seated at table 1": "Working together at the table",
+  "kids seated at table 2": "Focused group work",
   "kids arc learning": "Guided Early Years learning",
   "kids circle": "Circle-time learning",
   "kids playing 2": "Learning through play",
@@ -305,13 +604,17 @@ const titleOverrides = {
   "group 2 - line up": "Excursion group line-up",
   "group 2 - political party": "Learning about civic life",
   "leadership-": "School leadership",
-  principal: "School principal",
   "student speaking": "Student speaker",
   "student speaking 2": "Student speaker",
   "stage close up": "Recital close-up",
 };
 
 const albumAltPrefixes = {
+  campus: "The Divine International School campus:",
+  classrooms: "Divine International School pupils in class:",
+  library: "Divine International School pupils in the school library:",
+  "digital-learning": "Divine International School pupils in the Edu Lab:",
+  dining: "Divine International School pupils at mealtime:",
   learning: "Divine International School pupils during",
   history: "A Divine International School historical photograph showing",
   "career-day": "Divine International School pupils during Career Day:",
@@ -326,15 +629,11 @@ const albumAltPrefixes = {
   "leadership-portraits": "A Divine International School portrait showing",
 };
 
-const heroSources = new Set([
-  siteImageAliases.homeHero,
-  siteImageAliases.aboutHero,
-  siteImageAliases.academicsHero,
-  siteImageAliases.admissionsHero,
-  siteImageAliases.newsHero,
-  siteImageAliases.historyHero,
-  siteImageAliases.studentLifeHero,
-]);
+const heroSources = new Set(
+  Object.entries(siteImageAliases)
+    .filter(([alias]) => /Hero\d*$/.test(alias))
+    .map(([, source]) => source),
+);
 
 function slugify(value) {
   return value
@@ -411,10 +710,17 @@ function humanize(source, album) {
     return `Competition group ${filename.match(/\d+/)[0]}`;
   }
 
-  return filename
-    .replace(/[-_]+/g, " ")
-    .replace(/\s+/g, " ")
-    .replace(/\b\w/g, (character) => character.toUpperCase());
+  // Sentence case: "reading-group" -> "Reading group".
+  const words = filename.replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
+function altText(source, album, title) {
+  const filename = source.split("/").at(-1).replace(/\.[^.]+$/, "").trim();
+  return (
+    altOverrides[filename.toLowerCase()] ??
+    `${albumAltPrefixes[album]} ${title.toLowerCase()}.`
+  );
 }
 
 function pageUsages(source) {
@@ -432,9 +738,12 @@ export const imageManifest = imageGroups.flatMap((group) =>
       source,
       album: group.album,
       title,
-      alt: `${albumAltPrefixes[group.album]} ${title.toLowerCase()}.`,
+      alt: altText(source, group.album, title),
       caption: title,
-      position: "center",
+      position:
+        positionOverrides[
+          source.split("/").at(-1).replace(/\.[^.]+$/, "").trim().toLowerCase()
+        ] ?? "center",
       fit: "cover",
       profile: heroSources.has(source) ? "hero" : "gallery",
       approved: true,

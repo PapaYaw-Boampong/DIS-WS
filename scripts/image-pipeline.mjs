@@ -17,7 +17,6 @@ import process from "node:process";
 import sharp from "sharp";
 
 import {
-  EXPECTED_IMAGE_COUNT,
   highlightSources,
   imageAlbums,
   imageManifest,
@@ -67,11 +66,20 @@ function outputName(entry) {
   return `${entry.id}.webp`;
 }
 
+// The originals in pics/ are kept out of git, so a fresh checkout (CI, the
+// deploy build) has none. There, verify checks the committed WebP output
+// against the manifest; the source checks run wherever the originals exist.
+async function hasOriginals() {
+  try {
+    return (await stat(sourceRoot)).isDirectory();
+  } catch {
+    return false;
+  }
+}
+
 function assertManifest() {
-  if (imageManifest.length !== EXPECTED_IMAGE_COUNT) {
-    throw new Error(
-      `Expected ${EXPECTED_IMAGE_COUNT} images, found ${imageManifest.length}.`,
-    );
+  if (imageManifest.length === 0) {
+    throw new Error("The image manifest is empty.");
   }
 
   const ids = new Set();
@@ -425,7 +433,8 @@ async function readGeneratedManifest() {
 
 async function verify() {
   assertManifest();
-  const sourceDuplicates = await verifySources();
+  const checkSources = await hasOriginals();
+  const sourceDuplicates = checkSources ? await verifySources() : [];
   const generated = await readGeneratedManifest();
 
   if (generated.imageCount !== imageManifest.length) {
@@ -480,7 +489,9 @@ async function verify() {
       throw new Error(`Missing generated record for ${entry.source}`);
     }
 
-    const currentSourceHash = await hashFile(sourcePath(entry.source));
+    const currentSourceHash = checkSources
+      ? await hashFile(sourcePath(entry.source))
+      : record.sourceHash;
     if (currentSourceHash !== record.sourceHash) {
       throw new Error(
         `Source changed after generation: ${entry.source}. Run npm run images:prepare.`,
@@ -515,6 +526,9 @@ async function verify() {
   console.log(
     `Verified ${imageManifest.length} WebP images across ${imageAlbums.length} albums.`,
   );
+  if (!checkSources) {
+    console.log("Originals (pics/) not present: checked generated output only.");
+  }
 
   if (sourceDuplicates.length) {
     console.warn(
