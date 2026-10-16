@@ -37,6 +37,72 @@ export async function applyPaymentToInvoice(
   });
 }
 
+// A verified feeding/transport payment is a wallet top-up: it moves the
+// matching wallet balance and leaves a ledger row. Without this the wallet
+// pages would show a balance that never responds to a real payment.
+// School-fee payments are invoice-settling and never touch a wallet.
+export async function creditWalletForPayment(payment: Payment): Promise<void> {
+  const wallet =
+    payment.category === "feeding"
+      ? "feeding"
+      : payment.category === "transport"
+        ? "transport"
+        : null;
+  if (!wallet) return;
+
+  const occurredAt = new Date().toISOString().slice(0, 10);
+
+  if (wallet === "feeding") {
+    const existing = await prisma.feedingBalance.findUnique({
+      where: { studentId: payment.studentId },
+    });
+    await prisma.feedingBalance.upsert({
+      where: { studentId: payment.studentId },
+      create: {
+        studentId: payment.studentId,
+        balance: payment.amount,
+        lastTopUpAt: occurredAt,
+        status: "active",
+      },
+      update: {
+        balance: (existing?.balance ?? 0) + payment.amount,
+        lastTopUpAt: occurredAt,
+        status: "active",
+      },
+    });
+  } else {
+    const existing = await prisma.transportWalletBalance.findUnique({
+      where: { studentId: payment.studentId },
+    });
+    await prisma.transportWalletBalance.upsert({
+      where: { studentId: payment.studentId },
+      create: {
+        studentId: payment.studentId,
+        balance: payment.amount,
+        lastTopUpAt: occurredAt,
+        status: "active",
+      },
+      update: {
+        balance: (existing?.balance ?? 0) + payment.amount,
+        lastTopUpAt: occurredAt,
+        status: "active",
+      },
+    });
+  }
+
+  await prisma.walletTransaction.create({
+    data: {
+      studentId: payment.studentId,
+      wallet,
+      type: "top_up",
+      amount: payment.amount,
+      description: `${payment.method.toUpperCase()} payment ${payment.reference}`,
+      reference: payment.reference,
+      occurredAt,
+    },
+  });
+}
+
 // Generate a receipt document for a verified payment (parent-visible).
 export async function createReceipt(
   payment: Payment,
@@ -135,6 +201,7 @@ export async function verifyPaymentRecord(
   if (payment.invoiceId) {
     await applyPaymentToInvoice(payment.invoiceId, payment.amount);
   }
+  await creditWalletForPayment(payment);
   const receiptId = await createReceipt(payment, student);
   const updated = await prisma.payment.update({
     where: { id: paymentId },

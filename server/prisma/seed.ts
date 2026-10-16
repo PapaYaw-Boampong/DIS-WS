@@ -14,6 +14,8 @@ const accounts: ReadonlyArray<{ name: string; email: string; role: Role }> = [
   { name: "Divine Parent", email: "parent@dis.local", role: "PARENT" },
   { name: "Divine Student", email: "student@dis.local", role: "STUDENT" },
   { name: "Divine Transport", email: "transport@dis.local", role: "TRANSPORT" },
+  { name: "Divine Registry", email: "registry@dis.local", role: "REGISTRY" },
+  { name: "Divine Developer", email: "developer@dis.local", role: "DEVELOPER" },
 ];
 
 async function main() {
@@ -43,8 +45,25 @@ async function main() {
   const accountsUser = byEmail("accounts@dis.local");
   const transportUser = byEmail("transport@dis.local");
 
-  // Reset domain tables for an idempotent seed.
+  // Reset domain tables for an idempotent seed. Every table this script writes
+  // to must be listed — a table that is seeded but never reset makes the second
+  // run fail on a unique constraint (which is exactly what the CMS posts did),
+  // and it fails *after* the accounts are already written, leaving the database
+  // half-seeded.
   await prisma.$transaction([
+    // Public website CMS.
+    prisma.newsArticlePost.deleteMany(),
+    prisma.eventPost.deleteMany(),
+    prisma.calendarTermPost.deleteMany(),
+    // Report cards and progression (Phase 22).
+    prisma.reportCard.deleteMany(),
+    prisma.studentPromotion.deleteMany(),
+    // Developer-set role permissions fall back to the shipped defaults.
+    prisma.roleCapability.deleteMany(),
+    // Rows that reference seeded records without a database-level cascade
+    // would otherwise be left orphaned pointing at deleted ids.
+    prisma.notificationRead.deleteMany(),
+    prisma.assignmentSubmission.deleteMany(),
     prisma.statementTransaction.deleteMany(),
     prisma.statementImport.deleteMany(),
     prisma.message.deleteMany(),
@@ -157,6 +176,29 @@ async function main() {
         status: "active",
       },
     ],
+  });
+
+  // School leadership: real staff records whose public profile drives the
+  // website's Leadership & Management page.
+  const leaders = [
+    { fullName: "Kwame Wireko Boampong", title: "Co-Director", publicRole: "School direction & governance", publicIcon: "user-round", publicBio: "Provides overall direction, governance and stewardship of the school's vision and growth.", imageId: "events-graduation-adults-co-director-1" },
+    { fullName: "Vivian Agbeme Boampong", title: "Co-Director", publicRole: "School direction & governance", publicIcon: "user-round", publicBio: "Provides overall direction, governance and stewardship of the school's vision and growth.", imageId: "events-graduation-adults-co-director-2" },
+    { fullName: "Kwasi Ohene", title: "Principal / Headmaster", publicRole: "Basic & Junior High", publicIcon: "graduation-cap", publicBio: "Leads teaching standards, staff culture, pupil wellbeing and family partnership across Basic and JHS." },
+    { fullName: "Bismark", title: "Assistant Headmaster", publicRole: "Basic & Junior High", publicIcon: "book-open", publicBio: "Supports academic leadership, daily coordination and pupil progress across Basic and JHS." },
+    { fullName: "Deede Ayetee", title: "Head Manager, Early Years", publicRole: "Early Years leadership", publicIcon: "baby", publicBio: "Leads the Early Years team, nurturing routines, care and foundation learning for the youngest pupils." },
+    { fullName: "Nancy Abatifie", title: "Assistant Manager, Early Years", publicRole: "Early Years support", publicIcon: "heart", publicBio: "Supports Early Years planning, classroom care and responsive support for young learners." },
+  ];
+  await prisma.staff.createMany({
+    data: leaders.map((leader, index) => ({
+      ...leader,
+      staffId: `STF-00${index + 1}`,
+      department: "Leadership",
+      classIds: [],
+      subjectIds: [],
+      status: "active",
+      showOnWebsite: true,
+      websitePosition: index + 1,
+    })),
   });
 
   const feeSchool = await prisma.feeItem.create({

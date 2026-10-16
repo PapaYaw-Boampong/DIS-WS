@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 
 import { requireRole } from "../lib/auth-guard";
+import { allowedAlbumHosts, validateAlbumUrl } from "../lib/album-url";
 import { recordAudit } from "../lib/audit";
 import { isContentIcon } from "../lib/content-icons";
 import { deleteObject, getObjectBytes, uploadObject } from "../lib/storage";
@@ -30,7 +31,8 @@ function contentTypeForKey(key: string): string {
   return "application/octet-stream";
 }
 
-// Public website CMS. Two audiences:
+// Public website CMS (news, events, albums, calendar, and the public profile
+// of leadership Staff records). Two audiences:
 //   - Public (unauthenticated) read endpoints under /public/* serve only
 //     `published` rows, for the marketing website to render.
 //   - Admin-only write endpoints under /cms/* manage all rows (incl. drafts),
@@ -98,6 +100,22 @@ const eventCreateSchema = z.object({
 
 const eventUpdateSchema = eventCreateSchema.partial();
 
+// --- Photo albums ----------------------------------------------------------
+// The URL is only shape-checked here; validateAlbumUrl enforces https and the
+// host allowlist at the route, where a rejection can name the allowed hosts.
+
+const albumCreateSchema = z.object({
+  title: z.string().min(1),
+  description: z.string().default(""),
+  occasionLabel: z.string().default(""),
+  albumUrl: z.string().min(1),
+  ...imageFields,
+  status: statusField.default("draft"),
+  position: z.number().int().default(0),
+});
+
+const albumUpdateSchema = albumCreateSchema.partial();
+
 // --- Calendar terms --------------------------------------------------------
 
 const calendarCreateSchema = z.object({
@@ -110,6 +128,47 @@ const calendarCreateSchema = z.object({
 });
 
 const calendarUpdateSchema = calendarCreateSchema.partial();
+
+// --- Leadership (public profile on Staff records) ---------------------------
+// Leaders are ordinary registry Staff rows; this only edits their public-facing
+// profile. Creating or renaming a person stays with the registry, so the site
+// and the people records cannot drift apart.
+
+const leaderUpdateSchema = z
+  .object({
+    showOnWebsite: z.boolean(),
+    websitePosition: z.number().int(),
+    publicTitle: z.string(),
+    publicRole: z.string(),
+    publicBio: z.string(),
+    publicIcon: iconField,
+    ...imageFields,
+  })
+  .partial();
+
+// The only Staff columns the public endpoint may ever return. Contact details
+// and HR fields live on the same row, so this is an allowlist, not a filter.
+const publicLeaderSelect = {
+  id: true,
+  fullName: true,
+  title: true,
+  publicTitle: true,
+  publicRole: true,
+  publicBio: true,
+  publicIcon: true,
+  imageId: true,
+  imageObjectKey: true,
+  imageAlt: true,
+} as const;
+
+const adminLeaderSelect = {
+  ...publicLeaderSelect,
+  staffId: true,
+  status: true,
+  department: true,
+  showOnWebsite: true,
+  websitePosition: true,
+} as const;
 
 // --- Calendar PDF (singleton document) -------------------------------------
 
@@ -146,6 +205,27 @@ export async function cmsRoutes(app: FastifyInstance): Promise<void> {
       orderBy: [{ position: "asc" }, { createdAt: "desc" }],
     });
     return reply.send({ events });
+  });
+
+  // Photo albums the school has shared (Google Photos). Public read serves
+  // only published rows, exactly like news and events.
+  app.get("/public/photo-albums", async (_request, reply) => {
+    const albums = await prisma.photoAlbumPost.findMany({
+      where: { status: "published" },
+      orderBy: [{ position: "asc" }, { createdAt: "desc" }],
+    });
+    return reply.send({ albums });
+  });
+
+  // Leadership & Management page. A leader drops off the site automatically
+  // when the registry marks them inactive.
+  app.get("/public/leadership", async (_request, reply) => {
+    const leaders = await prisma.staff.findMany({
+      where: { showOnWebsite: true, status: "active" },
+      orderBy: [{ websitePosition: "asc" }, { fullName: "asc" }],
+      select: publicLeaderSelect,
+    });
+    return reply.send({ leaders });
   });
 
   app.get("/public/calendar", async (_request, reply) => {
@@ -415,6 +495,51 @@ export async function cmsRoutes(app: FastifyInstance): Promise<void> {
     return reply.send({ ok: true });
   });
 
+  // ------------------------------------------------------ admin: leadership
+
+  // Every staff record, so an admin can choose who appears; those already on
+  // the site come first, in their display order.
+  app.get("/cms/leadership", async (request, reply) => {
+    const actor = await requireRole(request, reply, ADMIN);
+    if (!actor) return;
+    const staff = await prisma.staff.findMany({
+      orderBy: [
+        { showOnWebsite: "desc" },
+        { websitePosition: "asc" },
+        { fullName: "asc" },
+      ],
+      select: adminLeaderSelect,
+    });
+    return reply.send({ staff });
+  });
+
+  app.patch("/cms/leadership/:id", async (request, reply) => {
+    const actor = await requireRole(request, reply, ADMIN);
+    if (!actor) return;
+    const { id } = request.params as { id: string };
+    const parsed = leaderUpdateSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.code(400).send({ error: "invalid_request" });
+    }
+    try {
+      const leader = await prisma.staff.update({
+        where: { id },
+        data: parsed.data,
+        select: adminLeaderSelect,
+      });
+      await recordAudit(request, {
+        actor,
+        action: "cms.leadership_updated",
+        targetType: "staff",
+        targetId: id,
+        summary: `${Object.keys(parsed.data).join(",")} showOnWebsite=${leader.showOnWebsite}`,
+      });
+      return reply.send({ leader });
+    } catch {
+      return reply.code(404).send({ error: "not_found" });
+    }
+  });
+
   // -------------------------------------------------------- admin: calendar
 
   app.get("/cms/calendar", async (request, reply) => {
@@ -612,6 +737,100 @@ export async function cmsRoutes(app: FastifyInstance): Promise<void> {
       action: "cms.calendar_pdf_deleted",
       targetType: "calendar_document",
       targetId: firstId,
+    });
+    return reply.send({ ok: true });
+  });
+
+  // --------------------------------------------------- admin: photo albums
+
+  app.get("/cms/photo-albums", async (request, reply) => {
+    const actor = await requireRole(request, reply, ADMIN);
+    if (!actor) return;
+    const albums = await prisma.photoAlbumPost.findMany({
+      orderBy: [{ position: "asc" }, { updatedAt: "desc" }],
+    });
+    return reply.send({ albums, allowedHosts: allowedAlbumHosts });
+  });
+
+  app.post("/cms/photo-albums", async (request, reply) => {
+    const actor = await requireRole(request, reply, ADMIN);
+    if (!actor) return;
+    const parsed = albumCreateSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.code(400).send({ error: "invalid_request" });
+    }
+
+    const url = validateAlbumUrl(parsed.data.albumUrl);
+    if (!url.ok) {
+      return reply.code(400).send({ error: url.error, allowedHosts: allowedAlbumHosts });
+    }
+
+    const album = await prisma.photoAlbumPost.create({
+      data: {
+        ...parsed.data,
+        albumUrl: url.url,
+        provider: url.provider,
+        authorId: actor.id,
+      },
+    });
+    await recordAudit(request, {
+      actor,
+      action: "cms.photo_album_created",
+      targetType: "photo_album",
+      targetId: album.id,
+      summary: `title=${album.title} status=${album.status} host=${new URL(album.albumUrl).hostname}`,
+    });
+    return reply.code(201).send({ album });
+  });
+
+  app.patch("/cms/photo-albums/:id", async (request, reply) => {
+    const actor = await requireRole(request, reply, ADMIN);
+    if (!actor) return;
+    const { id } = request.params as { id: string };
+    const parsed = albumUpdateSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.code(400).send({ error: "invalid_request" });
+    }
+
+    const data: Record<string, unknown> = { ...parsed.data };
+    if (parsed.data.albumUrl !== undefined) {
+      const url = validateAlbumUrl(parsed.data.albumUrl);
+      if (!url.ok) {
+        return reply.code(400).send({ error: url.error, allowedHosts: allowedAlbumHosts });
+      }
+      data.albumUrl = url.url;
+      data.provider = url.provider;
+    }
+
+    try {
+      const album = await prisma.photoAlbumPost.update({ where: { id }, data });
+      await recordAudit(request, {
+        actor,
+        action: "cms.photo_album_updated",
+        targetType: "photo_album",
+        targetId: id,
+        summary: Object.keys(data).join(","),
+      });
+      return reply.send({ album });
+    } catch {
+      return reply.code(404).send({ error: "not_found" });
+    }
+  });
+
+  app.delete("/cms/photo-albums/:id", async (request, reply) => {
+    const actor = await requireRole(request, reply, ADMIN);
+    if (!actor) return;
+    const { id } = request.params as { id: string };
+    try {
+      await prisma.photoAlbumPost.delete({ where: { id } });
+    } catch {
+      return reply.code(404).send({ error: "not_found" });
+    }
+    await recordAudit(request, {
+      actor,
+      action: "cms.photo_album_deleted",
+      targetType: "photo_album",
+      targetId: id,
     });
     return reply.send({ ok: true });
   });

@@ -4,11 +4,11 @@ import { z } from "zod";
 
 import { requireRole, requireUser } from "../lib/auth-guard";
 import { recordAudit } from "../lib/audit";
+import { requireCapability } from "../lib/capabilities";
 import { resolveParent } from "../lib/current-parent";
 import { isAllowedUploadMimeType } from "../lib/file-validation";
 import {
-  applyPaymentToInvoice,
-  createReceipt,
+  invoiceStatus,
   newReference,
   notifyPaymentParent,
   notifyPendingPaymentVerifiers,
@@ -54,6 +54,21 @@ const bankSchema = z.object({
     .optional(),
 });
 
+const feeItemSchema = z.object({
+  title: z.string().min(1),
+  category: z.string().min(1),
+  amount: z.number().int().positive(),
+  term: z.string().min(1),
+  academicYear: z.string().min(1),
+  dueDate: z.string().optional().default(""),
+});
+
+const invoiceSchema = z.object({
+  studentId: z.string().min(1),
+  feeItemIds: z.array(z.string().min(1)).min(1),
+  dueDate: z.string().optional().default(""),
+});
+
 // Increment 4: finance (fee items, invoices, payments) + cash-desk write.
 export async function financeRoutes(app: FastifyInstance): Promise<void> {
   app.get("/fee-items", async (request, reply) => {
@@ -65,6 +80,39 @@ export async function financeRoutes(app: FastifyInstance): Promise<void> {
     return reply.send({ feeItems });
   });
 
+  // Fee catalogue setup. Capability-gated so the school can hand fee setup to
+  // the registry or keep it with accounts.
+  app.post("/fee-items", async (request, reply) => {
+    const actor = await requireCapability(request, reply, "finance.manage");
+    if (!actor) return;
+
+    const parsed = feeItemSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.code(400).send({ error: "invalid_request" });
+    }
+
+    const feeItem = await prisma.feeItem.create({
+      data: {
+        title: parsed.data.title.trim(),
+        category: parsed.data.category,
+        amount: parsed.data.amount,
+        term: parsed.data.term,
+        academicYear: parsed.data.academicYear,
+        dueDate: parsed.data.dueDate || null,
+      },
+    });
+
+    await recordAudit(request, {
+      actor,
+      action: "finance.fee_item_created",
+      targetType: "fee_item",
+      targetId: feeItem.id,
+      summary: `title=${feeItem.title} category=${feeItem.category} amount=${feeItem.amount} term=${feeItem.term}`,
+    });
+
+    return reply.code(201).send({ feeItem });
+  });
+
   app.get("/invoices", async (request, reply) => {
     const actor = await requireRole(request, reply, ["admin", "accounts"]);
     if (!actor) return;
@@ -72,6 +120,59 @@ export async function financeRoutes(app: FastifyInstance): Promise<void> {
       orderBy: { createdAt: "desc" },
     });
     return reply.send({ invoices });
+  });
+
+  // Assign fee items to a learner. The total is computed from the catalogue,
+  // never taken from the request — a client-supplied total would let the
+  // browser decide what a family owes.
+  app.post("/invoices", async (request, reply) => {
+    const actor = await requireCapability(request, reply, "finance.manage");
+    if (!actor) return;
+
+    const parsed = invoiceSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.code(400).send({ error: "invalid_request" });
+    }
+
+    const student = await prisma.student.findUnique({
+      where: { id: parsed.data.studentId },
+    });
+    if (!student) return reply.code(404).send({ error: "student_not_found" });
+
+    const feeItems = await prisma.feeItem.findMany({
+      where: { id: { in: parsed.data.feeItemIds } },
+    });
+    if (feeItems.length !== parsed.data.feeItemIds.length) {
+      return reply.code(400).send({ error: "unknown_fee_item" });
+    }
+
+    const totalAmount = feeItems.reduce((sum, item) => sum + item.amount, 0);
+    const dueDate =
+      parsed.data.dueDate ||
+      feeItems.map((item) => item.dueDate).filter(Boolean).sort()[0] ||
+      null;
+
+    const invoice = await prisma.invoice.create({
+      data: {
+        studentId: student.id,
+        feeItemIds: feeItems.map((item) => item.id),
+        totalAmount,
+        amountPaid: 0,
+        balance: totalAmount,
+        status: invoiceStatus(totalAmount, 0),
+        dueDate,
+      },
+    });
+
+    await recordAudit(request, {
+      actor,
+      action: "finance.invoice_created",
+      targetType: "invoice",
+      targetId: invoice.id,
+      summary: `student=${student.id} items=${feeItems.length} total=${totalAmount}`,
+    });
+
+    return reply.code(201).send({ invoice });
   });
 
   app.get("/payments", async (request, reply) => {
@@ -273,7 +374,7 @@ export async function financeRoutes(app: FastifyInstance): Promise<void> {
       where: { childIds: { has: student.id } },
     });
 
-    const payment = await prisma.payment.create({
+    const created = await prisma.payment.create({
       data: {
         parentId: parent?.id ?? null,
         studentId: parsed.data.studentId,
@@ -281,36 +382,30 @@ export async function financeRoutes(app: FastifyInstance): Promise<void> {
         category: parsed.data.category,
         amount: parsed.data.amount,
         method: "cash",
-        status: "verified",
+        status: "pending",
         reference,
         note: parsed.data.note ?? null,
-        verifiedById: actor.id,
-        verifiedAt: new Date(),
       },
     });
 
-    if (parsed.data.invoiceId) {
-      await applyPaymentToInvoice(parsed.data.invoiceId, parsed.data.amount);
+    // Cash is verified the moment it is handed over, but it still goes through
+    // the one shared verification helper rather than applying its own invoice/
+    // receipt/notification logic. Duplicating those effects here is how the
+    // cash desk silently stopped crediting feeding and transport wallets.
+    const verified = await verifyPaymentRecord(created.id, actor.id);
+    if (!verified.ok) {
+      return reply.code(400).send({ error: verified.error });
     }
-    const receiptId = await createReceipt(payment, student);
-    await prisma.payment.update({
-      where: { id: payment.id },
-      data: { receiptDocumentId: receiptId },
-    });
-    await notifyPaymentParent(
-      payment,
-      "Payment received",
-      `A cash payment of GHS ${payment.amount} for ${student.fullName} has been recorded and verified.`,
-    );
+
     await recordAudit(request, {
       actor,
       action: "finance.payment_recorded",
       targetType: "payment",
-      targetId: payment.id,
-      summary: `method=cash amount=${payment.amount} category=${payment.category} student=${student.id} reference=${payment.reference}`,
+      targetId: verified.payment.id,
+      summary: `method=cash amount=${verified.payment.amount} category=${verified.payment.category} student=${student.id} reference=${verified.payment.reference}`,
     });
 
-    return reply.code(201).send({ payment });
+    return reply.code(201).send({ payment: verified.payment });
   });
 
   // Accounts/admin: verify a pending payment (idempotent).

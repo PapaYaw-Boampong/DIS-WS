@@ -59,6 +59,20 @@ runs `prisma migrate deploy` on build.
    | `R2_BUCKET_NAME` | your bucket, e.g. `dis-file-space` |
    | `ALLOWED_ORIGIN` | the Vercel origin(s), comma-separated (see step 3) |
 
+   **Optional — Paystack** (the online payment lane). Leave these unset and the
+   portal runs on Mobile Money submission + bank deposits exactly as before.
+
+   | Var | Value |
+   |---|---|
+   | `PAYSTACK_ENABLED` | `true` to open the lane; anything else keeps it closed |
+   | `PAYSTACK_SECRET_KEY` | Paystack secret key (`sk_live_…`) — also signs the webhook |
+   | `PAYSTACK_CALLBACK_URL` | `https://<vercel-app>/portal/parent/fees/pay/confirm` |
+
+   The service **refuses to boot** if `PAYSTACK_ENABLED=true` with no secret key,
+   or with a `sk_test_` key while `NODE_ENV=production`. Set the webhook URL in
+   the Paystack dashboard to
+   `https://<service>.onrender.com/finance/payments/paystack/webhook`.
+
    `DATABASE_URL` is wired automatically from the Render DB; `NODE_ENV=production`
    and `PORT` are set for you. **No session secret is needed** (sessions store a
    SHA-256 hash of a random token). Set `SEED_PASSWORD` only if you seed.
@@ -129,8 +143,8 @@ backend.
 
 ## Deferred (documented, not yet built)
 
-Card payment provider (Paystack/Hubtel/Flutterwave), MTN MoMo API auto-verify,
-OCR receipt scan, bank-email ingestion, real GPS transport tracking, SMS/WhatsApp
-notifications, and email-based self-service password reset. In-app equivalents
-(manual/cash/MoMo-submission payments, in-app notifications, manual transport
-status, admin-initiated password reset) are live.
+MTN MoMo API auto-verify, OCR receipt scan, bank-email ingestion, Paystack
+settlement-report reconciliation and refunds, real GPS transport tracking, and
+SMS/WhatsApp + email-based self-service password reset. In-app equivalents
+(Paystack checkout, manual/cash/MoMo-submission payments, in-app notifications,
+manual transport status, admin-initiated password reset) are live.

@@ -2,11 +2,16 @@ import { PrismaClient } from "@prisma/client";
 
 import { hashPassword } from "../src/lib/password";
 
-// Creates a single real ADMIN account so a fresh (unseeded) production database
-// has a way in. That admin then creates all other accounts from the portal.
+// Creates the single first account so a fresh (unseeded) production database
+// has a way in. That account then creates all other accounts from the portal.
+//
+// The default role is DEVELOPER because account issuance is gated on the
+// `accounts.manage` capability, which ships granted to `developer` only. A
+// bootstrap ADMIN could not create anyone else.
 //
 // Usage (values via flags or env):
-//   npx tsx scripts/create-admin.ts --email head@school.edu --name "Head Teacher" --password "..."
+//   npx tsx scripts/create-admin.ts --email you@school.edu --name "Name" --password "..."
+//   npx tsx scripts/create-admin.ts --role admin --email head@school.edu ...
 //   ADMIN_EMAIL=... ADMIN_NAME="..." ADMIN_PASSWORD=... npx tsx scripts/create-admin.ts
 //
 // It refuses to overwrite an existing account and enforces an 8+ char password.
@@ -22,6 +27,14 @@ async function main() {
   const email = (flag("email") ?? process.env.ADMIN_EMAIL ?? "").toLowerCase().trim();
   const name = flag("name") ?? process.env.ADMIN_NAME ?? "";
   const password = flag("password") ?? process.env.ADMIN_PASSWORD ?? "";
+  const role = (flag("role") ?? process.env.ADMIN_ROLE ?? "developer")
+    .toLowerCase()
+    .trim();
+
+  const allowedRoles = ["developer", "admin", "registry", "accounts"] as const;
+  if (!allowedRoles.includes(role as (typeof allowedRoles)[number])) {
+    throw new Error(`--role must be one of: ${allowedRoles.join(", ")}.`);
+  }
 
   if (!email || !email.includes("@")) {
     throw new Error("A valid --email (or ADMIN_EMAIL) is required.");
@@ -42,12 +55,12 @@ async function main() {
     data: {
       name,
       email,
-      role: "ADMIN",
+      role: role.toUpperCase() as "DEVELOPER",
       passwordHash: await hashPassword(password),
     },
   });
 
-  console.log(`Created admin account: ${user.email} (id ${user.id}).`);
+  console.log(`Created ${role} account: ${user.email} (id ${user.id}).`);
   console.log("Sign in at the portal and create the remaining accounts from there.");
 }
 

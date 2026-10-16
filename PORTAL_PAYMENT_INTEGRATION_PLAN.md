@@ -43,6 +43,12 @@ Provider choice should consider:
 
 No provider is selected or connected in this repository.
 
+`PAYSTACK_INTEGRATION_PLAN.md` works Paystack up in full detail as an
+**optional** lane alongside the existing MoMo-reference and bank-deposit
+flows — schema, endpoints, webhook verification, fee/settlement handling, and
+build order. It is a plan, not an implementation, and choosing it still
+requires the school to open a Paystack Ghana account.
+
 ## 3. Production Payment Flow
 
 Recommended flow:

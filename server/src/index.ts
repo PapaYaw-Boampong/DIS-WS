@@ -1,20 +1,34 @@
 import cors from "@fastify/cors";
 import Fastify from "fastify";
 
+declare module "fastify" {
+  interface FastifyRequest {
+    // The exact JSON text received, kept for signature verification.
+    rawBody?: string;
+  }
+}
+
 import { prisma } from "./db";
 import { allowedOrigins, env } from "./env";
 import { academicsRoutes } from "./routes/academics";
 import { adminRoutes } from "./routes/admin";
 import { auditRoutes } from "./routes/audit";
 import { authRoutes } from "./routes/auth";
+import { calendarRoutes } from "./routes/calendar";
 import { cmsRoutes } from "./routes/cms";
+import { dashboardRoutes } from "./routes/dashboard";
 import { communicationRoutes } from "./routes/communication";
 import { documentRoutes } from "./routes/documents";
 import { financeRoutes } from "./routes/finance";
 import { formsRoutes } from "./routes/forms";
 import { healthRoutes } from "./routes/health";
 import { messageRoutes } from "./routes/messages";
+import { mfaRoutes } from "./routes/mfa";
+import { paystackRoutes, paystackWebhookRoutes } from "./routes/paystack";
 import { peopleRoutes } from "./routes/people";
+import { permissionRoutes } from "./routes/permissions";
+import { registryRoutes } from "./routes/registry";
+import { reportCardRoutes } from "./routes/report-cards";
 import { statementRoutes } from "./routes/statements";
 import { transportRoutes } from "./routes/transport";
 import { walletRoutes } from "./routes/wallets";
@@ -33,7 +47,7 @@ async function main(): Promise<void> {
   await app.register(cors, {
     origin: allowedOrigins,
     credentials: true,
-    methods: ["GET", "POST", "OPTIONS"],
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
   });
 
   // Defense-in-depth for the file-download routes (payment attachments,
@@ -49,14 +63,22 @@ async function main(): Promise<void> {
   // Fastify's default JSON parser rejects an empty body under
   // `content-type: application/json` with a 400 before the route handler (and
   // its auth check) ever runs — treat an empty body as `undefined` instead.
+  //
+  // The untouched request text is also stashed on the request. The Paystack
+  // webhook's HMAC is computed over the exact bytes Paystack sent, and
+  // verifying a re-serialised body fails intermittently (key order,
+  // whitespace) in a way that looks like a provider bug. A parser cannot be
+  // overridden per-route in Fastify (FST_ERR_CTP_ALREADY_PRESENT), so the one
+  // global parser preserves what that route needs.
   app.addContentTypeParser(
     "application/json",
     { parseAs: "string" },
-    (_request, body, done) => {
+    (request, body, done) => {
       if (typeof body !== "string" || body.trim().length === 0) {
         done(null, undefined);
         return;
       }
+      request.rawBody = body;
       try {
         done(null, JSON.parse(body));
       } catch (error) {
@@ -80,6 +102,14 @@ async function main(): Promise<void> {
   await app.register(auditRoutes);
   await app.register(cmsRoutes);
   await app.register(formsRoutes);
+  await app.register(mfaRoutes);
+  await app.register(calendarRoutes);
+  await app.register(dashboardRoutes);
+  await app.register(registryRoutes);
+  await app.register(reportCardRoutes);
+  await app.register(permissionRoutes);
+  await app.register(paystackRoutes);
+  await app.register(paystackWebhookRoutes);
 
   async function shutdown(signal: string): Promise<void> {
     app.log.info(`Received ${signal}, shutting down`);

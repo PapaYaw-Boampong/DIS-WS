@@ -7,6 +7,152 @@ brief.
 
 ## Current Phase
 
+**Portal Phase 24: Two-step sign-in, GPS trackers & a repeatable seed**
+Status: `complete`
+Completed: August 10, 2026
+
+- **Two-step sign-in (TOTP)** — `server/src/lib/totp.ts` implements RFC 6238
+  (SHA-1, 6 digits, 30s step, ±1 window) directly rather than pulling in a
+  dependency, and is checked against the **RFC 6238 Appendix B test vectors**
+  (`npx tsx scripts/totp-check.ts`) so it interoperates with Google
+  Authenticator, Authy, 1Password and the rest.
+  Sign-in becomes two steps: a correct password returns a short-lived
+  **challenge**, never a session, and the challenge is exchanged for a session
+  only once a code is verified. The challenge lives in an httpOnly cookie, is
+  single-use, expires in 5 minutes and dies after 5 wrong codes. A TOTP code
+  already used cannot be replayed inside its own 30-second window.
+  Ten one-time **backup codes** are issued at enrolment, stored as SHA-256
+  hashes and shown exactly once. Enabling needs a working code (so a
+  half-finished enrolment can never lock someone out); disabling needs **both**
+  the password and a current code (so a borrowed screen cannot strip it).
+  Whoever holds `accounts.manage` can reset a locked-out user's second factor —
+  audited, and it revokes their sessions.
+  **A real bug was caught in verification**: `/auth/mfa/verify` capped the
+  submitted code at 9 characters while a backup code is 11, so backup codes
+  could never have been used — a failure nobody discovers until they have
+  already lost their phone.
+- **GPS trackers** — a `TransportDevice` authenticates as itself with a hashed
+  bearer token (never a staff login), and `POST /transport/position` records a
+  bounded latitude/longitude/speed onto the day's trip. A tracker reports
+  *where* the bus is; it does not set the trip's operational status, so a
+  cancelled route is not un-cancelled by a box still transmitting from the
+  depot. Position writes are deliberately **not** audited — a tracker reporting
+  every few seconds would bury every human action in the log; `lastSeenAt` is
+  the trail. Devices can be revoked, and a revoked token is refused.
+  The parent view shows the live fix with how fresh it is and a link to open the
+  coordinates in a real map app; a reading older than five minutes is reported
+  as a lost signal rather than shown as live. The schematic route diagram is
+  left as a diagram — plotting real coordinates on it would be a guess. With no
+  tracker fitted, the page says plainly that the position is office-entered.
+  This is the whole software side; it needs the school to fit actual trackers.
+- **The seed is repeatable.** It reset most domain tables but never the CMS
+  ones, so a second run died on the news `slug` unique constraint — after the
+  accounts were already written, leaving a half-seeded database. Every table
+  the script writes is now reset first, verified over three consecutive runs.
+
+**Portal Phase 23: Real dashboard metrics & login throttling**
+Status: `complete`
+Completed: August 10, 2026
+
+- **Dashboard aggregates are counted, not invented**
+  (`server/src/routes/dashboard.ts`). `GET /dashboard/summary` returns real
+  school counts, finance totals and **derived** alerts — each alert states a
+  live count (classes under the 90% attendance threshold, payments awaiting
+  verification, overdue invoices and their value, empty feeding wallets) and
+  disappears on its own when the condition clears. `GET
+  /dashboard/staff-workload` gives a teacher their own week, scoped
+  server-side to their classes.
+  Per-category collection is reported as **amounts received per category**,
+  not a "percent collected": an invoice carries several fee items and payments
+  are not allocated across them, so a per-category completion rate would be a
+  guess presented as a fact.
+  With no backend the dashboards keep the illustrative figures and now label
+  them as illustrative, so the two modes are never confusable.
+- **Login throttling** (`server/src/lib/rate-limit.ts`): two independent
+  counters — 5 failures per **account** and 20 per **IP** in a 15-minute
+  window, each triggering a 15-minute lockout — because they stop different
+  attacks (guessing one password vs. spraying one password across many
+  accounts). The check runs *before* the database lookup and argon2 verify, so
+  a locked-out attacker gets a cheap `429` rather than free hashing work. A
+  **correct** password during a lockout is also refused, so the response is not
+  a password oracle. The sign-in page explains the wait instead of repeating
+  "incorrect password". State is in-process: correct for the current
+  single-instance Render service, and it must move to Postgres/Redis before
+  the API is scaled out — noted in the module.
+- **Stale copy fixed**: the create-assignment page still said *"This is a
+  preview and does not publish work to students"* and badged "Preview only",
+  three phases after the form started creating real assignments. Renamed
+  `MockAssignmentForm` → `AssignmentForm` and deleted the dead
+  `MockGradeEntryForm`.
+
+**Portal Phase 22: Registry, report cards, role permissions & Paystack**
+Status: `complete`
+Completed: August 5, 2026
+
+Closes every remaining frontend-only surface in the portal and adds the online
+payment lane. Before this phase the registry screens, report cards and the role
+matrix existed as UI with no backend behind them; the admin/accounts setup
+forms were browser-only previews.
+
+- **The two split admin roles are real** (migration
+  `registry_reportcards_permissions_paystack`): `REGISTRY` and `DEVELOPER` join
+  the Prisma `Role` enum, so those accounts can be created and can sign in. The
+  seed adds `registry@dis.local` and `developer@dis.local`.
+- **Role permissions are school-wide and enforced** (`RoleCapability` table,
+  `server/src/routes/permissions.ts`): the developer's capability matrix is
+  persisted and read back by every portal render, and `requireCapability()`
+  gates the writes server-side. Revoking a capability now *stops the write*,
+  not just the button — verified by revoking `students.import` from `registry`
+  and getting a `403` on the endpoint. Editing the matrix is gated on the
+  `developer` **role**, not a capability, so the school cannot revoke its own
+  way back in. With no backend the matrix still falls back to a per-browser
+  cookie, and says so.
+- **Registry write endpoints** (`server/src/routes/registry.ts`): `POST
+  /students`, `/parents`, `/staff`, `/students/promotions`, `/students/import`
+  and `/classes`, all capability-gated and audited. The intake forms captured
+  far more than the old models held, so `Student`, `Parent` and `Staff` gained
+  the full intake detail (date of birth, guardian contacts, address, medical
+  notes, emergency contact, department, qualification…) rather than dropping it.
+  Guardian↔learner links are written on both sides. A new `StudentPromotion`
+  table keeps end-of-year progression as auditable history; class rosters are
+  recomputed, never hand-maintained. Bulk import treats rows independently, so
+  one duplicate learner number does not discard the rest of the class list.
+  The registry may issue a **parent** login (lowest privilege, no escalation
+  risk); a staff login needs `accounts.manage`, and without it the staff record
+  is still created with the requested role recorded for whoever does have it.
+- **Report cards are a real domain** (`ReportCard` model,
+  `server/src/lib/report-cards.ts`): drafts are built from a class's gradebook —
+  continuous assessment and examination scaled to 50 each, grade, subject and
+  overall position by standard competition ranking, attendance from the daily
+  register — then checked, then published in one action that notifies each
+  family. `subjects` is denormalised JSON on purpose: a published report is a
+  historical statement and must not change when a gradebook entry is later
+  corrected. A published card cannot be edited (`409`); withdrawing it returns
+  it to draft, and regenerating preserves teacher remarks. Families only ever
+  receive `published` rows; staff are scoped to their own classes server-side.
+- **The last five preview forms now write**: class setup, fee items, invoices
+  and transport trip status all hit real endpoints. Invoice totals are computed
+  from the fee catalogue server-side — a client-supplied total would let the
+  browser decide what a family owes. Trip updates overwrite the day's run
+  rather than stacking rows, and notifying families is opt-in per update.
+- **Wallets respond to real money.** Verifying a `feeding` or `transport`
+  payment now credits the matching wallet and writes a ledger row. This
+  surfaced a real bug: the cash desk had its own copy of the invoice/receipt/
+  notification logic instead of calling `verifyPaymentRecord`, so it silently
+  never credited a wallet. All four verification paths (cash desk, accounts
+  Verify, statement auto-match, Paystack) now funnel through the one helper.
+  The parent wallet pages link to Pay Now instead of carrying a mock top-up
+  form — a top-up is a payment, not a separate money path.
+- **Paystack is live as an optional lane** (`PAYSTACK_INTEGRATION_PLAN.md`
+  steps 1–8). The school can leave it off and lose nothing; MoMo-reference and
+  bank-deposit lanes are untouched. The frontend asks
+  `GET /finance/payment-methods` rather than reading a public flag, so it can
+  never offer a checkout the server cannot serve. Hosted-checkout redirect (no
+  third-party script on the portal origin), our reference is Paystack's
+  reference, amount/currency/status are re-verified server-side before any
+  credit, and the webhook HMAC is computed over the exact received bytes.
+  Nothing is ever credited from a webhook payload alone.
+
 **Portal Phase 21: Go-live hardening & deployment prep**
 Status: `in progress`
 Started: July 26, 2026
@@ -372,6 +518,9 @@ unchanged and continues to run on the mock session.
 | Portal Phase 18: Public Website CMS | `complete` | July 25, 2026 | Admin-managed news/events/calendar for the public marketing site: backend models + published-only public read endpoints + admin CRUD (audited, icon-allowlisted); public pages read via `USE_REAL_PUBLIC_CONTENT` with ISR + static fallback; portal admin managers with `revalidatePath` so edits go live instantly |
 | Portal Phase 19: CMS media (flipbook & images) | `complete` | July 26, 2026 | School-calendar PDF flipbook (PDF.js + page-flip; admin upload, R2, public flipbook replacing term tabs with embedded-PDF fallback); news/event images picked from the built-in gallery or uploaded to R2 via a reusable ImagePicker + `/cms-image` proxy; Student Life carousel heights trimmed to fit the viewport |
 | Portal Phase 20: Design-intelligence polish | `complete` | July 26, 2026 | App-wide interaction polish (pointer cursor + `touch-action` on all interactive elements, `not-allowed` when disabled), press-feedback on the shared Button (reduced-motion aware), CMS image-picker label fix, and a documented `design-system/dis/MASTER.md`; verified with `tsc`/`eslint`/production build |
+| Portal Phase 24: Two-step sign-in, GPS trackers & repeatable seed | `complete` | August 10, 2026 | TOTP second factor (own RFC 6238 implementation, validated against the spec's test vectors) with single-use login challenges, replay-proof codes, hashed one-time backup codes and audited admin lockout recovery — caught a code-length bug that would have made every backup code unusable; GPS tracker devices with hashed per-device tokens and a bounded position endpoint, surfaced to parents with freshness and staleness handling; seed made idempotent across all tables |
+| Portal Phase 23: Real dashboard metrics & login throttling | `complete` | August 10, 2026 | `GET /dashboard/summary` + `/dashboard/staff-workload` replace the invented admin/accounts/staff dashboard figures with counted ones and data-derived alerts (per-category collection reported as amounts received, not a fabricated completion rate); per-account + per-IP login throttling with lockout applied before the DB/argon2 work and no password oracle; create-assignment page copy corrected and dead mock form removed |
+| Portal Phase 22: Registry, report cards, permissions & Paystack | `complete` | August 5, 2026 | `REGISTRY`/`DEVELOPER` roles in the backend; persisted + server-enforced role capability matrix; registry write endpoints (students/parents/staff/promotions/bulk import/classes) with full intake detail retained; `ReportCard` domain built from the gradebook with draft→publish→withdraw and family notification; class/fee/invoice/trip preview forms replaced with real writes; feeding & transport wallets credited on payment verification (fixing a cash-desk path that bypassed the shared helper); Paystack optional lane — hosted checkout, signed webhook, server-side amount/currency re-verification |
 | Portal Phase 21: Go-live hardening & deployment prep | `in progress` | — | Admin-initiated password reset (`mustChangePassword`, `/portal/admin/accounts` reset issuing a one-time temp password + session revoke, forced `/portal/change-password` flow); `create:admin` script for a clean production first admin; `render.yaml` R2 env fix; `DEPLOYMENT.md` runbook (Render + Vercel, staging-first). Capability audit confirms MVP complete + backend beyond |
 
 ## Phase 1 Delivered
@@ -835,23 +984,35 @@ Portal Phase 14 verification:
 
 ## Next Phase
 
-Phases 15–17 are complete: real backend (auth through messages/payments/
-statements), an audit trail on every sensitive write, and R2-backed file
-storage for both payment attachments and course materials/submissions.
+As of Phase 22 every portal screen that manages school records writes to the
+real backend. Two smaller surfaces are still browser-only: the accounts
+**report export** and the parent **pickup/drop-off preferences**.
 
-Remaining gaps, per the "Deferred" note under Phase 15 and the backend
-README TODOs — none block current functionality, all need an external
-service/decision before they can be built:
+Remaining gaps:
 
+- **Paystack steps 9–10**: settlement-report import/reconciliation and
+  refunds/reversals. Both are blocked on the school's answers in
+  `PAYSTACK_INTEGRATION_PLAN.md` §10 (who absorbs the fee, which account
+  receives settlements, who may issue a refund).
 - MTN MoMo Collections API auto-verify, OCR of uploaded receipts, and
   automatic bank email/statement-import polling (manual statement upload is
-  the live path today).
-- Admin/accounts dashboard summary/alert cards remain illustrative mock data
-  (not modelled in the backend) — a real aggregate-metrics endpoint would be
-  the next increment here.
-- Login rate limiting and optional MFA for admin/accounts (noted in
-  `server/README.md`, tracked against `PORTAL_AUTHORIZATION_PLAN.md`).
+  still the live path for the MoMo/bank lanes).
+- Login throttle state is per-process — move it to Postgres/Redis before
+  running more than one API instance.
+- Two-step sign-in is **opt-in per user**. If the school wants it mandatory for
+  privileged roles, that is a policy decision plus an enforcement rule at login.
+- GPS tracking is built end to end in software but needs the school to fit
+  actual tracker hardware and point it at
+  `POST /transport/position` with its device token.
+- Accounts **report export** (CSV/PDF/Excel on `/reports`) is still a
+  placeholder. Real CSV export already exists on the student/parent/staff
+  registers via `ExportButton` + `src/lib/portal/spreadsheet.ts`; pointing the
+  reports page at it is small, PDF/Excel would be new.
+- Parent **pickup/drop-off preferences** are still saved in the browser only —
+  no endpoint, so a parent's stated pickup point never reaches the transport
+  office.
 
-Prerequisites the school must supply for the deferred items above: a payment-
-provider account (MTN MoMo Collections API access) and, if automatic bank
-statement polling is wanted, a mailbox/API the backend can poll.
+Prerequisites the school must supply: a Paystack Ghana business account for the
+online lane (test keys are enough to exercise it end to end), MTN MoMo
+Collections API access for auto-verify, and — if automatic bank statement
+polling is wanted — a mailbox/API the backend can poll.

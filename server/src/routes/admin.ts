@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import type { Role, UserStatus } from "@prisma/client";
 import { z } from "zod";
 
-import { requireRole } from "../lib/auth-guard";
+import { requireCapability } from "../lib/capabilities";
 import { recordAudit } from "../lib/audit";
 import { toPublicUser } from "../lib/serialize";
 import { prisma } from "../db";
@@ -16,6 +16,8 @@ const lowerRoles = [
   "admin",
   "accounts",
   "transport",
+  "registry",
+  "developer",
 ] as const;
 
 const createSchema = z.object({
@@ -37,7 +39,7 @@ const toStatus = (value: string): UserStatus => value.toUpperCase() as UserStatu
 // Increment 2: admin-issued account lifecycle (no public sign-up).
 export async function adminRoutes(app: FastifyInstance): Promise<void> {
   app.get("/admin/users", async (request, reply) => {
-    const actor = await requireRole(request, reply, ["admin"]);
+    const actor = await requireCapability(request, reply, "accounts.manage");
     if (!actor) return;
 
     const users = await prisma.user.findMany({ orderBy: { createdAt: "asc" } });
@@ -45,7 +47,7 @@ export async function adminRoutes(app: FastifyInstance): Promise<void> {
   });
 
   app.post("/admin/users", async (request, reply) => {
-    const actor = await requireRole(request, reply, ["admin"]);
+    const actor = await requireCapability(request, reply, "accounts.manage");
     if (!actor) return;
 
     const parsed = createSchema.safeParse(request.body);
@@ -83,7 +85,7 @@ export async function adminRoutes(app: FastifyInstance): Promise<void> {
   app.patch<{ Params: { id: string } }>(
     "/admin/users/:id",
     async (request, reply) => {
-      const actor = await requireRole(request, reply, ["admin"]);
+      const actor = await requireCapability(request, reply, "accounts.manage");
       if (!actor) return;
 
       const parsed = patchSchema.safeParse(request.body);
@@ -134,7 +136,7 @@ export async function adminRoutes(app: FastifyInstance): Promise<void> {
   app.post<{ Params: { id: string } }>(
     "/admin/users/:id/reset-password",
     async (request, reply) => {
-      const actor = await requireRole(request, reply, ["admin"]);
+      const actor = await requireCapability(request, reply, "accounts.manage");
       if (!actor) return;
 
       const target = await prisma.user.findUnique({

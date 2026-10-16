@@ -39,6 +39,19 @@ services:
         sync: false
       - key: R2_BUCKET_NAME
         sync: false
+      # Paystack — OPTIONAL online payment lane. Leave PAYSTACK_ENABLED unset
+      # (or "false") and the portal runs exactly as before on Mobile Money
+      # reference submission + bank deposits. If set to "true", the secret key
+      # is REQUIRED or the service refuses to boot, and a test key is refused
+      # when NODE_ENV=production.
+      - key: PAYSTACK_ENABLED
+        sync: false
+      - key: PAYSTACK_SECRET_KEY
+        sync: false
+      # Where Paystack returns the parent after checkout — the portal confirm
+      # page, e.g. https://<vercel-app>/portal/parent/fees/pay/confirm
+      - key: PAYSTACK_CALLBACK_URL
+        sync: false
       # Only needed if you seed demo data on this environment.
       - key: SEED_PASSWORD
         sync: false

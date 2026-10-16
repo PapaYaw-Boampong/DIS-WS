@@ -19,6 +19,11 @@ enum Role {
   ADMIN
   ACCOUNTS
   TRANSPORT
+  // The administration portal is split by responsibility: ADMIN runs the
+  // school, REGISTRY owns people records and admissions, DEVELOPER owns the
+  // platform (accounts + role permissions + readiness).
+  REGISTRY
+  DEVELOPER
 }
 
 enum UserStatus {
@@ -37,14 +42,55 @@ model User {
   // Set when an admin resets the password to a temporary one; the portal forces
   // a password change on next sign-in and clears it once changed.
   mustChangePassword Boolean @default(false)
+  // TOTP second factor. `mfaSecret` is set while enrolling and stays set once
+  // confirmed; `mfaEnabledAt` is what actually gates login, so a half-finished
+  // enrolment can never lock someone out of their own account.
+  mfaSecret          String?
+  mfaEnabledAt       DateTime?
+  // Highest TOTP step already accepted, so a code cannot be replayed inside
+  // its own validity window.
+  mfaLastUsedCounter BigInt?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
   sessions                 Session[]
   conversationParticipants ConversationParticipant[]
   authoredMessages         Message[]
+  mfaBackupCodes           MfaBackupCode[]
+  mfaChallenges            MfaChallenge[]
 
   @@map("users")
+}
+
+// One-time recovery codes for a lost authenticator. Stored as SHA-256 hashes —
+// the plaintext is shown to the user once, at enrolment, and never again.
+model MfaBackupCode {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash  String
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@map("mfa_backup_codes")
+}
+
+// The short-lived ticket issued when a password is correct but the second
+// factor is still outstanding. It is NOT a session: it authorises exactly one
+// thing, submitting a TOTP code, and expires in minutes.
+model MfaChallenge {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attempts  Int      @default(0)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("mfa_challenges")
 }
 
 model Session {
@@ -80,8 +126,23 @@ model Student {
   parentIds        String[]
   transportRouteId String?
   feedingPlan      String   @default("none")
+  // Registry intake detail. Defaulted rather than required so rows created
+  // before the registry existed stay valid.
+  dateOfBirth            String @default("")
+  gender                 String @default("")
+  admissionDate          String @default("")
+  previousSchool         String @default("")
+  guardianName           String @default("")
+  guardianRelationship   String @default("")
+  guardianPhone          String @default("")
+  guardianEmail          String @default("")
+  address                String @default("")
+  emergencyContactName   String @default("")
+  emergencyContactPhone  String @default("")
+  medicalNotes           String @default("")
   createdAt        DateTime @default(now())
 
+  @@index([classId])
   @@map("students")
 }
 
@@ -93,6 +154,13 @@ model Parent {
   email     String
   childIds  String[]
   status    String   @default("active")
+  // Registry intake detail.
+  relationship  String @default("")
+  alternatePhone String @default("")
+  address       String @default("")
+  occupation    String @default("")
+  idType        String @default("")
+  idNumber      String @default("")
   createdAt DateTime @default(now())
 
   @@map("parents")
@@ -107,9 +175,53 @@ model Staff {
   classIds   String[]
   subjectIds String[]
   status     String   @default("active")
+  // Registry intake detail.
+  department     String @default("")
+  employmentType String @default("")
+  startDate      String @default("")
+  qualification  String @default("")
+  phone          String @default("")
+  email          String @default("")
+  address        String @default("")
+  // The portal role the registry asked for. Kept even when no account was
+  // issued, so whoever holds `accounts.manage` knows what to create.
+  requestedPortalRole String @default("")
+  // Public website profile (the Leadership & Management page), managed by
+  // admins under Website in the portal. The displayed name is always
+  // `fullName`, so a registry correction reaches the site with no second edit.
+  // Only rows that are `showOnWebsite` AND active are served publicly, and only
+  // these fields — never contact details.
+  showOnWebsite   Boolean @default(false)
+  websitePosition Int     @default(0)
+  publicTitle     String  @default("") // e.g. "Principal / Headmaster"; falls back to `title`
+  publicRole      String  @default("") // e.g. "Basic & Junior High"
+  publicBio       String  @default("")
+  publicIcon      String  @default("user-round")
+  imageId         String?
+  imageObjectKey  String?
+  imageAlt        String?
   createdAt  DateTime @default(now())
 
+  @@index([showOnWebsite])
   @@map("staff")
+}
+
+// End-of-year progression: one row per learner per academic year, recording
+// where they moved from and to. Kept as history so a repeat/transfer decision
+// stays auditable after the class rosters have moved on.
+model StudentPromotion {
+  id           String   @id @default(cuid())
+  studentId    String
+  academicYear String
+  fromClassId  String?
+  toClassId    String?
+  outcome      String // promote | repeat | graduate | transfer
+  recordedById String?
+  createdAt    DateTime @default(now())
+
+  @@unique([studentId, academicYear])
+  @@index([academicYear])
+  @@map("student_promotions")
 }
 
 model SchoolClass {
@@ -158,10 +270,22 @@ model Payment {
   invoiceId String?
   category  String
   amount    Int
-  method    String // momo | bank | cash
-  status    String @default("pending") // pending | verified | rejected
+  method    String // momo | bank | cash | paystack
+  // `initiated` is a payment INTENT (Paystack checkout opened, nothing paid
+  // yet): it must never count towards a parent's paid total, never generate a
+  // receipt, and never touch Invoice.amountPaid.
+  status    String @default("pending") // pending | initiated | verified | rejected | failed | abandoned
   reference String   @unique
   note      String?
+  // Provider fields — null for every manually-verified payment.
+  provider          String? // "paystack"
+  providerReference String? @unique
+  providerChannel   String? // card | mobile_money | bank_transfer | ussd
+  // Provider fee in PESEWAS (the unit Paystack reports). Every other money
+  // column in this schema is whole Ghana cedis; this one is not.
+  providerFee       Int?
+  providerPaidAt    DateTime?
+  providerMessage   String?
   // Bank-deposit metadata (structured fields the parent submits).
   bankName      String?
   depositorName String?
@@ -179,6 +303,7 @@ model Payment {
 
   @@index([studentId])
   @@index([status])
+  @@index([provider, providerReference])
   @@map("payments")
 }
 
@@ -206,10 +331,15 @@ model StatementImport {
   id           String   @id @default(cuid())
   method       String // momo | bank
   fileName     String
+  // How the rows were obtained: a machine-readable export, or text lifted out
+  // of a PDF/photo. Anything derived by OCR is held for human review before it
+  // moves money, so the source has to be recorded.
+  source       String   @default("csv") // csv | pdf_text | ocr
   importedById String
   importedAt   DateTime @default(now())
   rowCount     Int
   matchedCount Int      @default(0)
+  reviewCount  Int      @default(0)
 
   transactions StatementTransaction[]
 
@@ -225,13 +355,28 @@ model StatementTransaction {
   counterpartyName String?
   raw              Json
   matchedPaymentId String?
-  matchType        String? // reference | amount_date_name | manual
+  // Parents are told to put the ward's name or ID in the transaction
+  // reference, so a statement row usually identifies a LEARNER rather than a
+  // payment the parent separately declared.
+  matchedStudentId String?
+  matchType        String? // reference | amount_date_name | student_id | student_name | manual
   matchConfidence  Int?
+  // unmatched | needs_review | confirmed | ignored. Rows that would move money
+  // never skip straight to confirmed when they came from OCR.
+  status           String   @default("unmatched")
+  createdPaymentId String?
+  reviewedById     String?
+  reviewedAt       DateTime?
+  // Raw text line this row was parsed from, so a reviewer can see exactly what
+  // the OCR read rather than trusting the parsed fields.
+  sourceText       String?
   createdAt        DateTime @default(now())
 
   import StatementImport @relation(fields: [importId], references: [id], onDelete: Cascade)
 
   @@index([importId])
+  @@index([status])
+  @@index([matchedStudentId])
   @@map("statement_transactions")
 }
 
@@ -245,6 +390,10 @@ model TransportRoute {
   capacity            Int
   driverName          String?
   driverPhone         String?
+  // The portal account of the driver who runs this route. Position sharing
+  // comes from that driver's phone, so the route needs to know whose phone
+  // is allowed to move it.
+  driverUserId        String?
   stops               String[]
 
   @@map("transport_routes")
@@ -258,10 +407,22 @@ model TransportTrip {
   status      String
   lastUpdated String
   nextStop    String?
+  // Live position, shared from the driver's phone while they are on the run.
+  // Null means nobody is sharing — the parent view then falls back to the
+  // route's planned stops rather than pretending to know where the bus is.
+  latitude    Float?
+  longitude   Float?
+  speedKph    Float?
+  // Reported accuracy radius in metres. A phone fix indoors can be kilometres
+  // out; showing that as a precise location would mislead a waiting parent.
+  accuracyM   Float?
+  positionAt  DateTime?
+  positionById String?
 
   @@index([routeId])
   @@map("transport_trips")
 }
+
 
 model TransportAssignment {
   id                   String @id @default(cuid())
@@ -399,6 +560,41 @@ model ResultRecord {
 
   @@index([studentId])
   @@map("results")
+}
+
+// End-of-term report card. Built by aggregating GradebookEntry rows for a
+// class/term (see server/src/lib/report-cards.ts), held as a draft while
+// teachers add remarks, then published to the family in one action. `subjects`
+// is denormalised JSON because a published report is a historical statement:
+// it must not change when a gradebook entry is later corrected.
+model ReportCard {
+  id                 String   @id @default(cuid())
+  studentId          String
+  classId            String?
+  className          String
+  academicYear       String
+  term               String
+  status             String   @default("draft") // draft | published
+  publishedAt        String?
+  overallTotal       Int      @default(0)
+  overallPercentage  Int      @default(0)
+  positionInClass    Int?
+  classSize          Int?
+  attendancePresent  Int      @default(0)
+  attendanceTotal    Int      @default(0)
+  subjects           Json // ReportCardSubject[]
+  classTeacher       String   @default("")
+  classTeacherRemark String   @default("")
+  headTeacherRemark  String   @default("")
+  nextTermBegins     String?
+  publishedById      String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@unique([studentId, academicYear, term])
+  @@index([classId, academicYear, term])
+  @@index([status])
+  @@map("report_cards")
 }
 
 model AttendanceSummary {
@@ -618,6 +814,20 @@ model AuditLog {
   @@map("audit_logs")
 }
 
+// --- Role permissions -------------------------------------------------------
+// What each portal role is allowed to do. Edited by the developer role and
+// enforced server-side on every capability-gated write. One row per role;
+// a role with no row falls back to the shipped defaults in
+// server/src/lib/capabilities.ts (which mirror the portal's own defaults).
+model RoleCapability {
+  role         String   @id // student | parent | staff | admin | registry | developer | accounts | transport
+  capabilities String[]
+  updatedById  String?
+  updatedAt    DateTime @updatedAt
+
+  @@map("role_capabilities")
+}
+
 // --- Public forms: mailing list + inquiries --------------------------------
 // Captured from the public website; managed by admins in the portal.
 model MailingListSignup {
@@ -721,6 +931,36 @@ model CalendarTermPost {
 
   @@index([status])
   @@map("calendar_terms")
+}
+
+// A shared photo album for a school event, hosted on Google Photos (which is
+// where the school already publishes them). The portal stores the LINK, not the
+// photos: no copies, no storage cost, and the school keeps control of the album
+// in one place. `albumUrl` is host-allowlisted on write — an admin-authored
+// link is published to the public site, so a mistyped or pasted-in address
+// must not become a link the school appears to vouch for.
+model PhotoAlbumPost {
+  id             String    @id @default(cuid())
+  title          String
+  description    String    @default("")
+  // Free-text like "July 2026" or "Graduation 2026" — albums are remembered by
+  // occasion, not by a precise date.
+  occasionLabel  String    @default("")
+  albumUrl       String
+  provider       String    @default("google_photos")
+  // Optional cover from the built-in gallery or an admin upload, reusing the
+  // same picker as news and events.
+  imageId        String?
+  imageObjectKey String?
+  imageAlt       String?
+  status         String    @default("draft")
+  position       Int       @default(0)
+  authorId       String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([status])
+  @@map("photo_albums")
 }
 
 // The school-calendar PDF. Effectively a singleton (one active document) —

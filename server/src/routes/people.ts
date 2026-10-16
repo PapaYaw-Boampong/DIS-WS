@@ -11,6 +11,7 @@ export async function peopleRoutes(app: FastifyInstance): Promise<void> {
       "admin",
       "staff",
       "accounts",
+      "registry",
     ]);
     if (!actor) return;
     const students = await prisma.student.findMany({
@@ -20,7 +21,11 @@ export async function peopleRoutes(app: FastifyInstance): Promise<void> {
   });
 
   app.get("/parents", async (request, reply) => {
-    const actor = await requireRole(request, reply, ["admin", "accounts"]);
+    const actor = await requireRole(request, reply, [
+      "admin",
+      "accounts",
+      "registry",
+    ]);
     if (!actor) return;
     const parents = await prisma.parent.findMany({
       orderBy: { fullName: "asc" },
@@ -29,7 +34,7 @@ export async function peopleRoutes(app: FastifyInstance): Promise<void> {
   });
 
   app.get("/staff", async (request, reply) => {
-    const actor = await requireRole(request, reply, ["admin"]);
+    const actor = await requireRole(request, reply, ["admin", "registry"]);
     if (!actor) return;
     const staff = await prisma.staff.findMany({ orderBy: { fullName: "asc" } });
     return reply.send({ staff });
@@ -40,6 +45,7 @@ export async function peopleRoutes(app: FastifyInstance): Promise<void> {
       "admin",
       "staff",
       "accounts",
+      "registry",
     ]);
     if (!actor) return;
     const classes = await prisma.schoolClass.findMany({
