@@ -233,6 +233,7 @@ export const mummyMessageSections = [
     paragraphs: [
       "I believe every child carries immense potential — enough to change the world. But potential does not unlock itself. It is drawn out through teaching: patient, purposeful and demanding teaching, given by people who truly believe in the child in front of them.",
       "Whether a child grows into a leader or loses their way is shaped, more than anything, by the care and attention we give them. A child who is noticed, guided and expected to do well rises to meet that expectation. A child who is overlooked can drift. At Divine, no child is overlooked.",
+      "Our elders say, “Abofra hunu ne nsa hohoro a, ɔne mpanimfoɔ didi” — when a child learns to wash their hands, they dine with the elders. Teach a child well, and they will take their place among the leaders.",
     ],
   },
   {
