@@ -115,7 +115,7 @@ export const mummyProfile: LeaderProfile & {
   description:
     "A mother of four who sees every child in our care as her own, and holds each of them to the same high hopes.",
   imageDescription:
-    "Vivian Agbeme Boampong, Co-Director of Divine International School.",
+    "Vivian Agbeme Boampong, Co-Director of Divine International School, addressing a school celebration.",
   image: siteImages.mummyPortrait,
   icon: "user-round",
   quote:

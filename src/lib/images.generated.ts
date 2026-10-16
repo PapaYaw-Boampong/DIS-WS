@@ -186,7 +186,7 @@ import image183 from "@/assets/images/approved/events-graduation-adults-teachers
 import image184 from "@/assets/images/approved/people-staff-teacher-marking.webp";
 import type { GalleryAlbum, SiteImage } from "@/types/content";
 
-export const generatedImageManifestHash = "254a9065c0ee77767c9618774e6bdfb40118fe8e9f11a55dbb8c7c02ddb24546";
+export const generatedImageManifestHash = "b833c32f13da9fd8c5c702e0548493a0196ffca4aff44c1324e95a3eeffaa63c";
 
 export const galleryAlbums = [
   {
@@ -2613,7 +2613,7 @@ export const siteImages = {
   backdropContact: imageById["campus-building-front-entrance"],
   backdropPortal: imageById["campus-edu-lab-computer-lab"],
   coDirectorKwame: imageById["events-graduation-adults-co-director-1"],
-  mummyPortrait: imageById["events-graduation-close-ups-vivian-boampong"],
+  mummyPortrait: imageById["events-graduation-adults-vivian-boampong-speaking"],
   coDirectorVivian: imageById["events-graduation-adults-co-director-2"],
   newsHero: imageById["events-graduation-group-g1"],
   historyHero: imageById["history-students-year-group-2022"],

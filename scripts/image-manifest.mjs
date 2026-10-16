@@ -481,7 +481,7 @@ export const siteImageAliases = {
   backdropContact: "campus/building/front-entrance.jpg",
   backdropPortal: "campus/edu-lab/computer-lab.jpg",
   coDirectorKwame: "events/graduation/adults/co-director-1.jpg",
-  mummyPortrait: "events/graduation/close ups/vivian-boampong.jpg",
+  mummyPortrait: "events/graduation/adults/vivian-boampong-speaking.jpg",
   coDirectorVivian: "events/graduation/adults/co-director-2.jpg",
   newsHero: "events/graduation/group/g1.jpg",
   historyHero: "history/students/year group 2022.jpeg",

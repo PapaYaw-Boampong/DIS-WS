@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "manifestHash": "254a9065c0ee77767c9618774e6bdfb40118fe8e9f11a55dbb8c7c02ddb24546",
-  "generatedAt": "2026-10-16T05:49:16.499Z",
+  "manifestHash": "b833c32f13da9fd8c5c702e0548493a0196ffca4aff44c1324e95a3eeffaa63c",
+  "generatedAt": "2026-10-16T06:09:16.581Z",
   "imageCount": 185,
   "exactSourceDuplicates": [],
   "records": [
@@ -4039,7 +4039,9 @@
       "fit": "cover",
       "profile": "gallery",
       "approved": true,
-      "usages": [],
+      "usages": [
+        "mummyPortrait"
+      ],
       "output": "events-graduation-adults-vivian-boampong-speaking.webp",
       "sourceBytes": 495431,
       "outputBytes": 451854,
@@ -4061,9 +4063,7 @@
       "fit": "cover",
       "profile": "gallery",
       "approved": true,
-      "usages": [
-        "mummyPortrait"
-      ],
+      "usages": [],
       "output": "events-graduation-close-ups-vivian-boampong.webp",
       "sourceBytes": 867620,
       "outputBytes": 472916,
